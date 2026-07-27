@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="दुनिया के मुख्य Search Engines का एक आसान और तेज़ Hub — Google, Bing, DuckDuckGo, Yahoo, Brave, Yandex, Baidu, Naver और कई अन्य।">
+    <title>Search Engine Hub | Santosh Kumar</title>
+    <style>
+        :root {
+            --bg: #07111f;
+            --bg-soft: #0f1f36;
+            --card: rgba(255, 255, 255, 0.09);
+            --card-border: rgba(255, 255, 255, 0.16);
+            --text: #eef6ff;
+            --muted: #a9bad2;
+            --accent: #58d5ff;
+            --accent-2: #8b5cf6;
+            --success: #22c55e;
+            --shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(88, 213, 255, 0.22), transparent 32rem),
+                radial-gradient(circle at top right, rgba(139, 92, 246, 0.24), transparent 30rem),
+                linear-gradient(135deg, #050b14 0%, var(--bg) 45%, #0d1730 100%);
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0 56px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 26px;
+            grid-template-columns: 1.3fr 0.7fr;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            padding: 8px 13px;
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #dff7ff;
+            font-size: 14px;
+            backdrop-filter: blur(14px);
+        }
+
+        h1 {
+            margin: 18px 0 14px;
+            font-size: clamp(36px, 7vw, 74px);
+            line-height: 0.98;
+            letter-spacing: -2.5px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #58d5ff, #ffffff 45%, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            max-width: 720px;
+            color: var(--muted);
+            font-size: clamp(17px, 2.2vw, 21px);
+            line-height: 1.75;
+            margin: 0;
+        }
+
+        .profile-card,
+        .search-panel,
+        .engine-card {
+            border: 1px solid var(--card-border);
+            background: var(--card);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .profile-card {
+            border-radius: 28px;
+            padding: 28px;
+        }
+
+        .avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 22px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .profile-card h2 {
+            margin: 0 0 8px;
+            font-size: 25px;
+        }
+
+        .profile-card p {
+            color: var(--muted);
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        .search-panel {
+            border-radius: 30px;
+            padding: 22px;
+            margin: 26px 0 34px;
+        }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: 1fr 220px auto;
+            gap: 12px;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 16px;
+            font: inherit;
+        }
+
+        input,
+        select {
+            background: rgba(255, 255, 255, 0.92);
+            color: #101827;
+            padding: 16px 17px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            box-shadow: 0 0 0 4px rgba(88, 213, 255, 0.22);
+        }
+
+        button {
+            cursor: pointer;
+            padding: 16px 22px;
+            color: #04111f;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), #a7f3d0);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(88, 213, 255, 0.24);
+        }
+
+        .hint {
+            margin: 14px 4px 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 18px;
+            margin: 30px 0 16px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: clamp(25px, 4vw, 34px);
+        }
+
+        .section-title p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .engine-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .engine-card {
+            min-height: 180px;
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .engine-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -40px -55px auto;
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            background: var(--brand, var(--accent));
+            opacity: 0.15;
+        }
+
+        .engine-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.38);
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .engine-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .engine-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: var(--brand, var(--accent));
+            color: white;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .engine-card h3 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .engine-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        .engine-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            color: #dff7ff;
+            font-weight: 700;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #d4e6fb;
+            font-size: 13px;
+        }
+
+        footer {
+            margin-top: 38px;
+            padding-top: 22px;
+            border-top: 1px solid var(--card-border);
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 980px) {
+            .hero,
+            .search-row {
+                grid-template-columns: 1fr;
+            }
+
+            .engine-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page {
+                width: min(100% - 22px, 1180px);
+                padding-top: 24px;
+            }
+
+            h1 {
+                letter-spacing: -1.4px;
+            }
+
+            .profile-card,
+            .search-panel,
+            .engine-card {
+                border-radius: 20px;
+            }
+
+            .engine-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                align-items: start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="hero" aria-label="Search Engine Hub परिचय">
+            <div>
+                <span class="badge">🌐 One Page Search Engine Hub</span>
+                <h1><span class="gradient-text">दुनिया के मुख्य</span><br>Search Engines एक जगह</h1>
+                <p class="subtitle">
+                    Google, Bing, Yahoo, DuckDuckGo, Brave, Yandex, Baidu, Naver और दूसरे लोकप्रिय Search Engines तक तेज़ पहुँच।
+                    कोई भी टॉपिक लिखें, इंजन चुनें और तुरंत खोज शुरू करें।
+                </p>
+                <div class="tags" aria-label="मुख्य सुविधाएँ">
+                    <span class="tag">तेज़ Search</span>
+                    <span class="tag">Privacy Options</span>
+                    <span class="tag">Regional Engines</span>
+                    <span class="tag">AI Search</span>
+                </div>
+            </div>
+
+            <aside class="profile-card" aria-label="Creator profile">
+                <div class="avatar" aria-hidden="true">SK</div>
+                <h2>Santosh Kumar</h2>
+                <p>🚀 App Developer & Web Creator<br>मेरी वेबसाइट पर आपका स्वागत है — यह पेज Search Engines के लिए एक आसान Hub है।</p>
+            </aside>
+        </section>
+
+        <section class="search-panel" aria-label="Quick search">
+            <form id="searchForm">
+                <div class="search-row">
+                    <input id="query" type="search" placeholder="यहाँ अपना search लिखें..." aria-label="Search query" required>
+                    <select id="engine" aria-label="Search engine चुनें">
+                        <option value="https://www.google.com/search?q=">Google</option>
+                        <option value="https://www.bing.com/search?q=">Bing</option>
+                        <option value="https://search.yahoo.com/search?p=">Yahoo</option>
+                        <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+                        <option value="https://search.brave.com/search?q=">Brave Search</option>
+                        <option value="https://www.ecosia.org/search?q=">Ecosia</option>
+                        <option value="https://www.startpage.com/sp/search?query=">Startpage</option>
+                        <option value="https://www.qwant.com/?q=">Qwant</option>
+                        <option value="https://www.baidu.com/s?wd=">Baidu</option>
+                        <option value="https://yandex.com/search/?text=">Yandex</option>
+                        <option value="https://search.naver.com/search.naver?query=">Naver</option>
+                        <option value="https://www.sogou.com/web?query=">Sogou</option>
+                        <option value="https://www.perplexity.ai/search?q=">Perplexity</option>
+                        <option value="https://you.com/search?q=">You.com</option>
+                    </select>
+                    <button type="submit">Search करें</button>
+                </div>
+            </form>
+            <p class="hint">Tip: Search result नए tab में खुलेगा ताकि यह Hub खुला रहे। नीचे दिए cards से आप सीधे Search Engine homepage पर भी जा सकते हैं।</p>
+        </section>
+
+        <section aria-label="Search engines list">
+            <div class="section-title">
+                <h2>Popular Search Engines</h2>
+                <p>Global, privacy-focused, regional और AI search options</p>
+            </div>
+
+            <div class="engine-grid">
+                <a class="engine-card" href="https://www.google.com/" target="_blank" rel="noopener noreferrer" style="--brand:#4285f4">
+                    <div class="engine-top"><span class="engine-icon">G</span><h3>Google</h3></div>
+                    <p>दुनिया का सबसे लोकप्रिय web search engine, maps, images, news और videos के साथ।</p>
+                    <span class="engine-link">Open Google →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer" style="--brand:#008373">
+                    <div class="engine-top"><span class="engine-icon">B</span><h3>Bing</h3></div>
+                    <p>Microsoft का search engine, web, image, video और AI-powered खोज के लिए उपयोगी।</p>
+                    <span class="engine-link">Open Bing →</span>
+                </a>
+
+                <a class="engine-card" href="https://search.yahoo.com/" target="_blank" rel="noopener noreferrer" style="--brand:#6001d2">
+                    <div class="engine-top"><span class="engine-icon">Y</span><h3>Yahoo</h3></div>
+                    <p>Search, news, finance और email ecosystem के साथ पुराना और लोकप्रिय portal।</p>
+                    <span class="engine-link">Open Yahoo →</span>
+                </a>
+
+                <a class="engine-card" href="https://duckduckgo.com/" target="_blank" rel="noopener noreferrer" style="--brand:#de5833">
+                    <div class="engine-top"><span class="engine-icon">DDG</span><h3>DuckDuckGo</h3></div>
+                    <p>Privacy-focused search engine जो tracking कम रखने पर जोर देता है।</p>
+                    <span class="engine-link">Open DuckDuckGo →</span>
+                </a>
+
+                <a class="engine-card" href="https://search.brave.com/" target="_blank" rel="noopener noreferrer" style="--brand:#fb542b">
+                    <div class="engine-top"><span class="engine-icon">Br</span><h3>Brave Search</h3></div>
+                    <p>Independent index और privacy-first approach के साथ modern search option।</p>
+                    <span class="engine-link">Open Brave →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.ecosia.org/" target="_blank" rel="noopener noreferrer" style="--brand:#2c8a3d">
+                    <div class="engine-top"><span class="engine-icon">E</span><h3>Ecosia</h3></div>
+                    <p>Environment-friendly search engine, trees और climate projects को support करने के लिए जाना जाता है।</p>
+                    <span class="engine-link">Open Ecosia →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.startpage.com/" target="_blank" rel="noopener noreferrer" style="--brand:#6573ff">
+                    <div class="engine-top"><span class="engine-icon">Sp</span><h3>Startpage</h3></div>
+                    <p>Private search experience के लिए लोकप्रिय, personal tracking को कम करने पर focus।</p>
+                    <span class="engine-link">Open Startpage →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.qwant.com/" target="_blank" rel="noopener noreferrer" style="--brand:#5968ff">
+                    <div class="engine-top"><span class="engine-icon">Q</span><h3>Qwant</h3></div>
+                    <p>Europe-based privacy search engine, web, news और maps जैसी सुविधाओं के साथ।</p>
+                    <span class="engine-link">Open Qwant →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.baidu.com/" target="_blank" rel="noopener noreferrer" style="--brand:#2932e1">
+                    <div class="engine-top"><span class="engine-icon">百</span><h3>Baidu</h3></div>
+                    <p>China में प्रमुख search engine, Chinese web content के लिए बहुत उपयोगी।</p>
+                    <span class="engine-link">Open Baidu →</span>
+                </a>
+
+                <a class="engine-card" href="https://yandex.com/" target="_blank" rel="noopener noreferrer" style="--brand:#fc3f1d">
+                    <div class="engine-top"><span class="engine-icon">Ya</span><h3>Yandex</h3></div>
+                    <p>Russia और आसपास के regions में लोकप्रिय search, maps, images और translation ecosystem।</p>
+                    <span class="engine-link">Open Yandex →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.naver.com/" target="_blank" rel="noopener noreferrer" style="--brand:#03c75a">
+                    <div class="engine-top"><span class="engine-icon">N</span><h3>Naver</h3></div>
+                    <p>South Korea का leading search portal, blogs, news और local content के लिए खास।</p>
+                    <span class="engine-link">Open Naver →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.sogou.com/" target="_blank" rel="noopener noreferrer" style="--brand:#ff6f00">
+                    <div class="engine-top"><span class="engine-icon">S</span><h3>Sogou</h3></div>
+                    <p>Chinese search platform, web pages और Chinese-language resources के लिए उपयोगी।</p>
+                    <span class="engine-link">Open Sogou →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.ask.com/" target="_blank" rel="noopener noreferrer" style="--brand:#d71920">
+                    <div class="engine-top"><span class="engine-icon">Ask</span><h3>Ask.com</h3></div>
+                    <p>Question-answer style search और general web discovery के लिए जाना जाता है।</p>
+                    <span class="engine-link">Open Ask →</span>
+                </a>
+
+                <a class="engine-card" href="https://swisscows.com/" target="_blank" rel="noopener noreferrer" style="--brand:#d9001b">
+                    <div class="engine-top"><span class="engine-icon">Sw</span><h3>Swisscows</h3></div>
+                    <p>Switzerland-based family-friendly और privacy-oriented search engine।</p>
+                    <span class="engine-link">Open Swisscows →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.mojeek.com/" target="_blank" rel="noopener noreferrer" style="--brand:#7aa22f">
+                    <div class="engine-top"><span class="engine-icon">M</span><h3>Mojeek</h3></div>
+                    <p>Independent crawler-based search engine, alternative web index के रूप में जाना जाता है।</p>
+                    <span class="engine-link">Open Mojeek →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.seznam.cz/" target="_blank" rel="noopener noreferrer" style="--brand:#cc0000">
+                    <div class="engine-top"><span class="engine-icon">Sz</span><h3>Seznam</h3></div>
+                    <p>Czech Republic में लोकप्रिय search और web portal, regional content के लिए उपयोगी।</p>
+                    <span class="engine-link">Open Seznam →</span>
+                </a>
+
+                <a class="engine-card" href="https://yep.com/" target="_blank" rel="noopener noreferrer" style="--brand:#ffcf00">
+                    <div class="engine-top"><span class="engine-icon">Yep</span><h3>Yep</h3></div>
+                    <p>Ahrefs team का search engine, creators और independent search ecosystem पर focus।</p>
+                    <span class="engine-link">Open Yep →</span>
+                </a>
+
+                <a class="engine-card" href="https://you.com/" target="_blank" rel="noopener noreferrer" style="--brand:#7c3aed">
+                    <div class="engine-top"><span class="engine-icon">You</span><h3>You.com</h3></div>
+                    <p>AI-assisted search, chat और summarized answers के साथ modern discovery platform।</p>
+                    <span class="engine-link">Open You.com →</span>
+                </a>
+
+                <a class="engine-card" href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer" style="--brand:#20b8cd">
+                    <div class="engine-top"><span class="engine-icon">P</span><h3>Perplexity</h3></div>
+                    <p>AI answer engine जो web sources के आधार पर conversational search experience देता है।</p>
+                    <span class="engine-link">Open Perplexity →</span>
+                </a>
+
+                <a class="engine-card" href="https://search.aol.com/" target="_blank" rel="noopener noreferrer" style="--brand:#111827">
+                    <div class="engine-top"><span class="engine-icon">AOL</span><h3>AOL Search</h3></div>
+                    <p>Classic web portal search, general web results और news discovery के लिए।</p>
+                    <span class="engine-link">Open AOL →</span>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <strong>Search Engine Hub</strong> by Santosh Kumar · सभी links official websites पर जाते हैं।
+        </footer>
+    </main>
+
+    <script>
+        const form = document.getElementById('searchForm');
+        const query = document.getElementById('query');
+        const engine = document.getElementById('engine');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const text = query.value.trim();
+            if (!text) return;
+            const url = engine.value + encodeURIComponent(text);
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    </script>
+</body>
+  </html>
