@@ -1,153 +1,187 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#05030a" />
-  <title>Queenie — आपकी AI गर्लफ्रेंड 💜</title>
-  <meta name="description" content="Queenie — एक अल्ट्रा-मॉडर्न, प्रीमियम AI Voice Companion जो आपकी है।" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="assets/css/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#07040f" />
+<title>Queenie — वॉइस AI असिस्टेंट</title>
+<meta name="description" content="Queenie — हिंदी/इंग्लिश वॉइस-कंट्रोल्ड AI असिस्टेंट। बोलो और सुनो, ब्राउज़र में ही।" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>" />
+<link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <!-- Ambient animated background layers -->
-  <div class="bg-aurora"></div>
-  <div class="bg-grid"></div>
 
-  <!-- 3D Orb canvas (Three.js) + 2D visualizer overlay -->
-  <canvas id="orb-canvas"></canvas>
-  <canvas id="viz-canvas"></canvas>
+<div class="bg-aurora" aria-hidden="true"></div>
 
-  <!-- CSS fallback orb (shown only if WebGL unavailable) -->
-  <div class="orb-fallback" aria-hidden="true">
-    <div class="orb-core"></div>
-    <div class="orb-ring"></div>
-  </div>
-
-  <!-- Top brand bar -->
-  <header class="topbar glass">
-    <div class="brand">
-      <div class="brand-mark">Q</div>
-      <div class="brand-text">
-        <h1>Queenie</h1>
-        <span class="brand-sub">आपकी AI — बस आपकी 💜</span>
-      </div>
-    </div>
-    <div class="brand-status" id="net-status">
-      <span class="dot"></span><span id="net-label">सिस्टम ऑनलाइन</span>
-    </div>
-    <button class="gear-btn" id="gear-btn" title="Grok / सेटिंग्स">⚙</button>
-  </header>
-
-  <!-- Settings popover (Grok / xAI) -->
-  <div class="settings glass" id="settings" aria-hidden="true">
-    <div class="settings-head">
-      <strong>⚙ Grok (xAI) कनेक्शन</strong>
-      <button class="drawer-close" id="settings-close">✕</button>
-    </div>
-    <label class="set-row">
-      <span>xAI API Key</span>
-      <input id="api-key" type="password" placeholder="xai-..." autocomplete="off" />
-    </label>
-    <label class="set-row">
-      <span>Model</span>
-      <select id="model-select" class="ctrl select">
-        <option value="grok-4-latest">grok-4-latest</option>
-        <option value="grok-3">grok-3</option>
-        <option value="grok-2-latest">grok-2-latest</option>
-        <option value="grok-beta">grok-beta</option>
-      </select>
-    </label>
-    <label class="set-row toggle-row">
-      <span>Grok इस्तेमाल करो (Unfiltered)</span>
-      <input id="use-grok" type="checkbox" />
-    </label>
-    <p class="set-note" id="set-note">
-      की सीधे ब्राउज़र से xAI API कॉल होती है (key सिर्फ इसी डिवाइस के localStorage में रहती है)।
-      अगर API key न हो या CORS रोके, तो Queenie लोकल इंजन से बोलेगी।
-    </p>
-    <div class="set-actions">
-      <button class="ctrl pill" id="save-settings">सेव करो</button>
-      <button class="ctrl pill" id="test-grok">टेस्ट</button>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">Q</div>
+    <div class="brand-text">
+      <h1>Queenie</h1>
+      <span class="brand-sub" id="brand-sub">वॉइस AI असिस्टेंट</span>
     </div>
   </div>
+  <div class="top-actions">
+    <span class="chip" id="mode-chip" title="जवाब का इंजन">लोकल</span>
+    <button class="icon-btn" id="gear-btn" title="सेटिंग्स" aria-label="सेटिंग्स">⚙</button>
+  </div>
+</header>
 
-  <!-- Center stage: status + hint -->
-  <main class="stage">
-    <div class="orb-wrap">
-      <div class="orb-halo"></div>
-      <p class="status-pill" id="status">आपकी बात सुनने के लिए तैयार हूँ…</p>
-    </div>
+<main class="stage">
 
-    <div class="hint" id="hint">
-      बस माइक दबाओ और प्यार से बोलो — मैं सुन रही हूँ 🎧
-    </div>
-  </main>
+  <!-- ===== AVATAR (pure SVG — हमेशा दिखेगा) ===== -->
+  <div class="avatar-wrap" id="avatar-wrap">
+    <div class="avatar-ring" id="avatar-ring"></div>
+    <svg class="avatar" id="avatar" viewBox="0 0 240 260" role="img" aria-label="Queenie अवतार">
+      <defs>
+        <linearGradient id="hairG" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#3b1d5e"/><stop offset="55%" stop-color="#6d28d9"/><stop offset="100%" stop-color="#a21caf"/>
+        </linearGradient>
+        <linearGradient id="skinG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffdcc7"/><stop offset="100%" stop-color="#f2b79b"/>
+        </linearGradient>
+        <linearGradient id="lipG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff5fa2"/><stop offset="100%" stop-color="#d81b60"/>
+        </linearGradient>
+        <radialGradient id="glowG" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ff2d95" stop-opacity=".55"/><stop offset="100%" stop-color="#ff2d95" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
+      </defs>
 
-  <!-- Bottom control dock -->
-  <nav class="dock glass">
-    <button class="ctrl mic-btn" id="mic-btn" title="बोलने के लिए दबाओ">
-      <span class="mic-glow"></span>
-      <svg viewBox="0 0 24 24" class="ico"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
-    </button>
+      <ellipse cx="120" cy="140" rx="108" ry="112" fill="url(#glowG)"/>
 
-    <div class="ctrl-group">
-      <button class="ctrl pill" id="handsfree-btn" title="Hands-Free मोड">
-        <svg viewBox="0 0 24 24" class="ico"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0v-3a7 7 0 0 0-7-7z"/><path d="M9 18v1a3 3 0 0 0 6 0v-1"/></svg>
-        <span>Hands-Free</span>
-      </button>
+      <!-- back hair -->
+      <path d="M120 22c-52 0-82 36-82 88 0 40 6 66 12 92h34c-10-34-14-60-12-84 22 10 74 10 96 0 2 24-2 50-12 84h34c6-26 12-52 12-92 0-52-30-88-82-88z" fill="url(#hairG)"/>
 
-      <button class="ctrl pill lang-btn" id="lang-btn" title="भाषा बदलें">
-        <span id="lang-label">हिन्दी</span>
-      </button>
+      <!-- ears (tucked near the face, not floating outside the hair) -->
+      <ellipse cx="63" cy="142" rx="8" ry="13" fill="url(#skinG)"/>
+      <ellipse cx="177" cy="142" rx="8" ry="13" fill="url(#skinG)"/>
 
-      <div class="ctrl select-wrap">
-        <select id="voice-select" class="ctrl select" title="आवाज़ चुनें"></select>
-      </div>
+      <!-- face -->
+      <path d="M120 54c-36 0-60 26-60 66 0 44 26 78 60 78s60-34 60-78c0-40-24-66-60-66z" fill="url(#skinG)"/>
 
-      <button class="ctrl pill" id="chat-btn" title="चैट खोलो">
-        <svg viewBox="0 0 24 24" class="ico"><path d="M21 11.5a8.5 8.5 0 0 1-12 7.7L3 21l1.8-6A8.5 8.5 0 1 1 21 11.5z"/></svg>
-        <span>चैट</span>
-      </button>
-    </div>
-  </nav>
+      <!-- fringe -->
+      <path d="M120 40c-40 0-64 26-64 62 6-18 16-30 30-36 16 22 68 26 96 8 6 8 9 18 10 28 2-38-24-62-72-62z" fill="url(#hairG)"/>
 
-  <!-- Slide-out chat drawer -->
-  <aside class="drawer glass" id="drawer" aria-hidden="true">
-    <div class="drawer-head">
-      <div class="drawer-title">
-        <span class="brand-mark small">Q</span>
-        <div>
-          <strong>Queenie</strong>
-          <em id="drawer-sub">आपकी बातें यहाँ 💬</em>
-        </div>
-      </div>
-      <button class="drawer-close" id="drawer-close" title="बंद करो">✕</button>
-    </div>
+      <!-- brows -->
+      <path class="brow" id="brow-l" d="M82 112c8-6 20-7 28-3" stroke="#4a2464" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path class="brow" id="brow-r" d="M130 109c8-4 20-3 28 3" stroke="#4a2464" stroke-width="5" fill="none" stroke-linecap="round"/>
 
-    <div class="chat" id="chat"></div>
+      <!-- eyes -->
+      <g id="eyes">
+        <g class="eye">
+          <ellipse cx="96" cy="134" rx="15" ry="11" fill="#fff"/>
+          <circle class="iris" cx="96" cy="134" r="7.5" fill="#7c3aed"/>
+          <circle cx="96" cy="134" r="3.4" fill="#1b0b2a"/>
+          <circle cx="99" cy="131" r="2.2" fill="#fff" opacity=".9"/>
+        </g>
+        <g class="eye">
+          <ellipse cx="144" cy="134" rx="15" ry="11" fill="#fff"/>
+          <circle class="iris" cx="144" cy="134" r="7.5" fill="#7c3aed"/>
+          <circle cx="144" cy="134" r="3.4" fill="#1b0b2a"/>
+          <circle cx="147" cy="131" r="2.2" fill="#fff" opacity=".9"/>
+        </g>
+        <!-- eyelids (blink) -->
+        <rect class="lid" id="lid-l" x="81" y="123" width="30" height="0" rx="4" fill="url(#skinG)"/>
+        <rect class="lid" id="lid-r" x="129" y="123" width="30" height="0" rx="4" fill="url(#skinG)"/>
+      </g>
 
+      <!-- blush -->
+      <ellipse cx="82" cy="158" rx="13" ry="8" fill="#ff8fb8" opacity=".45" filter="url(#soft)"/>
+      <ellipse cx="158" cy="158" rx="13" ry="8" fill="#ff8fb8" opacity=".45" filter="url(#soft)"/>
+
+      <!-- nose -->
+      <path d="M120 143v12c0 3-3 5-6 5" stroke="#d9906f" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+      <!-- mouth (JS animates height while speaking) -->
+      <g id="mouth-g">
+        <ellipse id="mouth" cx="120" cy="180" rx="17" ry="5" fill="url(#lipG)"/>
+        <path id="smile" d="M103 178q17 12 34 0" stroke="#c2185b" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+      </g>
+
+      <!-- neck + shoulders -->
+      <path d="M105 194q15 10 30 0v18c0 7 13 9 29 15 15 6 24 15 26 33H50c2-18 11-27 26-33 16-6 29-8 29-15z" fill="url(#skinG)"/>
+      <path d="M76 227c-15 6-24 15-26 33h140c-2-18-11-27-26-33-6 16-24 24-44 24s-38-8-44-24z" fill="#2a1140"/>
+      <path d="M120 251c-20 0-38-8-44-24l-4 2c8 18 27 27 48 27s40-9 48-27l-4-2c-6 16-24 24-44 24z" fill="#a855f7" opacity=".35"/>
+    </svg>
+    <canvas id="viz" class="viz" aria-hidden="true"></canvas>
+  </div>
+
+  <p class="status" id="status">तैयार हूँ — माइक दबाकर बोलिए 🎤</p>
+  <p class="subtle" id="hint">या नीचे टाइप करके भेजिए</p>
+
+  <!-- ===== CHAT (हमेशा दिखने वाला) ===== -->
+  <section class="chat-card">
+    <div class="chat" id="chat" aria-live="polite"></div>
     <form class="composer" id="composer" autocomplete="off">
-      <input id="text-input" type="text" placeholder="यहाँ टाइप करो या माइक दबाओ…" />
-      <button type="submit" class="send-btn" title="भेजो">➤</button>
+      <button type="button" class="mic-btn" id="mic-btn" title="बोलने के लिए दबाएँ" aria-label="माइक">
+        <svg viewBox="0 0 24 24" class="ico"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+      </button>
+      <input id="text-input" type="text" placeholder="यहाँ लिखिए…" />
+      <button type="submit" class="send-btn" title="भेजें" aria-label="भेजें">➤</button>
     </form>
-  </aside>
-  <div class="drawer-scrim" id="drawer-scrim"></div>
+  </section>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+  <div class="quickbar">
+    <button class="pill" data-q="तुम्हें किसने बनाया है?">किसने बनाया?</button>
+    <button class="pill" data-q="तुम मेरे लिए क्या कर सकती हो?">क्या कर सकती हो?</button>
+    <button class="pill" data-q="अभी समय क्या हुआ है?">समय बताओ</button>
+    <button class="pill" data-q="एक जोक सुनाओ">जोक सुनाओ</button>
+  </div>
 
-  <!-- Three.js (CDN) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <div class="toolbar">
+    <button class="pill" id="handsfree-btn" title="लगातार सुनती रहूँ">🔁 हैंड्स-फ्री</button>
+    <button class="pill" id="lang-btn"><span id="lang-label">हिन्दी</span></button>
+    <button class="pill" id="stop-btn" title="बोलना रोको">⏹ रोको</button>
+    <button class="pill" id="diag-btn" title="सपोर्ट जाँच">🩺 जाँच</button>
+  </div>
+</main>
 
-  <!-- App modules (load order matters) -->
-  <script src="assets/js/queenie.js"></script>
-  <script src="assets/js/orb.js"></script>
-  <script src="assets/js/audio.js"></script>
-  <script src="assets/js/app.js"></script>
+<!-- Settings -->
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="settings" aria-hidden="true">
+  <div class="sheet-head">
+    <strong>⚙ सेटिंग्स</strong>
+    <button class="icon-btn" id="settings-close" aria-label="बंद करें">✕</button>
+  </div>
+
+  <label class="row"><span>आवाज़ (TTS)</span>
+    <select id="voice-select"></select>
+  </label>
+  <label class="row"><span>बोलने की गति</span>
+    <input id="rate" type="range" min="0.6" max="1.4" step="0.05" value="1" />
+  </label>
+  <label class="row"><span>पिच</span>
+    <input id="pitch" type="range" min="0.6" max="1.6" step="0.05" value="1.15" />
+  </label>
+
+  <div class="divider"></div>
+
+  <p class="note">वैकल्पिक: अपनी AI API जोड़िए (OpenAI-कम्पैटिबल / xAI Grok)। बिना key के भी Queenie लोकल इंजन से जवाब देती है।</p>
+  <label class="row"><span>API Base URL</span>
+    <input id="api-base" type="text" placeholder="https://api.x.ai/v1" />
+  </label>
+  <label class="row"><span>API Key</span>
+    <input id="api-key" type="password" placeholder="xai-… / sk-…" autocomplete="off" />
+  </label>
+  <label class="row"><span>Model</span>
+    <input id="api-model" type="text" placeholder="grok-3 / gpt-4o-mini" />
+  </label>
+  <label class="row"><span>API इस्तेमाल करें</span>
+    <input id="use-api" type="checkbox" />
+  </label>
+  <div class="row btns">
+    <button class="pill solid" id="save-settings">सेव करें</button>
+    <button class="pill" id="test-api">टेस्ट</button>
+    <button class="pill" id="clear-chat">चैट साफ़</button>
+  </div>
+  <p class="note small">Key सिर्फ़ आपके ब्राउज़र के localStorage में रहती है, कहीं भेजी नहीं जाती।</p>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/brain.js"></script>
+<script src="assets/js/app.js"></script>
 </body>
 </html>
