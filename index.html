@@ -1,538 +1,1058 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="दुनिया के मुख्य Search Engines का एक आसान और तेज़ Hub — Google, Bing, DuckDuckGo, Yahoo, Brave, Yandex, Baidu, Naver और कई अन्य।">
-    <title>Search Engine Hub | Santosh Kumar</title>
-    <style>
-        :root {
-            --bg: #07111f;
-            --bg-soft: #0f1f36;
-            --card: rgba(255, 255, 255, 0.09);
-            --card-border: rgba(255, 255, 255, 0.16);
-            --text: #eef6ff;
-            --muted: #a9bad2;
-            --accent: #58d5ff;
-            --accent-2: #8b5cf6;
-            --success: #22c55e;
-            --shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#02110a">
+<meta name="description" content="Ultimate Root Security — Cyberpunk AI Terminal with Matrix Rain, Neon Glow, CRT Scanlines, Glitch FX, Web Audio sounds and Voice Control.">
+<title>ROOT@SECURITY :: Cyberpunk AI Terminal</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💀</text></svg>">
+<style>
+/* ============================================================
+   ULTIMATE ROOT SECURITY :: CYBERPUNK AI TERMINAL
+   ============================================================ */
+:root{
+  --green:#00ff9c;
+  --green-dim:#0b7a52;
+  --cyan:#00e5ff;
+  --magenta:#ff2bd6;
+  --amber:#ffcc00;
+  --red:#ff2e4d;
+  --bg:#02110a;
+  --bg2:#010806;
+  --glass:rgba(0,255,156,.05);
+  --line:rgba(0,255,156,.28);
+  --font:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,"Courier New",monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg2);
+  color:var(--green);
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.55;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
 
-        * {
-            box-sizing: border-box;
-        }
+/* ---------- Matrix rain ---------- */
+#matrix{position:fixed;inset:0;z-index:0;display:block;opacity:.55;transition:opacity .6s}
+body.rain-boost #matrix{opacity:1}
 
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top left, rgba(88, 213, 255, 0.22), transparent 32rem),
-                radial-gradient(circle at top right, rgba(139, 92, 246, 0.24), transparent 30rem),
-                linear-gradient(135deg, #050b14 0%, var(--bg) 45%, #0d1730 100%);
-            min-height: 100vh;
-        }
+/* ---------- Ambient neon glow ---------- */
+.ambient{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(60vw 50vh at 12% 8%, rgba(0,229,255,.13), transparent 60%),
+    radial-gradient(55vw 45vh at 88% 92%, rgba(255,43,214,.13), transparent 60%),
+    radial-gradient(70vw 60vh at 50% 50%, rgba(0,255,156,.07), transparent 70%);
+  mix-blend-mode:screen;
+}
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+/* ---------- CRT scanlines + vignette + flicker ---------- */
+.crt{
+  position:fixed;inset:0;z-index:60;pointer-events:none;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.22) 3px,
+    rgba(0,0,0,.22) 4px);
+  mix-blend-mode:multiply;
+}
+.crt::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
+}
+.crt-beam{
+  position:fixed;left:0;right:0;height:26vh;z-index:61;pointer-events:none;
+  background:linear-gradient(to bottom, rgba(0,255,156,0), rgba(0,255,156,.055), rgba(0,255,156,0));
+  animation:beam 7s linear infinite;
+}
+@keyframes beam{0%{top:-30vh}100%{top:110vh}}
+.flicker{position:fixed;inset:0;z-index:62;pointer-events:none;background:rgba(0,255,156,.02);animation:flick 4s steps(2) infinite}
+@keyframes flick{0%,96%{opacity:0}97%{opacity:.5}98%{opacity:0}99%{opacity:.7}100%{opacity:0}}
+body.no-fx .crt,body.no-fx .crt-beam,body.no-fx .flicker{display:none}
 
-        .page {
-            width: min(1180px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 42px 0 56px;
-        }
+/* ---------- Layout shell ---------- */
+.shell{
+  position:relative;z-index:10;
+  height:100dvh;height:100vh;
+  display:flex;flex-direction:column;
+  padding:10px;gap:8px;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+}
+.frame{
+  flex:1;min-height:0;display:flex;flex-direction:column;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:linear-gradient(180deg, rgba(2,17,10,.92), rgba(1,8,6,.96));
+  box-shadow:0 0 0 1px rgba(0,255,156,.06) inset, 0 0 42px rgba(0,255,156,.14), 0 0 120px rgba(0,229,255,.07);
+  backdrop-filter:blur(3px);
+  overflow:hidden;
+}
 
-        .hero {
-            display: grid;
-            gap: 26px;
-            grid-template-columns: 1.3fr 0.7fr;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+/* ---------- Title bar ---------- */
+.bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(90deg, rgba(0,255,156,.10), rgba(0,229,255,.05), rgba(255,43,214,.08));
+}
+.dots{display:flex;gap:6px}
+.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 8px currentColor}
+.dot.r{background:#ff2e4d;color:#ff2e4d}
+.dot.y{background:#ffcc00;color:#ffcc00}
+.dot.g{background:#00ff9c;color:#00ff9c}
+.title{
+  font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);
+  text-shadow:0 0 10px rgba(0,229,255,.8);white-space:nowrap;
+}
+.bar .spacer{flex:1}
+.stat{
+  font-size:11px;letter-spacing:1px;color:var(--green-dim);
+  border:1px solid rgba(0,255,156,.2);border-radius:999px;padding:2px 9px;white-space:nowrap;
+}
+.stat b{color:var(--green)}
+.led{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:5px;vertical-align:middle}
+.led.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            width: fit-content;
-            padding: 8px 13px;
-            border: 1px solid var(--card-border);
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
-            color: #dff7ff;
-            font-size: 14px;
-            backdrop-filter: blur(14px);
-        }
+/* ---------- Output area ---------- */
+#out{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  padding:14px 14px 4px;
+  scrollbar-width:thin;scrollbar-color:var(--green-dim) transparent;
+  -webkit-overflow-scrolling:touch;
+}
+#out::-webkit-scrollbar{width:8px}
+#out::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:8px}
+.line{white-space:pre-wrap;word-break:break-word;margin:0 0 2px;text-shadow:0 0 6px rgba(0,255,156,.35)}
+.c-green{color:var(--green)}
+.c-cyan{color:var(--cyan);text-shadow:0 0 8px rgba(0,229,255,.5)}
+.c-mag{color:var(--magenta);text-shadow:0 0 8px rgba(255,43,214,.5)}
+.c-amber{color:var(--amber);text-shadow:0 0 8px rgba(255,204,0,.5)}
+.c-red{color:var(--red);text-shadow:0 0 8px rgba(255,46,77,.6)}
+.c-dim{color:#4f7f68;text-shadow:none}
+.c-white{color:#dfffef}
+.bold{font-weight:700}
+.line a{color:var(--cyan);text-decoration:underline dotted}
+.banner{
+  font-size:clamp(6px,1.85vw,13px);line-height:1.1;white-space:pre;overflow-x:auto;
+  color:var(--green);text-shadow:0 0 12px rgba(0,255,156,.7), 0 0 26px rgba(0,229,255,.35);
+}
+.box{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--glass)}
+.kv{display:grid;grid-template-columns:minmax(96px,150px) 1fr;gap:2px 12px;font-size:13.5px}
+.kv .k{color:var(--cyan)}
+.kv .v{color:#cdfbe6;word-break:break-word}
 
-        h1 {
-            margin: 18px 0 14px;
-            font-size: clamp(36px, 7vw, 74px);
-            line-height: 0.98;
-            letter-spacing: -2.5px;
-        }
+/* progress bars */
+.pbar{display:flex;align-items:center;gap:8px;font-size:13px}
+.pbar .track{flex:1;height:9px;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:rgba(0,0,0,.5);min-width:80px}
+.pbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan));box-shadow:0 0 12px var(--green);transition:width .12s linear}
+.pbar .pct{width:44px;text-align:right;color:var(--cyan)}
 
-        .gradient-text {
-            background: linear-gradient(90deg, #58d5ff, #ffffff 45%, #c4b5fd);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+/* glitch */
+.glitch{position:relative;display:inline-block}
+.glitch::before,.glitch::after{
+  content:attr(data-t);position:absolute;left:0;top:0;width:100%;overflow:hidden;
+}
+.glitch::before{color:var(--magenta);animation:gl1 .55s infinite linear alternate-reverse;clip-path:inset(0 0 55% 0)}
+.glitch::after{color:var(--cyan);animation:gl2 .48s infinite linear alternate-reverse;clip-path:inset(52% 0 0 0)}
+@keyframes gl1{0%{transform:translate(0)}25%{transform:translate(-2px,-1px)}50%{transform:translate(2px,1px)}100%{transform:translate(-1px,1px)}}
+@keyframes gl2{0%{transform:translate(0)}25%{transform:translate(2px,1px)}50%{transform:translate(-2px,-1px)}100%{transform:translate(1px,-1px)}}
+body.shake .frame{animation:shake .35s linear}
+@keyframes shake{
+  0%,100%{transform:translate(0,0)}
+  20%{transform:translate(-4px,2px) skewX(.6deg)}
+  40%{transform:translate(4px,-2px) skewX(-.6deg)}
+  60%{transform:translate(-3px,-1px)}
+  80%{transform:translate(3px,1px)}
+}
+body.alarm .frame{border-color:var(--red);box-shadow:0 0 40px rgba(255,46,77,.5), 0 0 90px rgba(255,46,77,.25)}
+.rgb-split{animation:rgbs .18s steps(2) 6}
+@keyframes rgbs{0%{filter:none}50%{filter:drop-shadow(2px 0 var(--red)) drop-shadow(-2px 0 var(--cyan))}100%{filter:none}}
 
-        .subtitle {
-            max-width: 720px;
-            color: var(--muted);
-            font-size: clamp(17px, 2.2vw, 21px);
-            line-height: 1.75;
-            margin: 0;
-        }
+/* ---------- Input row ---------- */
+.inputbar{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 12px;border-top:1px solid var(--line);
+  background:linear-gradient(90deg, rgba(0,255,156,.07), rgba(0,229,255,.03));
+}
+.prompt{color:var(--magenta);white-space:nowrap;font-weight:700;text-shadow:0 0 10px rgba(255,43,214,.6);font-size:14px}
+#cmd{
+  flex:1;min-width:0;background:transparent;border:0;outline:0;
+  color:var(--green);font-family:var(--font);font-size:16px;caret-color:transparent;
+  text-shadow:0 0 8px rgba(0,255,156,.6);
+}
+#cmd::placeholder{color:#2f6a55}
+.caret{width:10px;height:18px;background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 1s steps(1) infinite;flex:none}
+@keyframes blink{50%{opacity:0}}
+.iconbtn{
+  flex:none;width:38px;height:38px;border-radius:10px;
+  border:1px solid var(--line);background:rgba(0,255,156,.07);
+  color:var(--green);font-size:16px;cursor:pointer;display:grid;place-items:center;
+  transition:.18s;
+}
+.iconbtn:hover{background:rgba(0,255,156,.18);box-shadow:0 0 14px rgba(0,255,156,.4)}
+.iconbtn.active{color:var(--magenta);border-color:var(--magenta);box-shadow:0 0 16px rgba(255,43,214,.6);background:rgba(255,43,214,.12)}
+.iconbtn.off{color:#3d6b5b;border-color:rgba(0,255,156,.15)}
 
-        .profile-card,
-        .search-panel,
-        .engine-card {
-            border: 1px solid var(--card-border);
-            background: var(--card);
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(18px);
-        }
+/* ---------- Quick chips ---------- */
+.chips{
+  display:flex;gap:7px;overflow-x:auto;padding:8px 10px;
+  border-top:1px solid rgba(0,255,156,.14);scrollbar-width:none;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;border:1px solid var(--line);border-radius:999px;
+  background:rgba(0,229,255,.06);color:var(--cyan);
+  padding:5px 12px;font-size:12.5px;font-family:var(--font);cursor:pointer;transition:.18s;white-space:nowrap;
+}
+.chip:hover{background:rgba(0,229,255,.2);box-shadow:0 0 14px rgba(0,229,255,.4);transform:translateY(-1px)}
+.chip.hot{color:var(--magenta);border-color:rgba(255,43,214,.45);background:rgba(255,43,214,.08)}
 
-        .profile-card {
-            border-radius: 28px;
-            padding: 28px;
-        }
+/* ---------- Boot overlay ---------- */
+#boot{
+  position:fixed;inset:0;z-index:120;background:#010806;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  padding:24px;text-align:center;transition:opacity .5s;
+}
+#boot .bigskull{font-size:clamp(48px,14vw,86px);filter:drop-shadow(0 0 22px var(--green));animation:pulse 1.6s infinite}
+#boot h1{
+  margin:0;font-size:clamp(17px,4.6vw,32px);letter-spacing:3px;color:var(--green);
+  text-shadow:0 0 18px rgba(0,255,156,.8);
+}
+#boot p{margin:0;color:var(--cyan);font-size:clamp(11px,2.8vw,14px);letter-spacing:1.5px}
+#boot .enter{
+  margin-top:8px;border:1px solid var(--green);background:rgba(0,255,156,.1);color:var(--green);
+  padding:13px 30px;border-radius:10px;font-family:var(--font);font-size:15px;letter-spacing:2px;cursor:pointer;
+  box-shadow:0 0 24px rgba(0,255,156,.35);transition:.2s;
+}
+#boot .enter:hover{background:var(--green);color:#02110a;box-shadow:0 0 40px var(--green)}
+#boot .hint{color:#4f7f68;font-size:11.5px;letter-spacing:1px}
+#boot.gone{opacity:0;pointer-events:none}
 
-        .avatar {
-            width: 76px;
-            height: 76px;
-            border-radius: 22px;
-            display: grid;
-            place-items: center;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: white;
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
+/* ---------- Voice listening overlay ---------- */
+#voicehud{
+  position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:70;
+  display:none;align-items:center;gap:10px;
+  border:1px solid var(--magenta);border-radius:999px;padding:8px 18px;
+  background:rgba(20,0,16,.86);color:var(--magenta);font-size:13px;letter-spacing:1px;
+  box-shadow:0 0 26px rgba(255,43,214,.5);max-width:92vw;
+}
+#voicehud.on{display:flex}
+.wave{display:flex;align-items:flex-end;gap:3px;height:16px}
+.wave i{width:3px;background:var(--magenta);border-radius:2px;animation:wv .9s ease-in-out infinite}
+.wave i:nth-child(2){animation-delay:.15s}
+.wave i:nth-child(3){animation-delay:.3s}
+.wave i:nth-child(4){animation-delay:.45s}
+@keyframes wv{0%,100%{height:4px}50%{height:16px}}
 
-        .profile-card h2 {
-            margin: 0 0 8px;
-            font-size: 25px;
-        }
-
-        .profile-card p {
-            color: var(--muted);
-            line-height: 1.65;
-            margin: 0;
-        }
-
-        .search-panel {
-            border-radius: 30px;
-            padding: 22px;
-            margin: 26px 0 34px;
-        }
-
-        .search-row {
-            display: grid;
-            grid-template-columns: 1fr 220px auto;
-            gap: 12px;
-        }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            border: 0;
-            border-radius: 16px;
-            font: inherit;
-        }
-
-        input,
-        select {
-            background: rgba(255, 255, 255, 0.92);
-            color: #101827;
-            padding: 16px 17px;
-            outline: none;
-        }
-
-        input:focus,
-        select:focus {
-            box-shadow: 0 0 0 4px rgba(88, 213, 255, 0.22);
-        }
-
-        button {
-            cursor: pointer;
-            padding: 16px 22px;
-            color: #04111f;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent), #a7f3d0);
-            transition: transform 0.18s ease, box-shadow 0.18s ease;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(88, 213, 255, 0.24);
-        }
-
-        .hint {
-            margin: 14px 4px 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 18px;
-            margin: 30px 0 16px;
-        }
-
-        .section-title h2 {
-            margin: 0;
-            font-size: clamp(25px, 4vw, 34px);
-        }
-
-        .section-title p {
-            margin: 0;
-            color: var(--muted);
-        }
-
-        .engine-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .engine-card {
-            min-height: 180px;
-            border-radius: 24px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-        }
-
-        .engine-card::after {
-            content: "";
-            position: absolute;
-            inset: auto -40px -55px auto;
-            width: 115px;
-            height: 115px;
-            border-radius: 50%;
-            background: var(--brand, var(--accent));
-            opacity: 0.15;
-        }
-
-        .engine-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.38);
-            background: rgba(255, 255, 255, 0.13);
-        }
-
-        .engine-top {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .engine-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            background: var(--brand, var(--accent));
-            color: white;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-        }
-
-        .engine-card h3 {
-            margin: 0;
-            font-size: 19px;
-        }
-
-        .engine-card p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.55;
-            flex: 1;
-        }
-
-        .engine-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            width: fit-content;
-            color: #dff7ff;
-            font-weight: 700;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .tag {
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #d4e6fb;
-            font-size: 13px;
-        }
-
-        footer {
-            margin-top: 38px;
-            padding-top: 22px;
-            border-top: 1px solid var(--card-border);
-            color: var(--muted);
-            text-align: center;
-            line-height: 1.7;
-        }
-
-        @media (max-width: 980px) {
-            .hero,
-            .search-row {
-                grid-template-columns: 1fr;
-            }
-
-            .engine-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 560px) {
-            .page {
-                width: min(100% - 22px, 1180px);
-                padding-top: 24px;
-            }
-
-            h1 {
-                letter-spacing: -1.4px;
-            }
-
-            .profile-card,
-            .search-panel,
-            .engine-card {
-                border-radius: 20px;
-            }
-
-            .engine-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-title {
-                align-items: start;
-                flex-direction: column;
-            }
-        }
-    </style>
+/* ---------- Mobile ---------- */
+@media (max-width:720px){
+  body{font-size:13.5px}
+  .shell{padding:6px;gap:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+  .frame{border-radius:11px}
+  .bar{padding:7px 9px;gap:7px}
+  .title{font-size:11px;letter-spacing:1.2px}
+  .stat{font-size:9.5px;padding:2px 7px}
+  .stat.hide-sm{display:none}
+  #out{padding:10px 10px 2px}
+  .kv{grid-template-columns:1fr;gap:0 0}
+  .kv .k{margin-top:5px}
+  .inputbar{padding:7px 9px;gap:6px}
+  .prompt{font-size:12px}
+  .iconbtn{width:36px;height:36px}
+  #voicehud{bottom:112px;font-size:11.5px;padding:7px 14px}
+}
+@media (max-width:400px){
+  .title{font-size:10px}
+  .prompt{font-size:11px}
+}
+@media (prefers-reduced-motion:reduce){
+  .crt-beam,.flicker,.glitch::before,.glitch::after{animation:none}
+}
+</style>
 </head>
-<body>
-    <main class="page">
-        <section class="hero" aria-label="Search Engine Hub परिचय">
-            <div>
-                <span class="badge">🌐 One Page Search Engine Hub</span>
-                <h1><span class="gradient-text">दुनिया के मुख्य</span><br>Search Engines एक जगह</h1>
-                <p class="subtitle">
-                    Google, Bing, Yahoo, DuckDuckGo, Brave, Yandex, Baidu, Naver और दूसरे लोकप्रिय Search Engines तक तेज़ पहुँच।
-                    कोई भी टॉपिक लिखें, इंजन चुनें और तुरंत खोज शुरू करें।
-                </p>
-                <div class="tags" aria-label="मुख्य सुविधाएँ">
-                    <span class="tag">तेज़ Search</span>
-                    <span class="tag">Privacy Options</span>
-                    <span class="tag">Regional Engines</span>
-                    <span class="tag">AI Search</span>
-                </div>
-            </div>
+<body class="no-select">
 
-            <aside class="profile-card" aria-label="Creator profile">
-                <div class="avatar" aria-hidden="true">SK</div>
-                <h2>Santosh Kumar</h2>
-                <p>🚀 App Developer & Web Creator<br>मेरी वेबसाइट पर आपका स्वागत है — यह पेज Search Engines के लिए एक आसान Hub है।</p>
-            </aside>
-        </section>
+<canvas id="matrix"></canvas>
+<div class="ambient"></div>
 
-        <section class="search-panel" aria-label="Quick search">
-            <form id="searchForm">
-                <div class="search-row">
-                    <input id="query" type="search" placeholder="यहाँ अपना search लिखें..." aria-label="Search query" required>
-                    <select id="engine" aria-label="Search engine चुनें">
-                        <option value="https://www.google.com/search?q=">Google</option>
-                        <option value="https://www.bing.com/search?q=">Bing</option>
-                        <option value="https://search.yahoo.com/search?p=">Yahoo</option>
-                        <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
-                        <option value="https://search.brave.com/search?q=">Brave Search</option>
-                        <option value="https://www.ecosia.org/search?q=">Ecosia</option>
-                        <option value="https://www.startpage.com/sp/search?query=">Startpage</option>
-                        <option value="https://www.qwant.com/?q=">Qwant</option>
-                        <option value="https://www.baidu.com/s?wd=">Baidu</option>
-                        <option value="https://yandex.com/search/?text=">Yandex</option>
-                        <option value="https://search.naver.com/search.naver?query=">Naver</option>
-                        <option value="https://www.sogou.com/web?query=">Sogou</option>
-                        <option value="https://www.perplexity.ai/search?q=">Perplexity</option>
-                        <option value="https://you.com/search?q=">You.com</option>
-                    </select>
-                    <button type="submit">Search करें</button>
-                </div>
-            </form>
-            <p class="hint">Tip: Search result नए tab में खुलेगा ताकि यह Hub खुला रहे। नीचे दिए cards से आप सीधे Search Engine homepage पर भी जा सकते हैं।</p>
-        </section>
+<div class="shell">
+  <div class="frame" id="frame">
+    <div class="bar">
+      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+      <div class="title">root@security ~ cyberpunk&nbsp;ai&nbsp;terminal</div>
+      <div class="spacer"></div>
+      <div class="stat hide-sm"><span class="led on"></span>SECURE</div>
+      <div class="stat">UP <b id="uptime">00:00</b></div>
+      <div class="stat hide-sm">CPU <b id="cpu">0%</b></div>
+      <div class="stat" id="clock">--:--:--</div>
+    </div>
 
-        <section aria-label="Search engines list">
-            <div class="section-title">
-                <h2>Popular Search Engines</h2>
-                <p>Global, privacy-focused, regional और AI search options</p>
-            </div>
+    <div id="out"></div>
 
-            <div class="engine-grid">
-                <a class="engine-card" href="https://www.google.com/" target="_blank" rel="noopener noreferrer" style="--brand:#4285f4">
-                    <div class="engine-top"><span class="engine-icon">G</span><h3>Google</h3></div>
-                    <p>दुनिया का सबसे लोकप्रिय web search engine, maps, images, news और videos के साथ।</p>
-                    <span class="engine-link">Open Google →</span>
-                </a>
+    <div class="chips" id="chips"></div>
 
-                <a class="engine-card" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer" style="--brand:#008373">
-                    <div class="engine-top"><span class="engine-icon">B</span><h3>Bing</h3></div>
-                    <p>Microsoft का search engine, web, image, video और AI-powered खोज के लिए उपयोगी।</p>
-                    <span class="engine-link">Open Bing →</span>
-                </a>
+    <div class="inputbar">
+      <span class="prompt" id="ps1">root@security:~#</span>
+      <input id="cmd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+             enterkeyhint="go" placeholder="type 'help' …" aria-label="terminal input">
+      <span class="caret" id="caret"></span>
+      <button class="iconbtn" id="micBtn" title="Voice control (Web Speech API)" aria-label="voice">🎤</button>
+      <button class="iconbtn" id="sndBtn" title="Toggle sound" aria-label="sound">🔊</button>
+    </div>
+  </div>
+</div>
 
-                <a class="engine-card" href="https://search.yahoo.com/" target="_blank" rel="noopener noreferrer" style="--brand:#6001d2">
-                    <div class="engine-top"><span class="engine-icon">Y</span><h3>Yahoo</h3></div>
-                    <p>Search, news, finance और email ecosystem के साथ पुराना और लोकप्रिय portal।</p>
-                    <span class="engine-link">Open Yahoo →</span>
-                </a>
+<div id="voicehud"><span class="wave"><i></i><i></i><i></i><i></i></span><span id="voicetxt">LISTENING…</span></div>
 
-                <a class="engine-card" href="https://duckduckgo.com/" target="_blank" rel="noopener noreferrer" style="--brand:#de5833">
-                    <div class="engine-top"><span class="engine-icon">DDG</span><h3>DuckDuckGo</h3></div>
-                    <p>Privacy-focused search engine जो tracking कम रखने पर जोर देता है।</p>
-                    <span class="engine-link">Open DuckDuckGo →</span>
-                </a>
+<div class="crt"></div>
+<div class="crt-beam"></div>
+<div class="flicker"></div>
 
-                <a class="engine-card" href="https://search.brave.com/" target="_blank" rel="noopener noreferrer" style="--brand:#fb542b">
-                    <div class="engine-top"><span class="engine-icon">Br</span><h3>Brave Search</h3></div>
-                    <p>Independent index और privacy-first approach के साथ modern search option।</p>
-                    <span class="engine-link">Open Brave →</span>
-                </a>
+<div id="boot">
+  <div class="bigskull">💀</div>
+  <h1 class="glitch" data-t="ULTIMATE ROOT SECURITY">ULTIMATE ROOT SECURITY</h1>
+  <p>CYBERPUNK&nbsp;AI&nbsp;TERMINAL&nbsp;v3.0</p>
+  <button class="enter" id="enterBtn">[ INITIALIZE SYSTEM ]</button>
+  <div class="hint">audio + voice engines require a user gesture</div>
+</div>
 
-                <a class="engine-card" href="https://www.ecosia.org/" target="_blank" rel="noopener noreferrer" style="--brand:#2c8a3d">
-                    <div class="engine-top"><span class="engine-icon">E</span><h3>Ecosia</h3></div>
-                    <p>Environment-friendly search engine, trees और climate projects को support करने के लिए जाना जाता है।</p>
-                    <span class="engine-link">Open Ecosia →</span>
-                </a>
+<script>
+"use strict";
+/* ============================================================
+   ULTIMATE ROOT SECURITY :: CYBERPUNK AI TERMINAL  v3.0
+   Single-file. No dependencies. Runs fully client-side.
+   ============================================================ */
+const $ = (s) => document.querySelector(s);
+const out    = $('#out');
+const input  = $('#cmd');
+const bootEl = $('#boot');
+const frame  = $('#frame');
 
-                <a class="engine-card" href="https://www.startpage.com/" target="_blank" rel="noopener noreferrer" style="--brand:#6573ff">
-                    <div class="engine-top"><span class="engine-icon">Sp</span><h3>Startpage</h3></div>
-                    <p>Private search experience के लिए लोकप्रिय, personal tracking को कम करने पर focus।</p>
-                    <span class="engine-link">Open Startpage →</span>
-                </a>
+const STATE = {
+  booted:false, sound:true, listening:false, busy:false,
+  user:'guest', host:'security', root:false,
+  history:[], hIdx:-1, start:Date.now(), rainBoost:false, fx:true
+};
 
-                <a class="engine-card" href="https://www.qwant.com/" target="_blank" rel="noopener noreferrer" style="--brand:#5968ff">
-                    <div class="engine-top"><span class="engine-icon">Q</span><h3>Qwant</h3></div>
-                    <p>Europe-based privacy search engine, web, news और maps जैसी सुविधाओं के साथ।</p>
-                    <span class="engine-link">Open Qwant →</span>
-                </a>
+/* ============================================================
+   1. MATRIX RAIN
+   ============================================================ */
+const canvas = $('#matrix'), ctx = canvas.getContext && canvas.getContext('2d');
+const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789$#@%&*+=<>/\\|ROOTSECURITY';
+let cols = 0, drops = [], speeds = [], fsize = 16, dpr = 1;
 
-                <a class="engine-card" href="https://www.baidu.com/" target="_blank" rel="noopener noreferrer" style="--brand:#2932e1">
-                    <div class="engine-top"><span class="engine-icon">百</span><h3>Baidu</h3></div>
-                    <p>China में प्रमुख search engine, Chinese web content के लिए बहुत उपयोगी।</p>
-                    <span class="engine-link">Open Baidu →</span>
-                </a>
+function sizeMatrix(){
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width  = Math.floor(innerWidth  * dpr);
+  canvas.height = Math.floor(innerHeight * dpr);
+  canvas.style.width = innerWidth + 'px';
+  canvas.style.height = innerHeight + 'px';
+  fsize = innerWidth < 620 ? 13 : 17;
+  cols = Math.ceil(innerWidth / fsize);
+  drops = new Array(cols).fill(0).map(() => Math.random() * -60);
+  speeds = new Array(cols).fill(0).map(() => 0.5 + Math.random() * 0.9);
+}
+sizeMatrix();
+addEventListener('resize', sizeMatrix);
 
-                <a class="engine-card" href="https://yandex.com/" target="_blank" rel="noopener noreferrer" style="--brand:#fc3f1d">
-                    <div class="engine-top"><span class="engine-icon">Ya</span><h3>Yandex</h3></div>
-                    <p>Russia और आसपास के regions में लोकप्रिय search, maps, images और translation ecosystem।</p>
-                    <span class="engine-link">Open Yandex →</span>
-                </a>
+let mFrame = 0;
+function drawMatrix(){
+  if (!ctx) return;                                    // graceful degrade: no canvas support
+  requestAnimationFrame(drawMatrix);
+  mFrame++;
+  if (mFrame % (STATE.rainBoost ? 1 : 2)) return;      // throttle for battery
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle = 'rgba(1,8,6,0.09)';
+  ctx.fillRect(0,0,innerWidth,innerHeight);
+  ctx.font = fsize + 'px ' + getComputedStyle(document.body).fontFamily;
+  for (let i=0;i<cols;i++){
+    const ch = GLYPHS[(Math.random()*GLYPHS.length)|0];
+    const x = i*fsize, y = drops[i]*fsize;
+    if (Math.random() > 0.985){ ctx.fillStyle='#dfffef'; ctx.shadowColor='#00ff9c'; ctx.shadowBlur=14; }
+    else if (STATE.rainBoost && Math.random()>0.97){ ctx.fillStyle='#00e5ff'; ctx.shadowColor='#00e5ff'; ctx.shadowBlur=10; }
+    else { ctx.fillStyle = STATE.alarm ? '#ff2e4d' : '#00ff9c'; ctx.shadowColor='transparent'; ctx.shadowBlur=0; }
+    ctx.fillText(ch, x, y);
+    ctx.shadowBlur = 0;
+    if (y > innerHeight && Math.random() > 0.975) drops[i] = Math.random()*-20;
+    drops[i] += speeds[i] * (STATE.rainBoost ? 1.9 : 1);
+  }
+}
+drawMatrix();
 
-                <a class="engine-card" href="https://www.naver.com/" target="_blank" rel="noopener noreferrer" style="--brand:#03c75a">
-                    <div class="engine-top"><span class="engine-icon">N</span><h3>Naver</h3></div>
-                    <p>South Korea का leading search portal, blogs, news और local content के लिए खास।</p>
-                    <span class="engine-link">Open Naver →</span>
-                </a>
+/* ============================================================
+   2. WEB AUDIO API — synth sound engine
+   ============================================================ */
+let AC = null;
+function ac(){
+  if (!AC){ const C = window.AudioContext || window.webkitAudioContext; if (C) AC = new C(); }
+  if (AC && AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function tone(freq, dur=0.08, type='square', vol=0.06, slideTo=null){
+  if (!STATE.sound) return;
+  const a = ac(); if (!a) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, a.currentTime);
+  if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(30,slideTo), a.currentTime + dur);
+  g.gain.setValueAtTime(0.0001, a.currentTime);
+  g.gain.exponentialRampToValueAtTime(vol, a.currentTime + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+  o.connect(g); g.connect(a.destination);
+  o.start(); o.stop(a.currentTime + dur + 0.02);
+}
+function noise(dur=0.25, vol=0.05, filterFreq=900){
+  if (!STATE.sound) return;
+  const a = ac(); if (!a) return;
+  const len = Math.floor(a.sampleRate * dur);
+  const buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i=0;i<len;i++) d[i] = (Math.random()*2-1) * (1 - i/len);
+  const src = a.createBufferSource(); src.buffer = buf;
+  const f = a.createBiquadFilter(); f.type='bandpass'; f.frequency.value=filterFreq;
+  const g = a.createGain(); g.gain.value = vol;
+  src.connect(f); f.connect(g); g.connect(a.destination); src.start();
+}
+const SFX = {
+  key:   () => tone(1200 + Math.random()*500, 0.03, 'square', 0.022),
+  enter: () => { tone(760,0.05,'square',0.05); setTimeout(()=>tone(1180,0.07,'square',0.045),45); },
+  ok:    () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.11,'triangle',0.05),i*70)); },
+  err:   () => { tone(200,0.22,'sawtooth',0.07,90); noise(0.16,0.035,420); },
+  boot:  () => { [110,165,220,330,440,660].forEach((f,i)=>setTimeout(()=>tone(f,0.16,'sine',0.07),i*95)); },
+  blip:  () => tone(1550,0.035,'sine',0.03),
+  scan:  () => tone(420,0.05,'sawtooth',0.028,880),
+  alarm: () => { let n=0; const iv=setInterval(()=>{ tone(n%2?680:980,0.14,'square',0.055); if(++n>7) clearInterval(iv); },160); },
+  breach:() => { noise(0.7,0.09,240); [880,660,440,220,110].forEach((f,i)=>setTimeout(()=>tone(f,0.24,'sawtooth',0.06),i*110)); },
+  glitch:() => { noise(0.14,0.06,1600); tone(90,0.12,'square',0.05); }
+};
 
-                <a class="engine-card" href="https://www.sogou.com/" target="_blank" rel="noopener noreferrer" style="--brand:#ff6f00">
-                    <div class="engine-top"><span class="engine-icon">S</span><h3>Sogou</h3></div>
-                    <p>Chinese search platform, web pages और Chinese-language resources के लिए उपयोगी।</p>
-                    <span class="engine-link">Open Sogou →</span>
-                </a>
+/* ============================================================
+   3. OUTPUT ENGINE
+   ============================================================ */
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+function scroll(){ out.scrollTop = out.scrollHeight; }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-                <a class="engine-card" href="https://www.ask.com/" target="_blank" rel="noopener noreferrer" style="--brand:#d71920">
-                    <div class="engine-top"><span class="engine-icon">Ask</span><h3>Ask.com</h3></div>
-                    <p>Question-answer style search और general web discovery के लिए जाना जाता है।</p>
-                    <span class="engine-link">Open Ask →</span>
-                </a>
+function print(text='', cls='c-green'){
+  const l = el('div', 'line ' + cls, text);
+  out.appendChild(l); scroll(); return l;
+}
+function printRaw(node){ out.appendChild(node); scroll(); return node; }
 
-                <a class="engine-card" href="https://swisscows.com/" target="_blank" rel="noopener noreferrer" style="--brand:#d9001b">
-                    <div class="engine-top"><span class="engine-icon">Sw</span><h3>Swisscows</h3></div>
-                    <p>Switzerland-based family-friendly और privacy-oriented search engine।</p>
-                    <span class="engine-link">Open Swisscows →</span>
-                </a>
+/* typewriter printing */
+function typeLine(text, cls='c-green', speed=12){
+  return new Promise(res => {
+    const l = el('div','line '+cls,''); out.appendChild(l);
+    let i=0;
+    (function step(){
+      if (i >= text.length){ scroll(); return res(l); }
+      const chunk = Math.max(1, Math.round(text.length/70));
+      l.textContent += text.slice(i, i+chunk); i += chunk;
+      if (i % 3 === 0) SFX.blip();
+      scroll();
+      setTimeout(step, speed);
+    })();
+  });
+}
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-                <a class="engine-card" href="https://www.mojeek.com/" target="_blank" rel="noopener noreferrer" style="--brand:#7aa22f">
-                    <div class="engine-top"><span class="engine-icon">M</span><h3>Mojeek</h3></div>
-                    <p>Independent crawler-based search engine, alternative web index के रूप में जाना जाता है।</p>
-                    <span class="engine-link">Open Mojeek →</span>
-                </a>
+async function progress(label, ms=1400, color='c-green'){
+  const wrap = el('div','line pbar '+color);
+  wrap.innerHTML = `<span style="min-width:0;flex:none">${esc(label)}</span>
+     <span class="track"><span class="fill"></span></span><span class="pct">0%</span>`;
+  out.appendChild(wrap); scroll();
+  const fill = wrap.querySelector('.fill'), pct = wrap.querySelector('.pct');
+  const steps = 26;
+  for (let i=1;i<=steps;i++){
+    await sleep(ms/steps);
+    const p = Math.round(i/steps*100);
+    fill.style.width = p + '%'; pct.textContent = p + '%';
+    if (i%4===0) SFX.scan();
+    scroll();
+  }
+  return wrap;
+}
 
-                <a class="engine-card" href="https://www.seznam.cz/" target="_blank" rel="noopener noreferrer" style="--brand:#cc0000">
-                    <div class="engine-top"><span class="engine-icon">Sz</span><h3>Seznam</h3></div>
-                    <p>Czech Republic में लोकप्रिय search और web portal, regional content के लिए उपयोगी।</p>
-                    <span class="engine-link">Open Seznam →</span>
-                </a>
+function glitchBurst(ms=600){
+  document.body.classList.add('shake');
+  frame.classList.add('rgb-split');
+  SFX.glitch();
+  setTimeout(()=>{ document.body.classList.remove('shake'); frame.classList.remove('rgb-split'); }, ms);
+}
 
-                <a class="engine-card" href="https://yep.com/" target="_blank" rel="noopener noreferrer" style="--brand:#ffcf00">
-                    <div class="engine-top"><span class="engine-icon">Yep</span><h3>Yep</h3></div>
-                    <p>Ahrefs team का search engine, creators और independent search ecosystem पर focus।</p>
-                    <span class="engine-link">Open Yep →</span>
-                </a>
+/* ============================================================
+   4. WEB SPEECH API — voice output + voice control
+   ============================================================ */
+function speak(text, rate=1.05){
+  if (!STATE.sound || !('speechSynthesis' in window)) return;
+  try{
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = rate; u.pitch = 0.7; u.volume = 0.85; u.lang = 'en-US';
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
 
-                <a class="engine-card" href="https://you.com/" target="_blank" rel="noopener noreferrer" style="--brand:#7c3aed">
-                    <div class="engine-top"><span class="engine-icon">You</span><h3>You.com</h3></div>
-                    <p>AI-assisted search, chat और summarized answers के साथ modern discovery platform।</p>
-                    <span class="engine-link">Open You.com →</span>
-                </a>
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null;
+const voiceHud = $('#voicehud'), voiceTxt = $('#voicetxt'), micBtn = $('#micBtn');
 
-                <a class="engine-card" href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer" style="--brand:#20b8cd">
-                    <div class="engine-top"><span class="engine-icon">P</span><h3>Perplexity</h3></div>
-                    <p>AI answer engine जो web sources के आधार पर conversational search experience देता है।</p>
-                    <span class="engine-link">Open Perplexity →</span>
-                </a>
+function initVoice(){
+  if (!SR) return false;
+  recog = new SR();
+  recog.continuous = false; recog.interimResults = true; recog.lang = 'en-US';
+  recog.onstart = () => { STATE.listening = true; micBtn.classList.add('active'); voiceHud.classList.add('on'); voiceTxt.textContent='LISTENING…'; SFX.blip(); };
+  recog.onerror = (e) => { voiceTxt.textContent = 'MIC ERROR: ' + e.error; SFX.err(); setTimeout(stopVoice, 1200); };
+  recog.onend   = () => { STATE.listening = false; micBtn.classList.remove('active'); voiceHud.classList.remove('on'); };
+  recog.onresult = (ev) => {
+    let txt = '';
+    for (let i = ev.resultIndex; i < ev.results.length; i++) txt += ev.results[i][0].transcript;
+    voiceTxt.textContent = '“' + txt + '”';
+    if (ev.results[ev.results.length-1].isFinal){
+      const cmd = mapVoice(txt.trim().toLowerCase());
+      setTimeout(()=>{ voiceHud.classList.remove('on'); input.value=''; run(cmd, true); }, 350);
+    }
+  };
+  return true;
+}
+/* natural language → command mapping */
+function mapVoice(t){
+  t = t.replace(/[.,!?]/g,'').trim();
+  const rules = [
+    [/^(open |go to |show )?help( me)?$/, 'help'],
+    [/^(clear|clean|reset)( screen| terminal)?$/, 'clear'],
+    [/^(matrix|matrix mode|rain)$/, 'matrix'],
+    [/^(root|root access|become root|sudo)$/, 'root'],
+    [/^(hack|hack it|start hack|hacking|attack)( mode| now)?$/, 'hack'],
+    [/^(time|what.*time.*|date)$/, 'time'],
+    [/^(system info|system information|sysinfo|system)$/, 'system_info'],
+    [/^(who am i|whoami)$/, 'whoami'],
+    [/^(about|banner)$/, 'banner']
+  ];
+  for (const [re, cmd] of rules) if (re.test(t)) return cmd;
+  let m = t.match(/^(?:search|google|find|look up)\s+(?:for\s+)?(.+)$/);      if (m) return 'search ' + m[1];
+  m     = t.match(/^(?:youtube|play|watch|video)\s+(?:for\s+)?(.+)$/);        if (m) return 'youtube ' + m[1];
+  m     = t.match(/^(?:calculate|calc|compute|what is)\s+(.+)$/);             if (m) return 'calc ' + wordsToMath(m[1]);
+  return t;
+}
+function wordsToMath(s){
+  return s.replace(/\bplus\b/g,'+').replace(/\bminus\b/g,'-')
+          .replace(/\b(times|multiplied by|into|x)\b/g,'*')
+          .replace(/\b(divided by|over|by)\b/g,'/')
+          .replace(/\bpercent of\b/g,'/100*').replace(/\bto the power of\b/g,'^');
+}
+function startVoice(){
+  if (!recog && !initVoice()){
+    print('[VOICE] Web Speech API not supported in this browser. Try Chrome / Edge.', 'c-red'); SFX.err(); return;
+  }
+  if (STATE.listening){ stopVoice(); return; }
+  try{ recog.start(); }catch(e){}
+}
+function stopVoice(){ try{ recog && recog.stop(); }catch(e){} voiceHud.classList.remove('on'); micBtn.classList.remove('active'); }
 
-                <a class="engine-card" href="https://search.aol.com/" target="_blank" rel="noopener noreferrer" style="--brand:#111827">
-                    <div class="engine-top"><span class="engine-icon">AOL</span><h3>AOL Search</h3></div>
-                    <p>Classic web portal search, general web results और news discovery के लिए।</p>
-                    <span class="engine-link">Open AOL →</span>
-                </a>
-            </div>
-        </section>
+/* ============================================================
+   5. SAFE CALCULATOR (no eval) — shunting yard
+   ============================================================ */
+function calcEval(expr){
+  const CONST = { pi: Math.PI, e: Math.E };
+  const FN = { sin:Math.sin, cos:Math.cos, tan:Math.tan, sqrt:Math.sqrt, log:Math.log10,
+               ln:Math.log, abs:Math.abs, round:Math.round, floor:Math.floor, ceil:Math.ceil };
+  const src = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/,/g,'').toLowerCase();
+  const tokens = src.match(/\d+\.?\d*|[a-z]+|[+\-*/%^()]/g);
+  if (!tokens) throw new Error('empty expression');
+  const prec = { '+':1,'-':1,'*':2,'/':2,'%':2,'^':3,'u-':4 };
+  const rightAssoc = { '^':true,'u-':true };
+  const outQ = [], ops = [];
+  let prev = null;
+  for (const t of tokens){
+    if (/^\d/.test(t)) { outQ.push(parseFloat(t)); }
+    else if (/^[a-z]+$/.test(t)){
+      if (t in CONST) outQ.push(CONST[t]);
+      else if (t in FN) ops.push(t);
+      else throw new Error('unknown symbol: ' + t);
+    }
+    else if (t === '('){ ops.push(t); }
+    else if (t === ')'){
+      while (ops.length && ops[ops.length-1] !== '(') outQ.push(ops.pop());
+      if (!ops.length) throw new Error('unbalanced )');
+      ops.pop();
+      if (ops.length && ops[ops.length-1] in FN) outQ.push(ops.pop());
+    } else {
+      let op = t;
+      if (op === '-' && (prev === null || prev === '(' || (prev in prec))) op = 'u-';
+      while (ops.length){
+        const top = ops[ops.length-1];
+        if (top === '(') break;
+        const tp = (top in FN) ? 5 : prec[top];
+        if (tp > prec[op] || (tp === prec[op] && !rightAssoc[op])) outQ.push(ops.pop()); else break;
+      }
+      ops.push(op);
+    }
+    prev = t;
+  }
+  while (ops.length){ const o = ops.pop(); if (o === '(') throw new Error('unbalanced ('); outQ.push(o); }
+  const st = [];
+  for (const t of outQ){
+    if (typeof t === 'number'){ st.push(t); continue; }
+    if (t in FN){ const a = st.pop(); if (a===undefined) throw new Error('bad args'); st.push(FN[t](a)); continue; }
+    if (t === 'u-'){ const a = st.pop(); st.push(-a); continue; }
+    const b = st.pop(), a = st.pop();
+    if (a === undefined || b === undefined) throw new Error('malformed expression');
+    st.push(t==='+'?a+b : t==='-'?a-b : t==='*'?a*b : t==='/'?a/b : t==='%'?a%b : Math.pow(a,b));
+  }
+  if (st.length !== 1) throw new Error('malformed expression');
+  return st[0];
+}
 
-        <footer>
-            <strong>Search Engine Hub</strong> by Santosh Kumar · सभी links official websites पर जाते हैं।
-        </footer>
-    </main>
+/* ============================================================
+   6. BANNER + HELP
+   ============================================================ */
+const BANNER = String.raw`
+  ██████╗  ██████╗  ██████╗ ████████╗
+  ██╔══██╗██╔═══██╗██╔═══██╗╚══██╔══╝
+  ██████╔╝██║   ██║██║   ██║   ██║
+  ██╔══██╗██║   ██║██║   ██║   ██║
+  ██║  ██║╚██████╔╝╚██████╔╝   ██║
+  ╚═╝  ╚═╝ ╚═════╝  ╚═════╝    ╚═╝
+   S E C U R I T Y   ·   T E R M I N A L`;
 
-    <script>
-        const form = document.getElementById('searchForm');
-        const query = document.getElementById('query');
-        const engine = document.getElementById('engine');
+const HELP = [
+  ['help',        'show this command matrix'],
+  ['root',        'escalate privileges → ROOT ACCESS'],
+  ['matrix',      'toggle hyper matrix rain mode'],
+  ['clear',       'wipe the terminal buffer'],
+  ['hack',        'launch cinematic intrusion sequence'],
+  ['search <q>',  'deep web search across engines'],
+  ['youtube <q>', 'open YouTube results for <q>'],
+  ['calc <expr>', 'secure math core  e.g. calc (12+8)*3^2'],
+  ['time',        'system clock, date & uptime'],
+  ['system_info', 'full host / browser / network scan'],
+  ['whoami',      'current identity'],
+  ['banner',      'redraw the ROOT banner'],
+  ['voice',       'toggle Web Speech voice control'],
+  ['sound',       'toggle Web Audio sound engine'],
+  ['fx',          'toggle CRT scanlines & glitch FX'],
+  ['history',     'show command history'],
+  ['echo <text>', 'print text'],
+  ['exit',        'terminate session']
+];
 
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const text = query.value.trim();
-            if (!text) return;
-            const url = engine.value + encodeURIComponent(text);
-            window.open(url, '_blank', 'noopener,noreferrer');
-        });
-    </script>
+function printBanner(){
+  printRaw(el('pre','line banner', esc(BANNER)));
+  print('  ULTIMATE ROOT SECURITY  ·  CYBERPUNK AI TERMINAL  v3.0', 'c-cyan bold');
+  print('  ' + '─'.repeat(46), 'c-dim');
+}
+
+function cmdHelp(){
+  print('');
+  print('╔══ COMMAND MATRIX ═══════════════════════════════╗', 'c-cyan');
+  const box = el('div','box');
+  const kv = el('div','kv');
+  HELP.forEach(([c,d]) => {
+    kv.appendChild(el('div','k', esc(c)));
+    kv.appendChild(el('div','v', esc(d)));
+  });
+  box.appendChild(kv); printRaw(box);
+  print('╚═════════════════════════════════════════════════╝', 'c-cyan');
+  print('TIP: ↑/↓ history · TAB autocomplete · 🎤 voice · tap chips below', 'c-dim');
+  print('');
+}
+
+/* ============================================================
+   7. COMMANDS
+   ============================================================ */
+async function cmdRoot(){
+  if (STATE.root){ print('[!] You are already ROOT. Absolute power confirmed.', 'c-amber'); return; }
+  print('');
+  print('[*] Requesting privilege escalation …', 'c-amber');
+  await progress('  kernel exploit  CVE-2026-0x1F ', 1100, 'c-amber');
+  await progress('  bypassing SELinux policy      ', 900,  'c-amber');
+  await progress('  patching /etc/shadow          ', 800,  'c-amber');
+  SFX.ok();
+  glitchBurst(400);
+  STATE.root = true; STATE.user = 'root';
+  $('#ps1').textContent = 'root@security:~#';
+  print('');
+  printRaw(el('pre','line banner c-mag', esc(String.raw`
+   ██████   ██████   ██████  ████████
+   ██   ██ ██    ██ ██    ██    ██
+   ██████  ██    ██ ██    ██    ██
+   ██   ██ ██    ██ ██    ██    ██
+   ██   ██  ██████   ██████     ██
+        A C C E S S   G R A N T E D`)));
+  print('');
+  print('[✔] UID=0  GID=0  groups=0(root)  — full system control unlocked.', 'c-green bold');
+  print('[✔] All restricted modules are now available.', 'c-green');
+  speak('Root access granted. Welcome back, operator.');
+  print('');
+}
+
+function cmdMatrix(){
+  STATE.rainBoost = !STATE.rainBoost;
+  document.body.classList.toggle('rain-boost', STATE.rainBoost);
+  if (STATE.rainBoost){
+    print('[MATRIX] Hyper-rain ENGAGED. Follow the white rabbit. 🐇', 'c-green bold');
+    print('         Digital rain density ▲ 240%   ·   glyph velocity ▲ 190%', 'c-dim');
+    SFX.ok(); speak('Matrix mode engaged.');
+  } else {
+    print('[MATRIX] Rain returned to ambient levels.', 'c-cyan');
+    SFX.blip();
+  }
+}
+
+function cmdClear(){ out.innerHTML = ''; SFX.blip(); }
+
+async function cmdHack(target){
+  if (STATE.busy) return;
+  STATE.busy = true; input.disabled = true;
+  const host = target || 'mainframe.darknet.onion';
+  const ip = `${10+((Math.random()*180)|0)}.${(Math.random()*255)|0}.${(Math.random()*255)|0}.${1+((Math.random()*253)|0)}`;
+  document.body.classList.add('alarm'); STATE.alarm = true;
+  SFX.alarm();
+  print('');
+  await typeLine(`[⚡] INITIATING CINEMATIC INTRUSION SEQUENCE → ${host}`, 'c-red bold', 8);
+  print(`[i] resolved ${host} → ${ip}`, 'c-dim');
+  await sleep(200);
+
+  const phases = [
+    ['  [1/7] port scan  nmap -sS -T5     ', 900,  'c-cyan'],
+    ['  [2/7] fingerprint stack           ', 700,  'c-cyan'],
+    ['  [3/7] injecting payload           ', 1100, 'c-amber'],
+    ['  [4/7] cracking sha512 hashes      ', 1300, 'c-amber'],
+    ['  [5/7] bypassing firewall (WAF)    ', 900,  'c-mag'],
+    ['  [6/7] escalating to kernel ring 0 ', 1000, 'c-mag'],
+    ['  [7/7] wiping forensic traces      ', 800,  'c-red']
+  ];
+  const chatter = [
+    'OPEN  22/tcp   ssh      OpenSSH 9.6',
+    'OPEN  443/tcp  https    nginx/1.27.2',
+    'OPEN  3306/tcp mysql    8.0.39  ← weak creds',
+    'FOUND admin:$6$rounds=656000$…  cracked in 0.42s',
+    'ACL bypass token issued  ttl=900s',
+    'shell spawned: /bin/bash  uid=0(root)',
+    'logs shredded: /var/log/auth.log  (7 passes)'
+  ];
+  for (let i=0;i<phases.length;i++){
+    await progress(phases[i][0], phases[i][1], phases[i][2]);
+    print('        ' + chatter[i], 'c-dim');
+    if (i===3 || i===5) glitchBurst(350);
+  }
+  await sleep(250);
+  SFX.breach(); glitchBurst(800);
+  print('');
+  const b = el('pre','line banner c-red', esc(String.raw`
+   ▄▄▄· ▄▄· ▄▄· ▄▄▄ ..▄▄ · .▄▄ ·
+  ▐█ ▀█ ▐█ ▌▪▐█ ▌▪▀▄.▀·▐█ ▀. ▐█ ▀.
+  ▄█▀▀█ ██ ▄▄██ ▄▄▐▀▀▪▄▄▀▀▀█▄▄▀▀▀█▄
+  ▐█ ▪▐▌▐███▌▐███▌▐█▄▄▌▐█▄▪▐█▐█▄▪▐█
+   ▀  ▀ ·▀▀▀ ·▀▀▀  ▀▀▀  ▀▀▀▀  ▀▀▀▀
+        G R A N T E D`));
+  printRaw(b);
+  print('');
+  print(`[✔] TARGET COMPROMISED  ·  ${host} (${ip})`, 'c-green bold');
+  print('[✔] 4,218 records exfiltrated  ·  0 alerts triggered  ·  0 traces left', 'c-green');
+  print('[i] Disclaimer: this is a 100% fictional cinematic simulation. 🎬', 'c-dim');
+  print('');
+  speak('Access granted. Target compromised.');
+  document.body.classList.remove('alarm'); STATE.alarm = false;
+  STATE.busy = false; input.disabled = false; input.focus();
+}
+
+const ENGINES = [
+  ['Google',     'https://www.google.com/search?q='],
+  ['Bing',       'https://www.bing.com/search?q='],
+  ['DuckDuckGo', 'https://duckduckgo.com/?q='],
+  ['Brave',      'https://search.brave.com/search?q='],
+  ['Startpage',  'https://www.startpage.com/sp/search?query='],
+  ['Perplexity', 'https://www.perplexity.ai/search?q=']
+];
+function cmdSearch(q){
+  if (!q){ print('usage: search <query>    e.g. search zero day exploits', 'c-amber'); SFX.err(); return; }
+  const enc = encodeURIComponent(q);
+  print(`[SEARCH] deep-web query → "${esc(q)}"`, 'c-cyan');
+  const box = el('div','box');
+  ENGINES.forEach(([n,u]) => {
+    const l = el('div','line');
+    l.innerHTML = `  ▸ <a href="${u}${enc}" target="_blank" rel="noopener noreferrer">${n}</a>`;
+    box.appendChild(l);
+  });
+  printRaw(box);
+  print('[i] Opening Google in a new tab …', 'c-dim');
+  SFX.ok();
+  const w = window.open('https://www.google.com/search?q=' + enc, '_blank', 'noopener');
+  if (!w) print('[!] Popup blocked — use the links above.', 'c-amber');
+}
+function cmdYoutube(q){
+  if (!q){ print('usage: youtube <query>    e.g. youtube cyberpunk synthwave', 'c-amber'); SFX.err(); return; }
+  const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+  print(`[YOUTUBE] streaming query → "${esc(q)}"`, 'c-red');
+  const l = el('div','line'); l.innerHTML = `  ▸ <a href="${url}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
+  printRaw(l); SFX.ok();
+  const w = window.open(url, '_blank', 'noopener');
+  if (!w) print('[!] Popup blocked — use the link above.', 'c-amber');
+}
+function cmdCalc(expr){
+  if (!expr){ print('usage: calc <expression>   e.g. calc (12+8)*3^2  ·  calc sqrt(144)+pi', 'c-amber'); SFX.err(); return; }
+  try{
+    const r = calcEval(expr);
+    if (!isFinite(r)) throw new Error('result is not finite');
+    const pretty = Number.isInteger(r) ? r.toString() : parseFloat(r.toPrecision(12)).toString();
+    print(`  ${esc(expr)}`, 'c-dim');
+    print(`  = ${pretty}`, 'c-cyan bold');
+    SFX.ok(); speak('Result ' + pretty);
+  }catch(e){
+    print('[MATH ERROR] ' + esc(e.message), 'c-red'); SFX.err();
+  }
+}
+function fmtUptime(){
+  const s = Math.floor((Date.now()-STATE.start)/1000);
+  const h = String(Math.floor(s/3600)).padStart(2,'0');
+  const m = String(Math.floor(s%3600/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return (h!=='00' ? h+':' : '') + m + ':' + ss;
+}
+function cmdTime(){
+  const d = new Date();
+  const box = el('div','box'), kv = el('div','kv');
+  const rows = [
+    ['LOCAL TIME',  d.toLocaleTimeString()],
+    ['LOCAL DATE',  d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})],
+    ['UTC',         d.toUTCString()],
+    ['ISO 8601',    d.toISOString()],
+    ['UNIX EPOCH',  Math.floor(d.getTime()/1000)],
+    ['TIMEZONE',    (Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown') + '  (UTC' + (-d.getTimezoneOffset()>=0?'+':'') + (-d.getTimezoneOffset()/60) + ')'],
+    ['SESSION UP',  fmtUptime()]
+  ];
+  rows.forEach(([k,v]) => { kv.appendChild(el('div','k',esc(k))); kv.appendChild(el('div','v',esc(v))); });
+  box.appendChild(kv); printRaw(box); SFX.blip();
+}
+async function cmdSysInfo(){
+  const n = navigator, s = screen;
+  await progress('  scanning host environment ', 700, 'c-cyan');
+  const conn = n.connection || {};
+  const gl = (() => { try{ const c=document.createElement('canvas'); const g=c.getContext('webgl'); const d=g.getExtension('WEBGL_debug_renderer_info');
+      return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : (g ? 'WebGL available' : 'n/a'); }catch(e){ return 'n/a'; } })();
+  const rows = [
+    ['OPERATOR',   (STATE.root ? 'root (UID 0)' : 'guest (UID 1000)')],
+    ['HOSTNAME',   location.hostname || 'localhost'],
+    ['ORIGIN',     location.origin],
+    ['PROTOCOL',   location.protocol + '  ' + (location.protocol==='https:' ? '🔒 ENCRYPTED' : '⚠ INSECURE')],
+    ['PLATFORM',   n.platform || 'unknown'],
+    ['USER AGENT', n.userAgent],
+    ['LANGUAGES',  (n.languages||[n.language]).join(', ')],
+    ['CPU THREADS',(n.hardwareConcurrency || '?') + ' logical cores'],
+    ['DEVICE RAM', (n.deviceMemory ? n.deviceMemory + ' GB (approx)' : 'restricted')],
+    ['GPU',        gl],
+    ['SCREEN',     `${s.width}×${s.height}  ·  viewport ${innerWidth}×${innerHeight}  ·  DPR ${devicePixelRatio}`],
+    ['COLOR DEPTH',s.colorDepth + '-bit'],
+    ['TOUCH',      (('ontouchstart' in window) || n.maxTouchPoints>0) ? 'yes (' + (n.maxTouchPoints||1) + ' points)' : 'no'],
+    ['NETWORK',    (conn.effectiveType ? conn.effectiveType.toUpperCase() + '  ~' + (conn.downlink||'?') + ' Mb/s  RTT ' + (conn.rtt||'?') + 'ms' : 'metrics restricted') + '  ·  ' + (n.onLine ? 'ONLINE' : 'OFFLINE')],
+    ['COOKIES',    n.cookieEnabled ? 'enabled' : 'disabled'],
+    ['AUDIO CORE', AC ? (AC.sampleRate/1000).toFixed(1) + ' kHz · ' + AC.state : 'idle'],
+    ['SPEECH API', SR ? 'available ✔' : 'unsupported ✘'],
+    ['TTS ENGINE', ('speechSynthesis' in window) ? 'available ✔' : 'unsupported ✘'],
+    ['UPTIME',     fmtUptime()]
+  ];
+  const box = el('div','box'), kv = el('div','kv');
+  rows.forEach(([k,v]) => { kv.appendChild(el('div','k',esc(k))); kv.appendChild(el('div','v',esc(v))); });
+  box.appendChild(kv); printRaw(box);
+  print('[✔] host scan complete — ' + rows.length + ' vectors profiled', 'c-green');
+  SFX.ok();
+}
+
+/* ============================================================
+   8. DISPATCHER
+   ============================================================ */
+const COMMANDS = {
+  help: cmdHelp,
+  '?': cmdHelp,
+  root: cmdRoot,
+  sudo: cmdRoot,
+  matrix: cmdMatrix,
+  clear: cmdClear,
+  cls: cmdClear,
+  hack: (a) => cmdHack(a),
+  search: (a) => cmdSearch(a),
+  google: (a) => cmdSearch(a),
+  youtube: (a) => cmdYoutube(a),
+  yt: (a) => cmdYoutube(a),
+  calc: (a) => cmdCalc(a),
+  time: cmdTime,
+  date: cmdTime,
+  system_info: cmdSysInfo,
+  sysinfo: cmdSysInfo,
+  neofetch: cmdSysInfo,
+  banner: printBanner,
+  whoami: () => {
+    print(STATE.root ? 'root' : 'guest', 'c-cyan bold');
+    print(STATE.root ? 'privilege: UID 0 · unrestricted' : "privilege: limited — run 'root' to escalate", 'c-dim');
+  },
+  echo: (a) => print(esc(a || ''), 'c-white'),
+  history: () => {
+    if (!STATE.history.length) return print('(history empty)', 'c-dim');
+    STATE.history.forEach((h,i) => print(String(i+1).padStart(4,' ') + '  ' + esc(h), 'c-dim'));
+  },
+  voice: () => { startVoice(); },
+  sound: () => toggleSound(),
+  fx: () => {
+    STATE.fx = !STATE.fx;
+    document.body.classList.toggle('no-fx', !STATE.fx);
+    print('[FX] CRT scanlines & glitch effects ' + (STATE.fx ? 'ENABLED' : 'DISABLED'), 'c-cyan');
+    SFX.blip();
+  },
+  exit: () => {
+    print('[SESSION] closing secure channel …', 'c-amber');
+    setTimeout(()=>{ glitchBurst(500); out.innerHTML=''; print('CONNECTION TERMINATED.', 'c-red bold');
+      print('Refresh the page to re-establish the link.', 'c-dim'); input.disabled = true; SFX.err(); }, 700);
+  },
+  ls: () => print('exploits/   payloads/   wordlists/   logs/   README.md   .secrets', 'c-cyan'),
+  cat: (a) => a === '.secrets'
+      ? print('cat: .secrets: Permission denied' + (STATE.root ? ' … just kidding, root.\n  ROOT_KEY=0xC0FFEE_DEADBEEF_1337' : ''), STATE.root ? 'c-mag' : 'c-red')
+      : print('cat: ' + esc(a||'') + ': No such file or directory', 'c-red'),
+  pwd: () => print('/home/' + (STATE.root ? 'root' : 'guest'), 'c-cyan')
+};
+
+async function run(raw, fromVoice=false){
+  const line = String(raw || '').trim();
+  const prompt = el('div','line');
+  prompt.innerHTML = `<span class="c-mag bold">${STATE.root?'root':'guest'}@security</span><span class="c-dim">:~$</span> <span class="c-white">${esc(line)}</span>` +
+                     (fromVoice ? ' <span class="c-mag">🎤</span>' : '');
+  printRaw(prompt);
+  if (!line) return;
+  STATE.history.push(line); STATE.hIdx = STATE.history.length;
+
+  const sp = line.indexOf(' ');
+  const name = (sp === -1 ? line : line.slice(0, sp)).toLowerCase();
+  const args = sp === -1 ? '' : line.slice(sp+1).trim();
+
+  const fn = COMMANDS[name];
+  if (!fn){
+    SFX.err(); glitchBurst(280);
+    print(`command not found: ${esc(name)}`, 'c-red');
+    const guess = Object.keys(COMMANDS).find(k => k.startsWith(name.slice(0,2)) && name.length>1);
+    if (guess) print(`did you mean: ${guess} ?`, 'c-amber');
+    print("type 'help' to list all available commands.", 'c-dim');
+    return;
+  }
+  try{ await fn(args); }
+  catch(e){ print('[RUNTIME ERROR] ' + esc(e.message), 'c-red'); SFX.err(); }
+  scroll();
+}
+
+/* ============================================================
+   9. INPUT HANDLING
+   ============================================================ */
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter'){
+    const v = input.value; input.value = '';
+    SFX.enter(); run(v);
+  } else if (e.key === 'ArrowUp'){
+    e.preventDefault();
+    if (STATE.hIdx > 0){ STATE.hIdx--; input.value = STATE.history[STATE.hIdx]; }
+  } else if (e.key === 'ArrowDown'){
+    e.preventDefault();
+    if (STATE.hIdx < STATE.history.length-1){ STATE.hIdx++; input.value = STATE.history[STATE.hIdx]; }
+    else { STATE.hIdx = STATE.history.length; input.value = ''; }
+  } else if (e.key === 'Tab'){
+    e.preventDefault();
+    const p = input.value.toLowerCase();
+    const hits = Object.keys(COMMANDS).filter(k => k.startsWith(p) && p);
+    if (hits.length === 1){ input.value = hits[0] + ' '; SFX.blip(); }
+    else if (hits.length > 1){ print(hits.join('   '), 'c-dim'); SFX.blip(); }
+  } else if (e.key === 'l' && e.ctrlKey){ e.preventDefault(); cmdClear(); }
+  else { SFX.key(); }
+});
+document.addEventListener('click', (e) => {
+  if (e.target.closest('button') || e.target.closest('a') || window.getSelection().toString()) return;
+  if (STATE.booted) input.focus();
+});
+
+/* chips */
+const CHIPS = [
+  ['help','help'],['root','root'],['💀 hack','hack'],['matrix','matrix'],
+  ['system_info','system_info'],['time','time'],['calc 2^10','calc 2^10'],
+  ['search AI','search artificial intelligence'],['youtube','youtube cyberpunk synthwave'],
+  ['whoami','whoami'],['fx','fx'],['clear','clear']
+];
+const chipsEl = $('#chips');
+CHIPS.forEach(([label, cmd]) => {
+  const b = el('button','chip' + (cmd==='hack'||cmd==='root' ? ' hot' : ''), esc(label));
+  b.addEventListener('click', () => { SFX.enter(); run(cmd); input.focus(); });
+  chipsEl.appendChild(b);
+});
+
+/* toolbar buttons */
+micBtn.addEventListener('click', () => { ac(); startVoice(); });
+const sndBtn = $('#sndBtn');
+function toggleSound(){
+  STATE.sound = !STATE.sound;
+  sndBtn.textContent = STATE.sound ? '🔊' : '🔇';
+  sndBtn.classList.toggle('off', !STATE.sound);
+  if (!STATE.sound && 'speechSynthesis' in window) speechSynthesis.cancel();
+  print('[AUDIO] sound engine ' + (STATE.sound ? 'ONLINE' : 'MUTED'), 'c-cyan');
+  if (STATE.sound) SFX.ok();
+}
+sndBtn.addEventListener('click', () => { ac(); toggleSound(); });
+
+/* status bar tickers */
+setInterval(() => {
+  $('#clock').textContent = new Date().toLocaleTimeString('en-GB');
+  $('#uptime').textContent = fmtUptime();
+}, 1000);
+setInterval(() => {
+  const base = STATE.busy ? 60 : (STATE.rainBoost ? 28 : 8);
+  $('#cpu').textContent = (base + Math.floor(Math.random()*22)) + '%';
+}, 1800);
+
+/* ============================================================
+   10. BOOT SEQUENCE
+   ============================================================ */
+const BOOT_LINES = [
+  ['[ BIOS ] ULTIMATE ROOT SECURITY  ·  UEFI v3.0.7', 'c-dim'],
+  ['[  OK  ] mounting /dev/neural0 → encrypted core', 'c-green'],
+  ['[  OK  ] loading matrix rain driver  (canvas2d)', 'c-green'],
+  ['[  OK  ] initializing Web Audio synth engine', 'c-green'],
+  ['[  OK  ] arming CRT scanline emulator', 'c-green'],
+  ['[  OK  ] calibrating neon glow shaders', 'c-green'],
+  ['[  OK  ] Web Speech API voice bridge attached', 'c-green'],
+  ['[ WARN ] intrusion countermeasures: PASSIVE', 'c-amber'],
+  ['[  OK  ] AI assistant core  ·  ONLINE', 'c-cyan']
+];
+
+async function boot(){
+  STATE.booted = true;
+  SFX.boot();
+  printBanner();
+  print('');
+  for (const [t,c] of BOOT_LINES){ print(t, c); SFX.scan(); await sleep(140); }
+  print('');
+  await progress('  establishing secure tunnel ', 900, 'c-cyan');
+  print('');
+  await typeLine('SYSTEM READY. Welcome, operator.', 'c-white bold', 22);
+  print("Type 'help' for the command matrix  ·  tap 🎤 for voice control.", 'c-dim');
+  print('');
+  speak('System ready. Welcome, operator.');
+  input.focus();
+}
+
+$('#enterBtn').addEventListener('click', () => {
+  ac(); initVoice();
+  bootEl.classList.add('gone');
+  setTimeout(() => { bootEl.remove(); boot(); }, 400);
+});
+addEventListener('keydown', (e) => {
+  if (!STATE.booted && (e.key === 'Enter' || e.key === ' ')) $('#enterBtn').click();
+});
+
+/* keep input visible when mobile keyboard opens */
+if (window.visualViewport){
+  visualViewport.addEventListener('resize', () => { setTimeout(scroll, 60); });
+}
+input.addEventListener('focus', () => setTimeout(scroll, 220));
+</script>
 </body>
-  </html>
+</html>
