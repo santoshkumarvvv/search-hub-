@@ -1,1058 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-<meta name="theme-color" content="#02110a">
-<meta name="description" content="Ultimate Root Security — Cyberpunk AI Terminal with Matrix Rain, Neon Glow, CRT Scanlines, Glitch FX, Web Audio sounds and Voice Control.">
-<title>ROOT@SECURITY :: Cyberpunk AI Terminal</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💀</text></svg>">
-<style>
-/* ============================================================
-   ULTIMATE ROOT SECURITY :: CYBERPUNK AI TERMINAL
-   ============================================================ */
-:root{
-  --green:#00ff9c;
-  --green-dim:#0b7a52;
-  --cyan:#00e5ff;
-  --magenta:#ff2bd6;
-  --amber:#ffcc00;
-  --red:#ff2e4d;
-  --bg:#02110a;
-  --bg2:#010806;
-  --glass:rgba(0,255,156,.05);
-  --line:rgba(0,255,156,.28);
-  --font:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,"Courier New",monospace;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  margin:0;
-  background:var(--bg2);
-  color:var(--green);
-  font-family:var(--font);
-  font-size:15px;
-  line-height:1.55;
-  overflow:hidden;
-  overscroll-behavior:none;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#05030a" />
+  <title>Queenie — आपकी AI गर्लफ्रेंड 💜</title>
+  <meta name="description" content="Queenie — एक अल्ट्रा-मॉडर्न, प्रीमियम AI Voice Companion जो आपकी है।" />
 
-/* ---------- Matrix rain ---------- */
-#matrix{position:fixed;inset:0;z-index:0;display:block;opacity:.55;transition:opacity .6s}
-body.rain-boost #matrix{opacity:1}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet" />
 
-/* ---------- Ambient neon glow ---------- */
-.ambient{
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:
-    radial-gradient(60vw 50vh at 12% 8%, rgba(0,229,255,.13), transparent 60%),
-    radial-gradient(55vw 45vh at 88% 92%, rgba(255,43,214,.13), transparent 60%),
-    radial-gradient(70vw 60vh at 50% 50%, rgba(0,255,156,.07), transparent 70%);
-  mix-blend-mode:screen;
-}
-
-/* ---------- CRT scanlines + vignette + flicker ---------- */
-.crt{
-  position:fixed;inset:0;z-index:60;pointer-events:none;
-  background:repeating-linear-gradient(
-    to bottom,
-    rgba(0,0,0,0) 0px,
-    rgba(0,0,0,0) 2px,
-    rgba(0,0,0,.22) 3px,
-    rgba(0,0,0,.22) 4px);
-  mix-blend-mode:multiply;
-}
-.crt::after{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
-}
-.crt-beam{
-  position:fixed;left:0;right:0;height:26vh;z-index:61;pointer-events:none;
-  background:linear-gradient(to bottom, rgba(0,255,156,0), rgba(0,255,156,.055), rgba(0,255,156,0));
-  animation:beam 7s linear infinite;
-}
-@keyframes beam{0%{top:-30vh}100%{top:110vh}}
-.flicker{position:fixed;inset:0;z-index:62;pointer-events:none;background:rgba(0,255,156,.02);animation:flick 4s steps(2) infinite}
-@keyframes flick{0%,96%{opacity:0}97%{opacity:.5}98%{opacity:0}99%{opacity:.7}100%{opacity:0}}
-body.no-fx .crt,body.no-fx .crt-beam,body.no-fx .flicker{display:none}
-
-/* ---------- Layout shell ---------- */
-.shell{
-  position:relative;z-index:10;
-  height:100dvh;height:100vh;
-  display:flex;flex-direction:column;
-  padding:10px;gap:8px;
-  padding-bottom:calc(10px + env(safe-area-inset-bottom));
-}
-.frame{
-  flex:1;min-height:0;display:flex;flex-direction:column;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:linear-gradient(180deg, rgba(2,17,10,.92), rgba(1,8,6,.96));
-  box-shadow:0 0 0 1px rgba(0,255,156,.06) inset, 0 0 42px rgba(0,255,156,.14), 0 0 120px rgba(0,229,255,.07);
-  backdrop-filter:blur(3px);
-  overflow:hidden;
-}
-
-/* ---------- Title bar ---------- */
-.bar{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  padding:8px 12px;
-  border-bottom:1px solid var(--line);
-  background:linear-gradient(90deg, rgba(0,255,156,.10), rgba(0,229,255,.05), rgba(255,43,214,.08));
-}
-.dots{display:flex;gap:6px}
-.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 8px currentColor}
-.dot.r{background:#ff2e4d;color:#ff2e4d}
-.dot.y{background:#ffcc00;color:#ffcc00}
-.dot.g{background:#00ff9c;color:#00ff9c}
-.title{
-  font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);
-  text-shadow:0 0 10px rgba(0,229,255,.8);white-space:nowrap;
-}
-.bar .spacer{flex:1}
-.stat{
-  font-size:11px;letter-spacing:1px;color:var(--green-dim);
-  border:1px solid rgba(0,255,156,.2);border-radius:999px;padding:2px 9px;white-space:nowrap;
-}
-.stat b{color:var(--green)}
-.led{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:5px;vertical-align:middle}
-.led.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s infinite}
-@keyframes pulse{50%{opacity:.35}}
-
-/* ---------- Output area ---------- */
-#out{
-  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
-  padding:14px 14px 4px;
-  scrollbar-width:thin;scrollbar-color:var(--green-dim) transparent;
-  -webkit-overflow-scrolling:touch;
-}
-#out::-webkit-scrollbar{width:8px}
-#out::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:8px}
-.line{white-space:pre-wrap;word-break:break-word;margin:0 0 2px;text-shadow:0 0 6px rgba(0,255,156,.35)}
-.c-green{color:var(--green)}
-.c-cyan{color:var(--cyan);text-shadow:0 0 8px rgba(0,229,255,.5)}
-.c-mag{color:var(--magenta);text-shadow:0 0 8px rgba(255,43,214,.5)}
-.c-amber{color:var(--amber);text-shadow:0 0 8px rgba(255,204,0,.5)}
-.c-red{color:var(--red);text-shadow:0 0 8px rgba(255,46,77,.6)}
-.c-dim{color:#4f7f68;text-shadow:none}
-.c-white{color:#dfffef}
-.bold{font-weight:700}
-.line a{color:var(--cyan);text-decoration:underline dotted}
-.banner{
-  font-size:clamp(6px,1.85vw,13px);line-height:1.1;white-space:pre;overflow-x:auto;
-  color:var(--green);text-shadow:0 0 12px rgba(0,255,156,.7), 0 0 26px rgba(0,229,255,.35);
-}
-.box{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--glass)}
-.kv{display:grid;grid-template-columns:minmax(96px,150px) 1fr;gap:2px 12px;font-size:13.5px}
-.kv .k{color:var(--cyan)}
-.kv .v{color:#cdfbe6;word-break:break-word}
-
-/* progress bars */
-.pbar{display:flex;align-items:center;gap:8px;font-size:13px}
-.pbar .track{flex:1;height:9px;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:rgba(0,0,0,.5);min-width:80px}
-.pbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan));box-shadow:0 0 12px var(--green);transition:width .12s linear}
-.pbar .pct{width:44px;text-align:right;color:var(--cyan)}
-
-/* glitch */
-.glitch{position:relative;display:inline-block}
-.glitch::before,.glitch::after{
-  content:attr(data-t);position:absolute;left:0;top:0;width:100%;overflow:hidden;
-}
-.glitch::before{color:var(--magenta);animation:gl1 .55s infinite linear alternate-reverse;clip-path:inset(0 0 55% 0)}
-.glitch::after{color:var(--cyan);animation:gl2 .48s infinite linear alternate-reverse;clip-path:inset(52% 0 0 0)}
-@keyframes gl1{0%{transform:translate(0)}25%{transform:translate(-2px,-1px)}50%{transform:translate(2px,1px)}100%{transform:translate(-1px,1px)}}
-@keyframes gl2{0%{transform:translate(0)}25%{transform:translate(2px,1px)}50%{transform:translate(-2px,-1px)}100%{transform:translate(1px,-1px)}}
-body.shake .frame{animation:shake .35s linear}
-@keyframes shake{
-  0%,100%{transform:translate(0,0)}
-  20%{transform:translate(-4px,2px) skewX(.6deg)}
-  40%{transform:translate(4px,-2px) skewX(-.6deg)}
-  60%{transform:translate(-3px,-1px)}
-  80%{transform:translate(3px,1px)}
-}
-body.alarm .frame{border-color:var(--red);box-shadow:0 0 40px rgba(255,46,77,.5), 0 0 90px rgba(255,46,77,.25)}
-.rgb-split{animation:rgbs .18s steps(2) 6}
-@keyframes rgbs{0%{filter:none}50%{filter:drop-shadow(2px 0 var(--red)) drop-shadow(-2px 0 var(--cyan))}100%{filter:none}}
-
-/* ---------- Input row ---------- */
-.inputbar{
-  display:flex;align-items:center;gap:8px;
-  padding:9px 12px;border-top:1px solid var(--line);
-  background:linear-gradient(90deg, rgba(0,255,156,.07), rgba(0,229,255,.03));
-}
-.prompt{color:var(--magenta);white-space:nowrap;font-weight:700;text-shadow:0 0 10px rgba(255,43,214,.6);font-size:14px}
-#cmd{
-  flex:1;min-width:0;background:transparent;border:0;outline:0;
-  color:var(--green);font-family:var(--font);font-size:16px;caret-color:transparent;
-  text-shadow:0 0 8px rgba(0,255,156,.6);
-}
-#cmd::placeholder{color:#2f6a55}
-.caret{width:10px;height:18px;background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 1s steps(1) infinite;flex:none}
-@keyframes blink{50%{opacity:0}}
-.iconbtn{
-  flex:none;width:38px;height:38px;border-radius:10px;
-  border:1px solid var(--line);background:rgba(0,255,156,.07);
-  color:var(--green);font-size:16px;cursor:pointer;display:grid;place-items:center;
-  transition:.18s;
-}
-.iconbtn:hover{background:rgba(0,255,156,.18);box-shadow:0 0 14px rgba(0,255,156,.4)}
-.iconbtn.active{color:var(--magenta);border-color:var(--magenta);box-shadow:0 0 16px rgba(255,43,214,.6);background:rgba(255,43,214,.12)}
-.iconbtn.off{color:#3d6b5b;border-color:rgba(0,255,156,.15)}
-
-/* ---------- Quick chips ---------- */
-.chips{
-  display:flex;gap:7px;overflow-x:auto;padding:8px 10px;
-  border-top:1px solid rgba(0,255,156,.14);scrollbar-width:none;
-}
-.chips::-webkit-scrollbar{display:none}
-.chip{
-  flex:none;border:1px solid var(--line);border-radius:999px;
-  background:rgba(0,229,255,.06);color:var(--cyan);
-  padding:5px 12px;font-size:12.5px;font-family:var(--font);cursor:pointer;transition:.18s;white-space:nowrap;
-}
-.chip:hover{background:rgba(0,229,255,.2);box-shadow:0 0 14px rgba(0,229,255,.4);transform:translateY(-1px)}
-.chip.hot{color:var(--magenta);border-color:rgba(255,43,214,.45);background:rgba(255,43,214,.08)}
-
-/* ---------- Boot overlay ---------- */
-#boot{
-  position:fixed;inset:0;z-index:120;background:#010806;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
-  padding:24px;text-align:center;transition:opacity .5s;
-}
-#boot .bigskull{font-size:clamp(48px,14vw,86px);filter:drop-shadow(0 0 22px var(--green));animation:pulse 1.6s infinite}
-#boot h1{
-  margin:0;font-size:clamp(17px,4.6vw,32px);letter-spacing:3px;color:var(--green);
-  text-shadow:0 0 18px rgba(0,255,156,.8);
-}
-#boot p{margin:0;color:var(--cyan);font-size:clamp(11px,2.8vw,14px);letter-spacing:1.5px}
-#boot .enter{
-  margin-top:8px;border:1px solid var(--green);background:rgba(0,255,156,.1);color:var(--green);
-  padding:13px 30px;border-radius:10px;font-family:var(--font);font-size:15px;letter-spacing:2px;cursor:pointer;
-  box-shadow:0 0 24px rgba(0,255,156,.35);transition:.2s;
-}
-#boot .enter:hover{background:var(--green);color:#02110a;box-shadow:0 0 40px var(--green)}
-#boot .hint{color:#4f7f68;font-size:11.5px;letter-spacing:1px}
-#boot.gone{opacity:0;pointer-events:none}
-
-/* ---------- Voice listening overlay ---------- */
-#voicehud{
-  position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:70;
-  display:none;align-items:center;gap:10px;
-  border:1px solid var(--magenta);border-radius:999px;padding:8px 18px;
-  background:rgba(20,0,16,.86);color:var(--magenta);font-size:13px;letter-spacing:1px;
-  box-shadow:0 0 26px rgba(255,43,214,.5);max-width:92vw;
-}
-#voicehud.on{display:flex}
-.wave{display:flex;align-items:flex-end;gap:3px;height:16px}
-.wave i{width:3px;background:var(--magenta);border-radius:2px;animation:wv .9s ease-in-out infinite}
-.wave i:nth-child(2){animation-delay:.15s}
-.wave i:nth-child(3){animation-delay:.3s}
-.wave i:nth-child(4){animation-delay:.45s}
-@keyframes wv{0%,100%{height:4px}50%{height:16px}}
-
-/* ---------- Mobile ---------- */
-@media (max-width:720px){
-  body{font-size:13.5px}
-  .shell{padding:6px;gap:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
-  .frame{border-radius:11px}
-  .bar{padding:7px 9px;gap:7px}
-  .title{font-size:11px;letter-spacing:1.2px}
-  .stat{font-size:9.5px;padding:2px 7px}
-  .stat.hide-sm{display:none}
-  #out{padding:10px 10px 2px}
-  .kv{grid-template-columns:1fr;gap:0 0}
-  .kv .k{margin-top:5px}
-  .inputbar{padding:7px 9px;gap:6px}
-  .prompt{font-size:12px}
-  .iconbtn{width:36px;height:36px}
-  #voicehud{bottom:112px;font-size:11.5px;padding:7px 14px}
-}
-@media (max-width:400px){
-  .title{font-size:10px}
-  .prompt{font-size:11px}
-}
-@media (prefers-reduced-motion:reduce){
-  .crt-beam,.flicker,.glitch::before,.glitch::after{animation:none}
-}
-</style>
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
-<body class="no-select">
+<body>
+  <!-- Ambient animated background layers -->
+  <div class="bg-aurora"></div>
+  <div class="bg-grid"></div>
 
-<canvas id="matrix"></canvas>
-<div class="ambient"></div>
+  <!-- 3D Orb canvas (Three.js) + 2D visualizer overlay -->
+  <canvas id="orb-canvas"></canvas>
+  <canvas id="viz-canvas"></canvas>
 
-<div class="shell">
-  <div class="frame" id="frame">
-    <div class="bar">
-      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-      <div class="title">root@security ~ cyberpunk&nbsp;ai&nbsp;terminal</div>
-      <div class="spacer"></div>
-      <div class="stat hide-sm"><span class="led on"></span>SECURE</div>
-      <div class="stat">UP <b id="uptime">00:00</b></div>
-      <div class="stat hide-sm">CPU <b id="cpu">0%</b></div>
-      <div class="stat" id="clock">--:--:--</div>
+  <!-- CSS fallback orb (shown only if WebGL unavailable) -->
+  <div class="orb-fallback" aria-hidden="true">
+    <div class="orb-core"></div>
+    <div class="orb-ring"></div>
+  </div>
+
+  <!-- Top brand bar -->
+  <header class="topbar glass">
+    <div class="brand">
+      <div class="brand-mark">Q</div>
+      <div class="brand-text">
+        <h1>Queenie</h1>
+        <span class="brand-sub">आपकी AI — बस आपकी 💜</span>
+      </div>
     </div>
+    <div class="brand-status" id="net-status">
+      <span class="dot"></span><span id="net-label">सिस्टम ऑनलाइन</span>
+    </div>
+    <button class="gear-btn" id="gear-btn" title="Grok / सेटिंग्स">⚙</button>
+  </header>
 
-    <div id="out"></div>
-
-    <div class="chips" id="chips"></div>
-
-    <div class="inputbar">
-      <span class="prompt" id="ps1">root@security:~#</span>
-      <input id="cmd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
-             enterkeyhint="go" placeholder="type 'help' …" aria-label="terminal input">
-      <span class="caret" id="caret"></span>
-      <button class="iconbtn" id="micBtn" title="Voice control (Web Speech API)" aria-label="voice">🎤</button>
-      <button class="iconbtn" id="sndBtn" title="Toggle sound" aria-label="sound">🔊</button>
+  <!-- Settings popover (Grok / xAI) -->
+  <div class="settings glass" id="settings" aria-hidden="true">
+    <div class="settings-head">
+      <strong>⚙ Grok (xAI) कनेक्शन</strong>
+      <button class="drawer-close" id="settings-close">✕</button>
+    </div>
+    <label class="set-row">
+      <span>xAI API Key</span>
+      <input id="api-key" type="password" placeholder="xai-..." autocomplete="off" />
+    </label>
+    <label class="set-row">
+      <span>Model</span>
+      <select id="model-select" class="ctrl select">
+        <option value="grok-4-latest">grok-4-latest</option>
+        <option value="grok-3">grok-3</option>
+        <option value="grok-2-latest">grok-2-latest</option>
+        <option value="grok-beta">grok-beta</option>
+      </select>
+    </label>
+    <label class="set-row toggle-row">
+      <span>Grok इस्तेमाल करो (Unfiltered)</span>
+      <input id="use-grok" type="checkbox" />
+    </label>
+    <p class="set-note" id="set-note">
+      की सीधे ब्राउज़र से xAI API कॉल होती है (key सिर्फ इसी डिवाइस के localStorage में रहती है)।
+      अगर API key न हो या CORS रोके, तो Queenie लोकल इंजन से बोलेगी।
+    </p>
+    <div class="set-actions">
+      <button class="ctrl pill" id="save-settings">सेव करो</button>
+      <button class="ctrl pill" id="test-grok">टेस्ट</button>
     </div>
   </div>
-</div>
 
-<div id="voicehud"><span class="wave"><i></i><i></i><i></i><i></i></span><span id="voicetxt">LISTENING…</span></div>
+  <!-- Center stage: status + hint -->
+  <main class="stage">
+    <div class="orb-wrap">
+      <div class="orb-halo"></div>
+      <p class="status-pill" id="status">आपकी बात सुनने के लिए तैयार हूँ…</p>
+    </div>
 
-<div class="crt"></div>
-<div class="crt-beam"></div>
-<div class="flicker"></div>
+    <div class="hint" id="hint">
+      बस माइक दबाओ और प्यार से बोलो — मैं सुन रही हूँ 🎧
+    </div>
+  </main>
 
-<div id="boot">
-  <div class="bigskull">💀</div>
-  <h1 class="glitch" data-t="ULTIMATE ROOT SECURITY">ULTIMATE ROOT SECURITY</h1>
-  <p>CYBERPUNK&nbsp;AI&nbsp;TERMINAL&nbsp;v3.0</p>
-  <button class="enter" id="enterBtn">[ INITIALIZE SYSTEM ]</button>
-  <div class="hint">audio + voice engines require a user gesture</div>
-</div>
+  <!-- Bottom control dock -->
+  <nav class="dock glass">
+    <button class="ctrl mic-btn" id="mic-btn" title="बोलने के लिए दबाओ">
+      <span class="mic-glow"></span>
+      <svg viewBox="0 0 24 24" class="ico"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+    </button>
 
-<script>
-"use strict";
-/* ============================================================
-   ULTIMATE ROOT SECURITY :: CYBERPUNK AI TERMINAL  v3.0
-   Single-file. No dependencies. Runs fully client-side.
-   ============================================================ */
-const $ = (s) => document.querySelector(s);
-const out    = $('#out');
-const input  = $('#cmd');
-const bootEl = $('#boot');
-const frame  = $('#frame');
+    <div class="ctrl-group">
+      <button class="ctrl pill" id="handsfree-btn" title="Hands-Free मोड">
+        <svg viewBox="0 0 24 24" class="ico"><path d="M12 2a7 7 0 0 0-7 7v3a7 7 0 0 0 14 0v-3a7 7 0 0 0-7-7z"/><path d="M9 18v1a3 3 0 0 0 6 0v-1"/></svg>
+        <span>Hands-Free</span>
+      </button>
 
-const STATE = {
-  booted:false, sound:true, listening:false, busy:false,
-  user:'guest', host:'security', root:false,
-  history:[], hIdx:-1, start:Date.now(), rainBoost:false, fx:true
-};
+      <button class="ctrl pill lang-btn" id="lang-btn" title="भाषा बदलें">
+        <span id="lang-label">हिन्दी</span>
+      </button>
 
-/* ============================================================
-   1. MATRIX RAIN
-   ============================================================ */
-const canvas = $('#matrix'), ctx = canvas.getContext && canvas.getContext('2d');
-const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789$#@%&*+=<>/\\|ROOTSECURITY';
-let cols = 0, drops = [], speeds = [], fsize = 16, dpr = 1;
+      <div class="ctrl select-wrap">
+        <select id="voice-select" class="ctrl select" title="आवाज़ चुनें"></select>
+      </div>
 
-function sizeMatrix(){
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width  = Math.floor(innerWidth  * dpr);
-  canvas.height = Math.floor(innerHeight * dpr);
-  canvas.style.width = innerWidth + 'px';
-  canvas.style.height = innerHeight + 'px';
-  fsize = innerWidth < 620 ? 13 : 17;
-  cols = Math.ceil(innerWidth / fsize);
-  drops = new Array(cols).fill(0).map(() => Math.random() * -60);
-  speeds = new Array(cols).fill(0).map(() => 0.5 + Math.random() * 0.9);
-}
-sizeMatrix();
-addEventListener('resize', sizeMatrix);
+      <button class="ctrl pill" id="chat-btn" title="चैट खोलो">
+        <svg viewBox="0 0 24 24" class="ico"><path d="M21 11.5a8.5 8.5 0 0 1-12 7.7L3 21l1.8-6A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        <span>चैट</span>
+      </button>
+    </div>
+  </nav>
 
-let mFrame = 0;
-function drawMatrix(){
-  if (!ctx) return;                                    // graceful degrade: no canvas support
-  requestAnimationFrame(drawMatrix);
-  mFrame++;
-  if (mFrame % (STATE.rainBoost ? 1 : 2)) return;      // throttle for battery
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.fillStyle = 'rgba(1,8,6,0.09)';
-  ctx.fillRect(0,0,innerWidth,innerHeight);
-  ctx.font = fsize + 'px ' + getComputedStyle(document.body).fontFamily;
-  for (let i=0;i<cols;i++){
-    const ch = GLYPHS[(Math.random()*GLYPHS.length)|0];
-    const x = i*fsize, y = drops[i]*fsize;
-    if (Math.random() > 0.985){ ctx.fillStyle='#dfffef'; ctx.shadowColor='#00ff9c'; ctx.shadowBlur=14; }
-    else if (STATE.rainBoost && Math.random()>0.97){ ctx.fillStyle='#00e5ff'; ctx.shadowColor='#00e5ff'; ctx.shadowBlur=10; }
-    else { ctx.fillStyle = STATE.alarm ? '#ff2e4d' : '#00ff9c'; ctx.shadowColor='transparent'; ctx.shadowBlur=0; }
-    ctx.fillText(ch, x, y);
-    ctx.shadowBlur = 0;
-    if (y > innerHeight && Math.random() > 0.975) drops[i] = Math.random()*-20;
-    drops[i] += speeds[i] * (STATE.rainBoost ? 1.9 : 1);
-  }
-}
-drawMatrix();
+  <!-- Slide-out chat drawer -->
+  <aside class="drawer glass" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div class="drawer-title">
+        <span class="brand-mark small">Q</span>
+        <div>
+          <strong>Queenie</strong>
+          <em id="drawer-sub">आपकी बातें यहाँ 💬</em>
+        </div>
+      </div>
+      <button class="drawer-close" id="drawer-close" title="बंद करो">✕</button>
+    </div>
 
-/* ============================================================
-   2. WEB AUDIO API — synth sound engine
-   ============================================================ */
-let AC = null;
-function ac(){
-  if (!AC){ const C = window.AudioContext || window.webkitAudioContext; if (C) AC = new C(); }
-  if (AC && AC.state === 'suspended') AC.resume();
-  return AC;
-}
-function tone(freq, dur=0.08, type='square', vol=0.06, slideTo=null){
-  if (!STATE.sound) return;
-  const a = ac(); if (!a) return;
-  const o = a.createOscillator(), g = a.createGain();
-  o.type = type; o.frequency.setValueAtTime(freq, a.currentTime);
-  if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(30,slideTo), a.currentTime + dur);
-  g.gain.setValueAtTime(0.0001, a.currentTime);
-  g.gain.exponentialRampToValueAtTime(vol, a.currentTime + 0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
-  o.connect(g); g.connect(a.destination);
-  o.start(); o.stop(a.currentTime + dur + 0.02);
-}
-function noise(dur=0.25, vol=0.05, filterFreq=900){
-  if (!STATE.sound) return;
-  const a = ac(); if (!a) return;
-  const len = Math.floor(a.sampleRate * dur);
-  const buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
-  for (let i=0;i<len;i++) d[i] = (Math.random()*2-1) * (1 - i/len);
-  const src = a.createBufferSource(); src.buffer = buf;
-  const f = a.createBiquadFilter(); f.type='bandpass'; f.frequency.value=filterFreq;
-  const g = a.createGain(); g.gain.value = vol;
-  src.connect(f); f.connect(g); g.connect(a.destination); src.start();
-}
-const SFX = {
-  key:   () => tone(1200 + Math.random()*500, 0.03, 'square', 0.022),
-  enter: () => { tone(760,0.05,'square',0.05); setTimeout(()=>tone(1180,0.07,'square',0.045),45); },
-  ok:    () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.11,'triangle',0.05),i*70)); },
-  err:   () => { tone(200,0.22,'sawtooth',0.07,90); noise(0.16,0.035,420); },
-  boot:  () => { [110,165,220,330,440,660].forEach((f,i)=>setTimeout(()=>tone(f,0.16,'sine',0.07),i*95)); },
-  blip:  () => tone(1550,0.035,'sine',0.03),
-  scan:  () => tone(420,0.05,'sawtooth',0.028,880),
-  alarm: () => { let n=0; const iv=setInterval(()=>{ tone(n%2?680:980,0.14,'square',0.055); if(++n>7) clearInterval(iv); },160); },
-  breach:() => { noise(0.7,0.09,240); [880,660,440,220,110].forEach((f,i)=>setTimeout(()=>tone(f,0.24,'sawtooth',0.06),i*110)); },
-  glitch:() => { noise(0.14,0.06,1600); tone(90,0.12,'square',0.05); }
-};
+    <div class="chat" id="chat"></div>
 
-/* ============================================================
-   3. OUTPUT ENGINE
-   ============================================================ */
-function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
-function scroll(){ out.scrollTop = out.scrollHeight; }
-function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    <form class="composer" id="composer" autocomplete="off">
+      <input id="text-input" type="text" placeholder="यहाँ टाइप करो या माइक दबाओ…" />
+      <button type="submit" class="send-btn" title="भेजो">➤</button>
+    </form>
+  </aside>
+  <div class="drawer-scrim" id="drawer-scrim"></div>
 
-function print(text='', cls='c-green'){
-  const l = el('div', 'line ' + cls, text);
-  out.appendChild(l); scroll(); return l;
-}
-function printRaw(node){ out.appendChild(node); scroll(); return node; }
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
-/* typewriter printing */
-function typeLine(text, cls='c-green', speed=12){
-  return new Promise(res => {
-    const l = el('div','line '+cls,''); out.appendChild(l);
-    let i=0;
-    (function step(){
-      if (i >= text.length){ scroll(); return res(l); }
-      const chunk = Math.max(1, Math.round(text.length/70));
-      l.textContent += text.slice(i, i+chunk); i += chunk;
-      if (i % 3 === 0) SFX.blip();
-      scroll();
-      setTimeout(step, speed);
-    })();
-  });
-}
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  <!-- Three.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-async function progress(label, ms=1400, color='c-green'){
-  const wrap = el('div','line pbar '+color);
-  wrap.innerHTML = `<span style="min-width:0;flex:none">${esc(label)}</span>
-     <span class="track"><span class="fill"></span></span><span class="pct">0%</span>`;
-  out.appendChild(wrap); scroll();
-  const fill = wrap.querySelector('.fill'), pct = wrap.querySelector('.pct');
-  const steps = 26;
-  for (let i=1;i<=steps;i++){
-    await sleep(ms/steps);
-    const p = Math.round(i/steps*100);
-    fill.style.width = p + '%'; pct.textContent = p + '%';
-    if (i%4===0) SFX.scan();
-    scroll();
-  }
-  return wrap;
-}
-
-function glitchBurst(ms=600){
-  document.body.classList.add('shake');
-  frame.classList.add('rgb-split');
-  SFX.glitch();
-  setTimeout(()=>{ document.body.classList.remove('shake'); frame.classList.remove('rgb-split'); }, ms);
-}
-
-/* ============================================================
-   4. WEB SPEECH API — voice output + voice control
-   ============================================================ */
-function speak(text, rate=1.05){
-  if (!STATE.sound || !('speechSynthesis' in window)) return;
-  try{
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = rate; u.pitch = 0.7; u.volume = 0.85; u.lang = 'en-US';
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recog = null;
-const voiceHud = $('#voicehud'), voiceTxt = $('#voicetxt'), micBtn = $('#micBtn');
-
-function initVoice(){
-  if (!SR) return false;
-  recog = new SR();
-  recog.continuous = false; recog.interimResults = true; recog.lang = 'en-US';
-  recog.onstart = () => { STATE.listening = true; micBtn.classList.add('active'); voiceHud.classList.add('on'); voiceTxt.textContent='LISTENING…'; SFX.blip(); };
-  recog.onerror = (e) => { voiceTxt.textContent = 'MIC ERROR: ' + e.error; SFX.err(); setTimeout(stopVoice, 1200); };
-  recog.onend   = () => { STATE.listening = false; micBtn.classList.remove('active'); voiceHud.classList.remove('on'); };
-  recog.onresult = (ev) => {
-    let txt = '';
-    for (let i = ev.resultIndex; i < ev.results.length; i++) txt += ev.results[i][0].transcript;
-    voiceTxt.textContent = '“' + txt + '”';
-    if (ev.results[ev.results.length-1].isFinal){
-      const cmd = mapVoice(txt.trim().toLowerCase());
-      setTimeout(()=>{ voiceHud.classList.remove('on'); input.value=''; run(cmd, true); }, 350);
-    }
-  };
-  return true;
-}
-/* natural language → command mapping */
-function mapVoice(t){
-  t = t.replace(/[.,!?]/g,'').trim();
-  const rules = [
-    [/^(open |go to |show )?help( me)?$/, 'help'],
-    [/^(clear|clean|reset)( screen| terminal)?$/, 'clear'],
-    [/^(matrix|matrix mode|rain)$/, 'matrix'],
-    [/^(root|root access|become root|sudo)$/, 'root'],
-    [/^(hack|hack it|start hack|hacking|attack)( mode| now)?$/, 'hack'],
-    [/^(time|what.*time.*|date)$/, 'time'],
-    [/^(system info|system information|sysinfo|system)$/, 'system_info'],
-    [/^(who am i|whoami)$/, 'whoami'],
-    [/^(about|banner)$/, 'banner']
-  ];
-  for (const [re, cmd] of rules) if (re.test(t)) return cmd;
-  let m = t.match(/^(?:search|google|find|look up)\s+(?:for\s+)?(.+)$/);      if (m) return 'search ' + m[1];
-  m     = t.match(/^(?:youtube|play|watch|video)\s+(?:for\s+)?(.+)$/);        if (m) return 'youtube ' + m[1];
-  m     = t.match(/^(?:calculate|calc|compute|what is)\s+(.+)$/);             if (m) return 'calc ' + wordsToMath(m[1]);
-  return t;
-}
-function wordsToMath(s){
-  return s.replace(/\bplus\b/g,'+').replace(/\bminus\b/g,'-')
-          .replace(/\b(times|multiplied by|into|x)\b/g,'*')
-          .replace(/\b(divided by|over|by)\b/g,'/')
-          .replace(/\bpercent of\b/g,'/100*').replace(/\bto the power of\b/g,'^');
-}
-function startVoice(){
-  if (!recog && !initVoice()){
-    print('[VOICE] Web Speech API not supported in this browser. Try Chrome / Edge.', 'c-red'); SFX.err(); return;
-  }
-  if (STATE.listening){ stopVoice(); return; }
-  try{ recog.start(); }catch(e){}
-}
-function stopVoice(){ try{ recog && recog.stop(); }catch(e){} voiceHud.classList.remove('on'); micBtn.classList.remove('active'); }
-
-/* ============================================================
-   5. SAFE CALCULATOR (no eval) — shunting yard
-   ============================================================ */
-function calcEval(expr){
-  const CONST = { pi: Math.PI, e: Math.E };
-  const FN = { sin:Math.sin, cos:Math.cos, tan:Math.tan, sqrt:Math.sqrt, log:Math.log10,
-               ln:Math.log, abs:Math.abs, round:Math.round, floor:Math.floor, ceil:Math.ceil };
-  const src = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/,/g,'').toLowerCase();
-  const tokens = src.match(/\d+\.?\d*|[a-z]+|[+\-*/%^()]/g);
-  if (!tokens) throw new Error('empty expression');
-  const prec = { '+':1,'-':1,'*':2,'/':2,'%':2,'^':3,'u-':4 };
-  const rightAssoc = { '^':true,'u-':true };
-  const outQ = [], ops = [];
-  let prev = null;
-  for (const t of tokens){
-    if (/^\d/.test(t)) { outQ.push(parseFloat(t)); }
-    else if (/^[a-z]+$/.test(t)){
-      if (t in CONST) outQ.push(CONST[t]);
-      else if (t in FN) ops.push(t);
-      else throw new Error('unknown symbol: ' + t);
-    }
-    else if (t === '('){ ops.push(t); }
-    else if (t === ')'){
-      while (ops.length && ops[ops.length-1] !== '(') outQ.push(ops.pop());
-      if (!ops.length) throw new Error('unbalanced )');
-      ops.pop();
-      if (ops.length && ops[ops.length-1] in FN) outQ.push(ops.pop());
-    } else {
-      let op = t;
-      if (op === '-' && (prev === null || prev === '(' || (prev in prec))) op = 'u-';
-      while (ops.length){
-        const top = ops[ops.length-1];
-        if (top === '(') break;
-        const tp = (top in FN) ? 5 : prec[top];
-        if (tp > prec[op] || (tp === prec[op] && !rightAssoc[op])) outQ.push(ops.pop()); else break;
-      }
-      ops.push(op);
-    }
-    prev = t;
-  }
-  while (ops.length){ const o = ops.pop(); if (o === '(') throw new Error('unbalanced ('); outQ.push(o); }
-  const st = [];
-  for (const t of outQ){
-    if (typeof t === 'number'){ st.push(t); continue; }
-    if (t in FN){ const a = st.pop(); if (a===undefined) throw new Error('bad args'); st.push(FN[t](a)); continue; }
-    if (t === 'u-'){ const a = st.pop(); st.push(-a); continue; }
-    const b = st.pop(), a = st.pop();
-    if (a === undefined || b === undefined) throw new Error('malformed expression');
-    st.push(t==='+'?a+b : t==='-'?a-b : t==='*'?a*b : t==='/'?a/b : t==='%'?a%b : Math.pow(a,b));
-  }
-  if (st.length !== 1) throw new Error('malformed expression');
-  return st[0];
-}
-
-/* ============================================================
-   6. BANNER + HELP
-   ============================================================ */
-const BANNER = String.raw`
-  ██████╗  ██████╗  ██████╗ ████████╗
-  ██╔══██╗██╔═══██╗██╔═══██╗╚══██╔══╝
-  ██████╔╝██║   ██║██║   ██║   ██║
-  ██╔══██╗██║   ██║██║   ██║   ██║
-  ██║  ██║╚██████╔╝╚██████╔╝   ██║
-  ╚═╝  ╚═╝ ╚═════╝  ╚═════╝    ╚═╝
-   S E C U R I T Y   ·   T E R M I N A L`;
-
-const HELP = [
-  ['help',        'show this command matrix'],
-  ['root',        'escalate privileges → ROOT ACCESS'],
-  ['matrix',      'toggle hyper matrix rain mode'],
-  ['clear',       'wipe the terminal buffer'],
-  ['hack',        'launch cinematic intrusion sequence'],
-  ['search <q>',  'deep web search across engines'],
-  ['youtube <q>', 'open YouTube results for <q>'],
-  ['calc <expr>', 'secure math core  e.g. calc (12+8)*3^2'],
-  ['time',        'system clock, date & uptime'],
-  ['system_info', 'full host / browser / network scan'],
-  ['whoami',      'current identity'],
-  ['banner',      'redraw the ROOT banner'],
-  ['voice',       'toggle Web Speech voice control'],
-  ['sound',       'toggle Web Audio sound engine'],
-  ['fx',          'toggle CRT scanlines & glitch FX'],
-  ['history',     'show command history'],
-  ['echo <text>', 'print text'],
-  ['exit',        'terminate session']
-];
-
-function printBanner(){
-  printRaw(el('pre','line banner', esc(BANNER)));
-  print('  ULTIMATE ROOT SECURITY  ·  CYBERPUNK AI TERMINAL  v3.0', 'c-cyan bold');
-  print('  ' + '─'.repeat(46), 'c-dim');
-}
-
-function cmdHelp(){
-  print('');
-  print('╔══ COMMAND MATRIX ═══════════════════════════════╗', 'c-cyan');
-  const box = el('div','box');
-  const kv = el('div','kv');
-  HELP.forEach(([c,d]) => {
-    kv.appendChild(el('div','k', esc(c)));
-    kv.appendChild(el('div','v', esc(d)));
-  });
-  box.appendChild(kv); printRaw(box);
-  print('╚═════════════════════════════════════════════════╝', 'c-cyan');
-  print('TIP: ↑/↓ history · TAB autocomplete · 🎤 voice · tap chips below', 'c-dim');
-  print('');
-}
-
-/* ============================================================
-   7. COMMANDS
-   ============================================================ */
-async function cmdRoot(){
-  if (STATE.root){ print('[!] You are already ROOT. Absolute power confirmed.', 'c-amber'); return; }
-  print('');
-  print('[*] Requesting privilege escalation …', 'c-amber');
-  await progress('  kernel exploit  CVE-2026-0x1F ', 1100, 'c-amber');
-  await progress('  bypassing SELinux policy      ', 900,  'c-amber');
-  await progress('  patching /etc/shadow          ', 800,  'c-amber');
-  SFX.ok();
-  glitchBurst(400);
-  STATE.root = true; STATE.user = 'root';
-  $('#ps1').textContent = 'root@security:~#';
-  print('');
-  printRaw(el('pre','line banner c-mag', esc(String.raw`
-   ██████   ██████   ██████  ████████
-   ██   ██ ██    ██ ██    ██    ██
-   ██████  ██    ██ ██    ██    ██
-   ██   ██ ██    ██ ██    ██    ██
-   ██   ██  ██████   ██████     ██
-        A C C E S S   G R A N T E D`)));
-  print('');
-  print('[✔] UID=0  GID=0  groups=0(root)  — full system control unlocked.', 'c-green bold');
-  print('[✔] All restricted modules are now available.', 'c-green');
-  speak('Root access granted. Welcome back, operator.');
-  print('');
-}
-
-function cmdMatrix(){
-  STATE.rainBoost = !STATE.rainBoost;
-  document.body.classList.toggle('rain-boost', STATE.rainBoost);
-  if (STATE.rainBoost){
-    print('[MATRIX] Hyper-rain ENGAGED. Follow the white rabbit. 🐇', 'c-green bold');
-    print('         Digital rain density ▲ 240%   ·   glyph velocity ▲ 190%', 'c-dim');
-    SFX.ok(); speak('Matrix mode engaged.');
-  } else {
-    print('[MATRIX] Rain returned to ambient levels.', 'c-cyan');
-    SFX.blip();
-  }
-}
-
-function cmdClear(){ out.innerHTML = ''; SFX.blip(); }
-
-async function cmdHack(target){
-  if (STATE.busy) return;
-  STATE.busy = true; input.disabled = true;
-  const host = target || 'mainframe.darknet.onion';
-  const ip = `${10+((Math.random()*180)|0)}.${(Math.random()*255)|0}.${(Math.random()*255)|0}.${1+((Math.random()*253)|0)}`;
-  document.body.classList.add('alarm'); STATE.alarm = true;
-  SFX.alarm();
-  print('');
-  await typeLine(`[⚡] INITIATING CINEMATIC INTRUSION SEQUENCE → ${host}`, 'c-red bold', 8);
-  print(`[i] resolved ${host} → ${ip}`, 'c-dim');
-  await sleep(200);
-
-  const phases = [
-    ['  [1/7] port scan  nmap -sS -T5     ', 900,  'c-cyan'],
-    ['  [2/7] fingerprint stack           ', 700,  'c-cyan'],
-    ['  [3/7] injecting payload           ', 1100, 'c-amber'],
-    ['  [4/7] cracking sha512 hashes      ', 1300, 'c-amber'],
-    ['  [5/7] bypassing firewall (WAF)    ', 900,  'c-mag'],
-    ['  [6/7] escalating to kernel ring 0 ', 1000, 'c-mag'],
-    ['  [7/7] wiping forensic traces      ', 800,  'c-red']
-  ];
-  const chatter = [
-    'OPEN  22/tcp   ssh      OpenSSH 9.6',
-    'OPEN  443/tcp  https    nginx/1.27.2',
-    'OPEN  3306/tcp mysql    8.0.39  ← weak creds',
-    'FOUND admin:$6$rounds=656000$…  cracked in 0.42s',
-    'ACL bypass token issued  ttl=900s',
-    'shell spawned: /bin/bash  uid=0(root)',
-    'logs shredded: /var/log/auth.log  (7 passes)'
-  ];
-  for (let i=0;i<phases.length;i++){
-    await progress(phases[i][0], phases[i][1], phases[i][2]);
-    print('        ' + chatter[i], 'c-dim');
-    if (i===3 || i===5) glitchBurst(350);
-  }
-  await sleep(250);
-  SFX.breach(); glitchBurst(800);
-  print('');
-  const b = el('pre','line banner c-red', esc(String.raw`
-   ▄▄▄· ▄▄· ▄▄· ▄▄▄ ..▄▄ · .▄▄ ·
-  ▐█ ▀█ ▐█ ▌▪▐█ ▌▪▀▄.▀·▐█ ▀. ▐█ ▀.
-  ▄█▀▀█ ██ ▄▄██ ▄▄▐▀▀▪▄▄▀▀▀█▄▄▀▀▀█▄
-  ▐█ ▪▐▌▐███▌▐███▌▐█▄▄▌▐█▄▪▐█▐█▄▪▐█
-   ▀  ▀ ·▀▀▀ ·▀▀▀  ▀▀▀  ▀▀▀▀  ▀▀▀▀
-        G R A N T E D`));
-  printRaw(b);
-  print('');
-  print(`[✔] TARGET COMPROMISED  ·  ${host} (${ip})`, 'c-green bold');
-  print('[✔] 4,218 records exfiltrated  ·  0 alerts triggered  ·  0 traces left', 'c-green');
-  print('[i] Disclaimer: this is a 100% fictional cinematic simulation. 🎬', 'c-dim');
-  print('');
-  speak('Access granted. Target compromised.');
-  document.body.classList.remove('alarm'); STATE.alarm = false;
-  STATE.busy = false; input.disabled = false; input.focus();
-}
-
-const ENGINES = [
-  ['Google',     'https://www.google.com/search?q='],
-  ['Bing',       'https://www.bing.com/search?q='],
-  ['DuckDuckGo', 'https://duckduckgo.com/?q='],
-  ['Brave',      'https://search.brave.com/search?q='],
-  ['Startpage',  'https://www.startpage.com/sp/search?query='],
-  ['Perplexity', 'https://www.perplexity.ai/search?q=']
-];
-function cmdSearch(q){
-  if (!q){ print('usage: search <query>    e.g. search zero day exploits', 'c-amber'); SFX.err(); return; }
-  const enc = encodeURIComponent(q);
-  print(`[SEARCH] deep-web query → "${esc(q)}"`, 'c-cyan');
-  const box = el('div','box');
-  ENGINES.forEach(([n,u]) => {
-    const l = el('div','line');
-    l.innerHTML = `  ▸ <a href="${u}${enc}" target="_blank" rel="noopener noreferrer">${n}</a>`;
-    box.appendChild(l);
-  });
-  printRaw(box);
-  print('[i] Opening Google in a new tab …', 'c-dim');
-  SFX.ok();
-  const w = window.open('https://www.google.com/search?q=' + enc, '_blank', 'noopener');
-  if (!w) print('[!] Popup blocked — use the links above.', 'c-amber');
-}
-function cmdYoutube(q){
-  if (!q){ print('usage: youtube <query>    e.g. youtube cyberpunk synthwave', 'c-amber'); SFX.err(); return; }
-  const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
-  print(`[YOUTUBE] streaming query → "${esc(q)}"`, 'c-red');
-  const l = el('div','line'); l.innerHTML = `  ▸ <a href="${url}" target="_blank" rel="noopener noreferrer">${esc(url)}</a>`;
-  printRaw(l); SFX.ok();
-  const w = window.open(url, '_blank', 'noopener');
-  if (!w) print('[!] Popup blocked — use the link above.', 'c-amber');
-}
-function cmdCalc(expr){
-  if (!expr){ print('usage: calc <expression>   e.g. calc (12+8)*3^2  ·  calc sqrt(144)+pi', 'c-amber'); SFX.err(); return; }
-  try{
-    const r = calcEval(expr);
-    if (!isFinite(r)) throw new Error('result is not finite');
-    const pretty = Number.isInteger(r) ? r.toString() : parseFloat(r.toPrecision(12)).toString();
-    print(`  ${esc(expr)}`, 'c-dim');
-    print(`  = ${pretty}`, 'c-cyan bold');
-    SFX.ok(); speak('Result ' + pretty);
-  }catch(e){
-    print('[MATH ERROR] ' + esc(e.message), 'c-red'); SFX.err();
-  }
-}
-function fmtUptime(){
-  const s = Math.floor((Date.now()-STATE.start)/1000);
-  const h = String(Math.floor(s/3600)).padStart(2,'0');
-  const m = String(Math.floor(s%3600/60)).padStart(2,'0');
-  const ss = String(s%60).padStart(2,'0');
-  return (h!=='00' ? h+':' : '') + m + ':' + ss;
-}
-function cmdTime(){
-  const d = new Date();
-  const box = el('div','box'), kv = el('div','kv');
-  const rows = [
-    ['LOCAL TIME',  d.toLocaleTimeString()],
-    ['LOCAL DATE',  d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'})],
-    ['UTC',         d.toUTCString()],
-    ['ISO 8601',    d.toISOString()],
-    ['UNIX EPOCH',  Math.floor(d.getTime()/1000)],
-    ['TIMEZONE',    (Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown') + '  (UTC' + (-d.getTimezoneOffset()>=0?'+':'') + (-d.getTimezoneOffset()/60) + ')'],
-    ['SESSION UP',  fmtUptime()]
-  ];
-  rows.forEach(([k,v]) => { kv.appendChild(el('div','k',esc(k))); kv.appendChild(el('div','v',esc(v))); });
-  box.appendChild(kv); printRaw(box); SFX.blip();
-}
-async function cmdSysInfo(){
-  const n = navigator, s = screen;
-  await progress('  scanning host environment ', 700, 'c-cyan');
-  const conn = n.connection || {};
-  const gl = (() => { try{ const c=document.createElement('canvas'); const g=c.getContext('webgl'); const d=g.getExtension('WEBGL_debug_renderer_info');
-      return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : (g ? 'WebGL available' : 'n/a'); }catch(e){ return 'n/a'; } })();
-  const rows = [
-    ['OPERATOR',   (STATE.root ? 'root (UID 0)' : 'guest (UID 1000)')],
-    ['HOSTNAME',   location.hostname || 'localhost'],
-    ['ORIGIN',     location.origin],
-    ['PROTOCOL',   location.protocol + '  ' + (location.protocol==='https:' ? '🔒 ENCRYPTED' : '⚠ INSECURE')],
-    ['PLATFORM',   n.platform || 'unknown'],
-    ['USER AGENT', n.userAgent],
-    ['LANGUAGES',  (n.languages||[n.language]).join(', ')],
-    ['CPU THREADS',(n.hardwareConcurrency || '?') + ' logical cores'],
-    ['DEVICE RAM', (n.deviceMemory ? n.deviceMemory + ' GB (approx)' : 'restricted')],
-    ['GPU',        gl],
-    ['SCREEN',     `${s.width}×${s.height}  ·  viewport ${innerWidth}×${innerHeight}  ·  DPR ${devicePixelRatio}`],
-    ['COLOR DEPTH',s.colorDepth + '-bit'],
-    ['TOUCH',      (('ontouchstart' in window) || n.maxTouchPoints>0) ? 'yes (' + (n.maxTouchPoints||1) + ' points)' : 'no'],
-    ['NETWORK',    (conn.effectiveType ? conn.effectiveType.toUpperCase() + '  ~' + (conn.downlink||'?') + ' Mb/s  RTT ' + (conn.rtt||'?') + 'ms' : 'metrics restricted') + '  ·  ' + (n.onLine ? 'ONLINE' : 'OFFLINE')],
-    ['COOKIES',    n.cookieEnabled ? 'enabled' : 'disabled'],
-    ['AUDIO CORE', AC ? (AC.sampleRate/1000).toFixed(1) + ' kHz · ' + AC.state : 'idle'],
-    ['SPEECH API', SR ? 'available ✔' : 'unsupported ✘'],
-    ['TTS ENGINE', ('speechSynthesis' in window) ? 'available ✔' : 'unsupported ✘'],
-    ['UPTIME',     fmtUptime()]
-  ];
-  const box = el('div','box'), kv = el('div','kv');
-  rows.forEach(([k,v]) => { kv.appendChild(el('div','k',esc(k))); kv.appendChild(el('div','v',esc(v))); });
-  box.appendChild(kv); printRaw(box);
-  print('[✔] host scan complete — ' + rows.length + ' vectors profiled', 'c-green');
-  SFX.ok();
-}
-
-/* ============================================================
-   8. DISPATCHER
-   ============================================================ */
-const COMMANDS = {
-  help: cmdHelp,
-  '?': cmdHelp,
-  root: cmdRoot,
-  sudo: cmdRoot,
-  matrix: cmdMatrix,
-  clear: cmdClear,
-  cls: cmdClear,
-  hack: (a) => cmdHack(a),
-  search: (a) => cmdSearch(a),
-  google: (a) => cmdSearch(a),
-  youtube: (a) => cmdYoutube(a),
-  yt: (a) => cmdYoutube(a),
-  calc: (a) => cmdCalc(a),
-  time: cmdTime,
-  date: cmdTime,
-  system_info: cmdSysInfo,
-  sysinfo: cmdSysInfo,
-  neofetch: cmdSysInfo,
-  banner: printBanner,
-  whoami: () => {
-    print(STATE.root ? 'root' : 'guest', 'c-cyan bold');
-    print(STATE.root ? 'privilege: UID 0 · unrestricted' : "privilege: limited — run 'root' to escalate", 'c-dim');
-  },
-  echo: (a) => print(esc(a || ''), 'c-white'),
-  history: () => {
-    if (!STATE.history.length) return print('(history empty)', 'c-dim');
-    STATE.history.forEach((h,i) => print(String(i+1).padStart(4,' ') + '  ' + esc(h), 'c-dim'));
-  },
-  voice: () => { startVoice(); },
-  sound: () => toggleSound(),
-  fx: () => {
-    STATE.fx = !STATE.fx;
-    document.body.classList.toggle('no-fx', !STATE.fx);
-    print('[FX] CRT scanlines & glitch effects ' + (STATE.fx ? 'ENABLED' : 'DISABLED'), 'c-cyan');
-    SFX.blip();
-  },
-  exit: () => {
-    print('[SESSION] closing secure channel …', 'c-amber');
-    setTimeout(()=>{ glitchBurst(500); out.innerHTML=''; print('CONNECTION TERMINATED.', 'c-red bold');
-      print('Refresh the page to re-establish the link.', 'c-dim'); input.disabled = true; SFX.err(); }, 700);
-  },
-  ls: () => print('exploits/   payloads/   wordlists/   logs/   README.md   .secrets', 'c-cyan'),
-  cat: (a) => a === '.secrets'
-      ? print('cat: .secrets: Permission denied' + (STATE.root ? ' … just kidding, root.\n  ROOT_KEY=0xC0FFEE_DEADBEEF_1337' : ''), STATE.root ? 'c-mag' : 'c-red')
-      : print('cat: ' + esc(a||'') + ': No such file or directory', 'c-red'),
-  pwd: () => print('/home/' + (STATE.root ? 'root' : 'guest'), 'c-cyan')
-};
-
-async function run(raw, fromVoice=false){
-  const line = String(raw || '').trim();
-  const prompt = el('div','line');
-  prompt.innerHTML = `<span class="c-mag bold">${STATE.root?'root':'guest'}@security</span><span class="c-dim">:~$</span> <span class="c-white">${esc(line)}</span>` +
-                     (fromVoice ? ' <span class="c-mag">🎤</span>' : '');
-  printRaw(prompt);
-  if (!line) return;
-  STATE.history.push(line); STATE.hIdx = STATE.history.length;
-
-  const sp = line.indexOf(' ');
-  const name = (sp === -1 ? line : line.slice(0, sp)).toLowerCase();
-  const args = sp === -1 ? '' : line.slice(sp+1).trim();
-
-  const fn = COMMANDS[name];
-  if (!fn){
-    SFX.err(); glitchBurst(280);
-    print(`command not found: ${esc(name)}`, 'c-red');
-    const guess = Object.keys(COMMANDS).find(k => k.startsWith(name.slice(0,2)) && name.length>1);
-    if (guess) print(`did you mean: ${guess} ?`, 'c-amber');
-    print("type 'help' to list all available commands.", 'c-dim');
-    return;
-  }
-  try{ await fn(args); }
-  catch(e){ print('[RUNTIME ERROR] ' + esc(e.message), 'c-red'); SFX.err(); }
-  scroll();
-}
-
-/* ============================================================
-   9. INPUT HANDLING
-   ============================================================ */
-input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter'){
-    const v = input.value; input.value = '';
-    SFX.enter(); run(v);
-  } else if (e.key === 'ArrowUp'){
-    e.preventDefault();
-    if (STATE.hIdx > 0){ STATE.hIdx--; input.value = STATE.history[STATE.hIdx]; }
-  } else if (e.key === 'ArrowDown'){
-    e.preventDefault();
-    if (STATE.hIdx < STATE.history.length-1){ STATE.hIdx++; input.value = STATE.history[STATE.hIdx]; }
-    else { STATE.hIdx = STATE.history.length; input.value = ''; }
-  } else if (e.key === 'Tab'){
-    e.preventDefault();
-    const p = input.value.toLowerCase();
-    const hits = Object.keys(COMMANDS).filter(k => k.startsWith(p) && p);
-    if (hits.length === 1){ input.value = hits[0] + ' '; SFX.blip(); }
-    else if (hits.length > 1){ print(hits.join('   '), 'c-dim'); SFX.blip(); }
-  } else if (e.key === 'l' && e.ctrlKey){ e.preventDefault(); cmdClear(); }
-  else { SFX.key(); }
-});
-document.addEventListener('click', (e) => {
-  if (e.target.closest('button') || e.target.closest('a') || window.getSelection().toString()) return;
-  if (STATE.booted) input.focus();
-});
-
-/* chips */
-const CHIPS = [
-  ['help','help'],['root','root'],['💀 hack','hack'],['matrix','matrix'],
-  ['system_info','system_info'],['time','time'],['calc 2^10','calc 2^10'],
-  ['search AI','search artificial intelligence'],['youtube','youtube cyberpunk synthwave'],
-  ['whoami','whoami'],['fx','fx'],['clear','clear']
-];
-const chipsEl = $('#chips');
-CHIPS.forEach(([label, cmd]) => {
-  const b = el('button','chip' + (cmd==='hack'||cmd==='root' ? ' hot' : ''), esc(label));
-  b.addEventListener('click', () => { SFX.enter(); run(cmd); input.focus(); });
-  chipsEl.appendChild(b);
-});
-
-/* toolbar buttons */
-micBtn.addEventListener('click', () => { ac(); startVoice(); });
-const sndBtn = $('#sndBtn');
-function toggleSound(){
-  STATE.sound = !STATE.sound;
-  sndBtn.textContent = STATE.sound ? '🔊' : '🔇';
-  sndBtn.classList.toggle('off', !STATE.sound);
-  if (!STATE.sound && 'speechSynthesis' in window) speechSynthesis.cancel();
-  print('[AUDIO] sound engine ' + (STATE.sound ? 'ONLINE' : 'MUTED'), 'c-cyan');
-  if (STATE.sound) SFX.ok();
-}
-sndBtn.addEventListener('click', () => { ac(); toggleSound(); });
-
-/* status bar tickers */
-setInterval(() => {
-  $('#clock').textContent = new Date().toLocaleTimeString('en-GB');
-  $('#uptime').textContent = fmtUptime();
-}, 1000);
-setInterval(() => {
-  const base = STATE.busy ? 60 : (STATE.rainBoost ? 28 : 8);
-  $('#cpu').textContent = (base + Math.floor(Math.random()*22)) + '%';
-}, 1800);
-
-/* ============================================================
-   10. BOOT SEQUENCE
-   ============================================================ */
-const BOOT_LINES = [
-  ['[ BIOS ] ULTIMATE ROOT SECURITY  ·  UEFI v3.0.7', 'c-dim'],
-  ['[  OK  ] mounting /dev/neural0 → encrypted core', 'c-green'],
-  ['[  OK  ] loading matrix rain driver  (canvas2d)', 'c-green'],
-  ['[  OK  ] initializing Web Audio synth engine', 'c-green'],
-  ['[  OK  ] arming CRT scanline emulator', 'c-green'],
-  ['[  OK  ] calibrating neon glow shaders', 'c-green'],
-  ['[  OK  ] Web Speech API voice bridge attached', 'c-green'],
-  ['[ WARN ] intrusion countermeasures: PASSIVE', 'c-amber'],
-  ['[  OK  ] AI assistant core  ·  ONLINE', 'c-cyan']
-];
-
-async function boot(){
-  STATE.booted = true;
-  SFX.boot();
-  printBanner();
-  print('');
-  for (const [t,c] of BOOT_LINES){ print(t, c); SFX.scan(); await sleep(140); }
-  print('');
-  await progress('  establishing secure tunnel ', 900, 'c-cyan');
-  print('');
-  await typeLine('SYSTEM READY. Welcome, operator.', 'c-white bold', 22);
-  print("Type 'help' for the command matrix  ·  tap 🎤 for voice control.", 'c-dim');
-  print('');
-  speak('System ready. Welcome, operator.');
-  input.focus();
-}
-
-$('#enterBtn').addEventListener('click', () => {
-  ac(); initVoice();
-  bootEl.classList.add('gone');
-  setTimeout(() => { bootEl.remove(); boot(); }, 400);
-});
-addEventListener('keydown', (e) => {
-  if (!STATE.booted && (e.key === 'Enter' || e.key === ' ')) $('#enterBtn').click();
-});
-
-/* keep input visible when mobile keyboard opens */
-if (window.visualViewport){
-  visualViewport.addEventListener('resize', () => { setTimeout(scroll, 60); });
-}
-input.addEventListener('focus', () => setTimeout(scroll, 220));
-</script>
+  <!-- App modules (load order matters) -->
+  <script src="assets/js/queenie.js"></script>
+  <script src="assets/js/orb.js"></script>
+  <script src="assets/js/audio.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
