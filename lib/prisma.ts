@@ -1,3 +1,4 @@
-// Database adapter boundary. Run `npx prisma generate` after configuring DATABASE_URL.
-// Kept intentionally lazy so the public UI can build without a database connection.
-export const prisma = null as unknown as { [key: string]: unknown };
+// Lazy Prisma client singleton; avoids requiring generated artifacts during static builds.
+let client: any;
+function getClient(){ if(!client){ const {PrismaClient}=require('@prisma/client'); client=new PrismaClient(); } return client; }
+export const prisma = new Proxy({}, { get: (_target, property) => getClient()[property] }) as any;
