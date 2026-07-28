@@ -1,0 +1,2 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+:root{background:#08090d;color:#f5f5f5}*{box-sizing:border-box}body{margin:0;background:#08090d;font-family:Arial,Helvetica,sans-serif}.scrollbar-hide::-webkit-scrollbar{display:none}.scrollbar-hide{scrollbar-width:none}.hero-gradient{background:linear-gradient(90deg,#08090d 8%,rgba(8,9,13,.82) 36%,rgba(8,9,13,.18) 75%),linear-gradient(0deg,#08090d 0%,transparent 35%)}
