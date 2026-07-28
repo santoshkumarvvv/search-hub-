@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Play } from 'lucide-react';
+import { Mic, Play } from 'lucide-react';
 import type { Anime } from '@/lib/types';
 
 export default function EpisodeList({
@@ -10,16 +10,24 @@ export default function EpisodeList({
   anime: Anime;
   currentEpisode?: number;
 }) {
+  const dubbedCount = anime.episodes.filter((e) =>
+    e.audio.some((t) => t.lang === 'hindi'),
+  ).length;
+
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold">एपिसोड</h2>
-        <span className="text-xs text-muted">{anime.episodes.length} कुल</span>
+        <span className="text-xs text-muted">
+          {dubbedCount}/{anime.episodes.length} हिंदी में
+        </span>
       </div>
 
       <ul className="space-y-3">
         {anime.episodes.map((ep) => {
           const active = ep.number === currentEpisode;
+          const hasHindi = ep.audio.some((t) => t.lang === 'hindi');
+
           return (
             <li key={ep.number}>
               <Link
@@ -50,15 +58,26 @@ export default function EpisodeList({
                 </div>
 
                 <div className="min-w-0 flex-1 py-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-accent">EP {ep.number}</span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs font-bold text-accent">एपिसोड {ep.number}</span>
+                    {hasHindi ? (
+                      <span className="flex items-center gap-1 rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                        <Mic size={9} /> हिंदी
+                      </span>
+                    ) : (
+                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-muted">
+                        डब जल्द
+                      </span>
+                    )}
                     {active && (
                       <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold">
                         चल रहा है
                       </span>
                     )}
                   </div>
-                  <h3 className="mt-1 truncate text-sm font-semibold text-white">{ep.title}</h3>
+                  <h3 className="mt-1 truncate text-sm font-semibold text-white">
+                    {ep.titleHindi ?? ep.title}
+                  </h3>
                   <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted">
                     {ep.synopsis}
                   </p>

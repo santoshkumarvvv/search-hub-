@@ -16,7 +16,7 @@ export default function WatchlistPage() {
         <div>
           <h1 className="flex items-center gap-2.5 text-3xl font-black tracking-tight sm:text-4xl">
             <Bookmark size={26} className="text-accent" />
-            मेरी Watchlist
+            मेरी लिस्ट
           </h1>
           <p className="mt-2 text-sm text-muted">
             {hydrated ? `${items.length} सीरीज़ सहेजी गई` : 'लोड हो रहा है...'}
@@ -45,10 +45,10 @@ export default function WatchlistPage() {
       ) : (
         <div className="mt-8">
           <EmptyState
-            title="Watchlist खाली है"
+            title="लिस्ट खाली है"
             description="किसी भी सीरीज़ पर + बटन दबाकर उसे यहाँ सहेजें और बाद में देखें।"
-            ctaLabel="सीरीज़ ब्राउज़ करें"
-            ctaHref="/browse"
+            ctaLabel="हिंदी डब सीरीज़ देखें"
+            ctaHref="/browse?dub=dubbed"
           />
         </div>
       )}

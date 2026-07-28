@@ -5,20 +5,23 @@ import { GENRES } from '@/lib/genres';
 import { getByGenre } from '@/lib/data';
 
 export const metadata: Metadata = {
-  title: 'श्रेणियाँ',
-  description: 'सभी anime श्रेणियाँ ब्राउज़ करें — action, romance, mecha, horror और बहुत कुछ।',
+  title: 'श्रेणियाँ — एनिमे हिंदी डब',
+  description:
+    'सभी एनिमे श्रेणियाँ हिंदी डब में ब्राउज़ करें — एक्शन, रोमांस, मेका, हॉरर और बहुत कुछ।',
 };
 
 export default function GenresPage() {
   return (
     <div className="container-page pb-10 pt-28">
       <h1 className="text-3xl font-black tracking-tight sm:text-4xl">श्रेणियाँ</h1>
-      <p className="mt-2 text-sm text-muted">अपनी पसंद की शैली चुनें और नई सीरीज़ खोजें।</p>
+      <p className="mt-2 text-sm text-muted">अपनी पसंद की शैली चुनें और नई हिंदी डब सीरीज़ खोजें।</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {GENRES.map((g) => {
           const items = getByGenre(g.slug);
+          const dubbed = items.filter((a) => a.dubStatus === 'dubbed').length;
           const cover = items[0]?.banner;
+
           return (
             <Link
               key={g.slug}
@@ -37,8 +40,10 @@ export default function GenresPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-5">
                 <span className="text-2xl">{g.emoji}</span>
-                <h2 className="mt-1 text-lg font-bold text-white">{g.name}</h2>
-                <p className="text-xs text-muted">{items.length} सीरीज़</p>
+                <h2 className="mt-1 text-lg font-bold text-white">{g.nameHindi}</h2>
+                <p className="text-xs text-muted">
+                  {items.length} सीरीज़ · {dubbed} हिंदी डब
+                </p>
               </div>
             </Link>
           );

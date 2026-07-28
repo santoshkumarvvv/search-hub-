@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
-import type { Anime } from '@/lib/types';
+import type { Anime, DubStatus } from '@/lib/types';
 import { GENRES } from '@/lib/genres';
 import AnimeCard from './AnimeCard';
 import EmptyState from './EmptyState';
 import { cn } from '@/lib/utils';
 
 type Sort = 'trending' | 'new' | 'rating' | 'az';
+type DubFilter = 'all' | DubStatus;
 
 const SORTS: { id: Sort; label: string }[] = [
   { id: 'trending', label: 'ट्रेंडिंग' },
@@ -17,20 +18,32 @@ const SORTS: { id: Sort; label: string }[] = [
   { id: 'az', label: 'A–Z' },
 ];
 
+const DUBS: { id: DubFilter; label: string }[] = [
+  { id: 'all', label: 'सभी' },
+  { id: 'dubbed', label: 'हिंदी डब' },
+  { id: 'in-progress', label: 'डब जारी' },
+  { id: 'announced', label: 'डब जल्द' },
+];
+
 export default function BrowseGrid({
   items,
   initialSort = 'trending',
+  initialDub = 'all',
 }: {
   items: Anime[];
   initialSort?: Sort;
+  initialDub?: DubFilter;
 }) {
   const [sort, setSort] = useState<Sort>(initialSort);
   const [genre, setGenre] = useState<string>('all');
+  const [dub, setDub] = useState<DubFilter>(initialDub);
 
   const visible = useMemo(() => {
-    const filtered = genre === 'all' ? items : items.filter((a) => a.genres.includes(genre));
-    const sorted = [...filtered];
+    let filtered = items;
+    if (genre !== 'all') filtered = filtered.filter((a) => a.genres.includes(genre));
+    if (dub !== 'all') filtered = filtered.filter((a) => a.dubStatus === dub);
 
+    const sorted = [...filtered];
     switch (sort) {
       case 'new':
         sorted.sort((a, b) => b.year - a.year || b.rating - a.rating);
@@ -39,13 +52,15 @@ export default function BrowseGrid({
         sorted.sort((a, b) => b.rating - a.rating);
         break;
       case 'az':
-        sorted.sort((a, b) => a.title.localeCompare(b.title));
+        sorted.sort((a, b) =>
+          (a.titleHindi ?? a.title).localeCompare(b.titleHindi ?? b.title, 'hi'),
+        );
         break;
       default:
         sorted.sort((a, b) => Number(b.trending) - Number(a.trending) || b.views - a.views);
     }
     return sorted;
-  }, [items, genre, sort]);
+  }, [items, genre, sort, dub]);
 
   return (
     <>
@@ -54,13 +69,27 @@ export default function BrowseGrid({
           <SlidersHorizontal size={14} /> फ़िल्टर
         </div>
 
+        {/* dub status — the primary filter for a Hindi dub site */}
+        <div className="flex flex-wrap items-center gap-2">
+          {DUBS.map((d) => (
+            <button
+              key={d.id}
+              type="button"
+              onClick={() => setDub(d.id)}
+              className={cn('chip', dub === d.id && 'chip-active')}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+
         <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           <button
             type="button"
             onClick={() => setGenre('all')}
             className={cn('chip shrink-0', genre === 'all' && 'chip-active')}
           >
-            सभी
+            सभी श्रेणियाँ
           </button>
           {GENRES.map((g) => (
             <button
@@ -69,7 +98,7 @@ export default function BrowseGrid({
               onClick={() => setGenre(g.slug)}
               className={cn('chip shrink-0', genre === g.slug && 'chip-active')}
             >
-              {g.emoji} {g.name}
+              {g.emoji} {g.nameHindi}
             </button>
           ))}
         </div>
@@ -99,7 +128,7 @@ export default function BrowseGrid({
         <div className="mt-7">
           <EmptyState
             title="कोई परिणाम नहीं"
-            description="इस फ़िल्टर के लिए कुछ नहीं मिला। कोई दूसरी श्रेणी आज़माएँ।"
+            description="इस फ़िल्टर के लिए कुछ नहीं मिला। कोई दूसरी श्रेणी या डब स्टेटस आज़माएँ।"
             ctaLabel="फ़िल्टर हटाएँ"
             ctaHref="/browse"
           />

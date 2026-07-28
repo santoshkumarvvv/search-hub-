@@ -1,18 +1,18 @@
 import type { Genre } from './types';
 
 export const GENRES: Genre[] = [
-  { slug: 'action', name: 'Action', emoji: '⚔️' },
-  { slug: 'adventure', name: 'Adventure', emoji: '🧭' },
-  { slug: 'fantasy', name: 'Fantasy', emoji: '🐉' },
-  { slug: 'sci-fi', name: 'Sci-Fi', emoji: '🛸' },
-  { slug: 'romance', name: 'Romance', emoji: '💗' },
-  { slug: 'comedy', name: 'Comedy', emoji: '😂' },
-  { slug: 'mystery', name: 'Mystery', emoji: '🕵️' },
-  { slug: 'sports', name: 'Sports', emoji: '🏐' },
-  { slug: 'slice-of-life', name: 'Slice of Life', emoji: '🍜' },
-  { slug: 'supernatural', name: 'Supernatural', emoji: '👻' },
-  { slug: 'mecha', name: 'Mecha', emoji: '🤖' },
-  { slug: 'horror', name: 'Horror', emoji: '🩸' },
+  { slug: 'action', name: 'Action', nameHindi: 'एक्शन', emoji: '⚔️' },
+  { slug: 'adventure', name: 'Adventure', nameHindi: 'एडवेंचर', emoji: '🧭' },
+  { slug: 'fantasy', name: 'Fantasy', nameHindi: 'फैंटेसी', emoji: '🐉' },
+  { slug: 'sci-fi', name: 'Sci-Fi', nameHindi: 'साई-फाई', emoji: '🛸' },
+  { slug: 'romance', name: 'Romance', nameHindi: 'रोमांस', emoji: '💗' },
+  { slug: 'comedy', name: 'Comedy', nameHindi: 'कॉमेडी', emoji: '😂' },
+  { slug: 'mystery', name: 'Mystery', nameHindi: 'रहस्य', emoji: '🕵️' },
+  { slug: 'sports', name: 'Sports', nameHindi: 'स्पोर्ट्स', emoji: '🏐' },
+  { slug: 'slice-of-life', name: 'Slice of Life', nameHindi: 'स्लाइस ऑफ लाइफ', emoji: '🍜' },
+  { slug: 'supernatural', name: 'Supernatural', nameHindi: 'अलौकिक', emoji: '👻' },
+  { slug: 'mecha', name: 'Mecha', nameHindi: 'मेका', emoji: '🤖' },
+  { slug: 'horror', name: 'Horror', nameHindi: 'हॉरर', emoji: '🩸' },
 ];
 
 export function genreBySlug(slug: string): Genre | undefined {

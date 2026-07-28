@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAll } from '@/lib/data';
 import { GENRES } from '@/lib/genres';
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kitsune-stream.vercel.app';
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://anime-hindi-dub.vercel.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

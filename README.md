@@ -1,16 +1,27 @@
-# 狐 KitsuneStream — Modern Anime Streaming Template
+# 🎙️ एनिमेहिंदीडब — Anime Hindi Dub Streaming Template
 
-A fast, dark, anime-styled streaming frontend built with **Next.js 15 (App Router)**, **TypeScript** and **Tailwind CSS**.
+A fast, dark, anime-styled **Hindi dub** streaming frontend built with **Next.js 15 (App Router)**, **TypeScript** and **Tailwind CSS**.
 
-Responsive homepage with a featured hero carousel, a custom video player that handles **YouTube / Vimeo embeds and direct MP4**, instant search, genre browsing, a trending section, and a localStorage watchlist with "continue watching".
+Hindi-first UI with dub-status badges, a per-episode **audio track switcher** (हिंदी / English / Japanese), a custom video player handling **YouTube / Vimeo embeds and direct MP4**, instant search with a "सिर्फ़ हिंदी डब" filter, genre browsing, and a localStorage watchlist with "continue watching".
+
+👉 **Deploying? Read [`DEPLOY.md`](./DEPLOY.md)** — step-by-step Vercel/Netlify instructions in Hindi.
 
 ---
 
-## ⚠️ About the demo content
+## ⚠️ About the demo content — read before launch
 
-All series in `lib/data.ts` are **original fictional titles written for this template** — they are not real licensed anime. Artwork is free Unsplash photography and the video sources are public open-license sample files (Blender Foundation open movies and Google's public sample media bucket).
+All series in `lib/data.ts` are **original fictional titles written for this template** — they are not real anime. Artwork is free Unsplash photography and video sources are public open-license sample files (Blender Foundation open movies and Google's public sample media bucket). This keeps the template safe to deploy as-is.
 
-**Before you go live, replace `lib/data.ts` with your own catalog and only embed video you hold the rights to.** Streaming copyrighted anime without a license is illegal in most countries.
+**Hindi dubs of real anime are copyrighted.** Titles like Demon Slayer, Naruto or One Piece have their Hindi distribution rights held by Crunchyroll, Netflix, Sony/Animax, Toei and others. Hosting or embedding those without a license is copyright infringement — it leads to DMCA takedowns, hosting account suspension, and legal exposure.
+
+Legal ways to run this site:
+
+1. **Your own original content** — material you created or dubbed yourself
+2. **Licensed content** — buy Hindi distribution rights from the distributor
+3. **Official embeds** — embed *official* YouTube channels (Muse India, Ani-One, etc.); the player already supports YouTube
+4. **Discovery/affiliate site** — host nothing, link out to official platforms
+
+The codebase supports all four — you only ever change `lib/data.ts`.
 
 ---
 
@@ -75,6 +86,9 @@ Requires Node.js **18.18+** (20 LTS recommended).
 │   ├── Row.tsx                   # Horizontal scroller with edge arrows
 │   ├── AnimeCard.tsx             # Poster card w/ hover overlay
 │   ├── VideoPlayer.tsx           # YouTube / Vimeo / MP4 player
+│   ├── WatchExperience.tsx       # Player + audio-track switching
+│   ├── AudioSwitcher.tsx         # हिंदी / English / Japanese toggle
+│   ├── DubBadge.tsx              # Dub-status badge
 │   ├── EpisodeList.tsx
 │   ├── ContinueWatching.tsx      # Resume from saved positions
 │   ├── BrowseGrid.tsx            # Client-side filter + sort
@@ -86,13 +100,39 @@ Requires Node.js **18.18+** (20 LTS recommended).
 ├── hooks/useWatchlist.ts         # localStorage watchlist + cross-tab sync
 ├── lib/
 │   ├── data.ts                   # 👈 Demo catalog + selectors (replace this)
-│   ├── genres.ts
-│   ├── types.ts                  # Anime / Episode / VideoSource
+│   ├── genres.ts                 # Genres with Hindi names
+│   ├── types.ts                  # Anime / Episode / AudioTrack / DubStatus
 │   └── utils.ts                  # cn(), formatCount(), formatDuration()
+├── DEPLOY.md                     # 👈 Hindi deployment guide
+├── netlify.toml                  # Netlify config (plugin required)
 ├── next.config.ts                # Image domains + security headers
 ├── tailwind.config.ts            # Theme tokens & animations
 └── tsconfig.json                 # Strict TS, @/* path alias
 ```
+
+---
+
+## Hindi dub features
+
+| Feature | Where |
+| --- | --- |
+| Dub-status badge (हिंदी डब / डब जारी / डब जल्द) | every card, hero, detail page |
+| Audio switcher (हिंदी ⇄ English ⇄ Japanese) | below the player, Hindi preselected |
+| "हिंदी में देखें" button | jumps to the first Hindi-dubbed episode |
+| Per-series dub counter ("3/4 हिंदी में") | episode list header |
+| Missing-dub notice | watch page, when an episode has no Hindi track |
+| "सिर्फ़ हिंदी डब" filter | search page + browse dub filter |
+| Hindi-first rows | homepage: उपलब्ध / ताज़ा / डब जारी |
+| Hindi SEO | `lang="hi-IN"`, `og:locale=hi_IN`, Hindi titles, JSON-LD |
+
+Dub state is modelled per series **and** per episode, so a show can be partially dubbed:
+
+```ts
+dubStatus: 'dubbed' | 'in-progress' | 'announced' | 'subbed-only'
+```
+
+Each episode carries its own `audio[]` array — list the Hindi track first and the player
+selects it by default; episodes with no Hindi track show a notice instead.
 
 ---
 
@@ -122,11 +162,17 @@ type VideoSource =
 {
   number: 1,
   title: 'Episode title',
+  titleHindi: 'पहला एपिसोड',
   synopsis: 'Short description.',
-  durationLabel: '24 min',
+  durationLabel: '24 मिनट',
   thumbnail: 'https://.../thumb.jpg',
-  source: { kind: 'youtube', id: 'VIDEO_ID' },   // or vimeo / mp4
+  audio: [
+    // Hindi first — the player defaults to it
+    { lang: 'hindi',   source: { kind: 'youtube', id: 'VIDEO_ID' } },
+    { lang: 'english', source: { kind: 'mp4', url: 'https://.../ep1-en.mp4' } },
+  ],
   releasedAt: '2025-01-01',
+  dubbedAt: '2025-01-15',
 }
 ```
 

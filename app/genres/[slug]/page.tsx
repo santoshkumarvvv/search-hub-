@@ -21,9 +21,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const genre = genreBySlug(slug);
   if (!genre) return { title: 'नहीं मिला' };
+
   return {
-    title: `${genre.name} Anime`,
-    description: `सर्वश्रेष्ठ ${genre.name} anime सीरीज़ देखें।`,
+    title: `${genre.nameHindi} एनिमे हिंदी डब`,
+    description: `सर्वश्रेष्ठ ${genre.nameHindi} (${genre.name}) एनिमे हिंदी डब में ऑनलाइन देखें।`,
   };
 }
 
@@ -32,15 +33,22 @@ export default async function GenrePage({ params }: { params: Promise<{ slug: st
   const genre = genreBySlug(slug);
   if (!genre) notFound();
 
-  const items = getByGenre(slug).sort((a, b) => b.rating - a.rating);
+  // Hindi-dubbed titles surface first
+  const items = getByGenre(slug).sort(
+    (a, b) =>
+      Number(b.dubStatus === 'dubbed') - Number(a.dubStatus === 'dubbed') || b.rating - a.rating,
+  );
+  const dubbed = items.filter((a) => a.dubStatus === 'dubbed').length;
 
   return (
     <div className="container-page pb-10 pt-28">
       <div className="flex items-center gap-3">
         <span className="text-3xl">{genre.emoji}</span>
         <div>
-          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{genre.name}</h1>
-          <p className="mt-1 text-sm text-muted">{items.length} सीरीज़ उपलब्ध</p>
+          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{genre.nameHindi}</h1>
+          <p className="mt-1 text-sm text-muted">
+            {items.length} सीरीज़ · {dubbed} हिंदी डब में
+          </p>
         </div>
       </div>
 
@@ -51,7 +59,7 @@ export default async function GenrePage({ params }: { params: Promise<{ slug: st
             href={`/genres/${g.slug}`}
             className={cn('chip shrink-0', g.slug === slug && 'chip-active')}
           >
-            {g.emoji} {g.name}
+            {g.emoji} {g.nameHindi}
           </Link>
         ))}
       </div>

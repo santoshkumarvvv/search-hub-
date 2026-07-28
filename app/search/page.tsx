@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import SearchClient from '@/components/SearchClient';
 
 export const metadata: Metadata = {
-  title: 'खोजें',
-  description: 'नाम, स्टूडियो या शैली से anime खोजें।',
+  title: 'एनिमे हिंदी डब खोजें',
+  description: 'नाम, स्टूडियो या शैली से एनिमे हिंदी डब खोजें।',
 };
 
 export default function SearchPage() {

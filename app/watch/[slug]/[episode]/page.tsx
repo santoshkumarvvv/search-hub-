@@ -4,10 +4,12 @@ import { notFound } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Share2, Star } from 'lucide-react';
 import { getAll, getBySlug, getRelated } from '@/lib/data';
 import { genreBySlug } from '@/lib/genres';
+import { AUDIO_LABELS } from '@/lib/types';
 import { formatCount } from '@/lib/utils';
-import VideoPlayer from '@/components/VideoPlayer';
+import WatchExperience from '@/components/WatchExperience';
 import EpisodeList from '@/components/EpisodeList';
 import WatchlistButton from '@/components/WatchlistButton';
+import DubBadge from '@/components/DubBadge';
 import Row from '@/components/Row';
 
 export const dynamicParams = false;
@@ -28,9 +30,15 @@ export async function generateMetadata({
   const ep = anime?.episodes.find((e) => e.number === Number(episode));
   if (!anime || !ep) return { title: 'नहीं मिला' };
 
+  const name = anime.titleHindi ?? anime.title;
+  const epName = ep.titleHindi ?? ep.title;
+  const hasHindi = ep.audio.some((t) => t.lang === 'hindi');
+
   return {
-    title: `${anime.title} — EP ${ep.number}: ${ep.title}`,
-    description: ep.synopsis,
+    title: `${name} एपिसोड ${ep.number} ${hasHindi ? 'हिंदी डब' : ''} — ${epName}`,
+    description: `${name} एपिसोड ${ep.number} "${epName}" ${
+      hasHindi ? 'हिंदी डब में' : ''
+    } ऑनलाइन देखें। ${ep.synopsis}`,
     openGraph: { images: [{ url: ep.thumbnail }] },
   };
 }
@@ -48,50 +56,50 @@ export default async function WatchPage({
 
   const prev = anime.episodes.find((e) => e.number === current - 1);
   const next = anime.episodes.find((e) => e.number === current + 1);
+  const name = anime.titleHindi ?? anime.title;
 
   return (
     <div className="container-page pb-10 pt-24 sm:pt-28">
-      {/* breadcrumb */}
-      <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-xs text-muted">
-        <Link href="/" className="transition-colors hover:text-white">होम</Link>
-        <span>/</span>
-        <Link href={`/anime/${anime.slug}`} className="max-w-[45vw] truncate transition-colors hover:text-white">
-          {anime.title}
+      <nav aria-label="ब्रेडक्रम्ब" className="mb-4 flex items-center gap-1.5 text-xs text-muted">
+        <Link href="/" className="transition-colors hover:text-white">
+          होम
         </Link>
         <span>/</span>
-        <span className="text-gray-300">EP {ep.number}</span>
+        <Link
+          href={`/anime/${anime.slug}`}
+          className="max-w-[45vw] truncate transition-colors hover:text-white"
+        >
+          {name}
+        </Link>
+        <span>/</span>
+        <span className="text-gray-300">एपिसोड {ep.number}</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="min-w-0">
-          <VideoPlayer
-            source={ep.source}
-            title={`${anime.title} — Episode ${ep.number}`}
-            poster={ep.thumbnail}
-            resumeKey={`${anime.slug}-${ep.number}`}
-          />
+          <WatchExperience anime={anime} episode={ep} />
 
-          {/* title block */}
           <div className="mt-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-xs font-bold uppercase tracking-wider text-accent">
-                  Episode {ep.number} · {ep.durationLabel}
+                  एपिसोड {ep.number} · {ep.durationLabel}
                 </p>
                 <h1 className="mt-1.5 text-balance text-xl font-bold leading-snug sm:text-2xl">
-                  {ep.title}
+                  {ep.titleHindi ?? ep.title}
                 </h1>
+                {ep.titleHindi && <p className="mt-1 text-sm text-muted">{ep.title}</p>}
                 <Link
                   href={`/anime/${anime.slug}`}
                   className="mt-1 inline-block text-sm text-muted transition-colors hover:text-white"
                 >
-                  {anime.title}
+                  {name}
                 </Link>
               </div>
 
               <div className="flex items-center gap-2">
                 <WatchlistButton slug={anime.slug} className="px-4 py-2.5 text-xs" />
-                <button type="button" className="btn-ghost px-4 py-2.5 text-xs" aria-label="Share">
+                <button type="button" className="btn-ghost px-4 py-2.5 text-xs" aria-label="शेयर करें">
                   <Share2 size={15} /> शेयर
                 </button>
               </div>
@@ -101,8 +109,8 @@ export default async function WatchPage({
               <span className="flex items-center gap-1.5 font-semibold text-amber-400">
                 <Star size={14} className="fill-amber-400" /> {anime.rating.toFixed(1)}
               </span>
-              <span className="text-muted">{formatCount(anime.views)} views</span>
-              <span className="text-muted">{anime.languages.join(' · ')}</span>
+              <span className="text-muted">{formatCount(anime.views)} व्यूज़</span>
+              <DubBadge status={anime.dubStatus} />
               <span className="rounded-md border border-line bg-panel px-2 py-0.5 text-xs text-gray-300">
                 {anime.ageRating}
               </span>
@@ -111,7 +119,7 @@ export default async function WatchPage({
             <div className="mt-3 flex flex-wrap gap-2">
               {anime.genres.map((g) => (
                 <Link key={g} href={`/genres/${g}`} className="chip">
-                  {genreBySlug(g)?.name ?? g}
+                  {genreBySlug(g)?.nameHindi ?? g}
                 </Link>
               ))}
             </div>
@@ -120,19 +128,31 @@ export default async function WatchPage({
               {ep.synopsis}
             </p>
 
-            {/* prev / next */}
+            {anime.dubStudio && (
+              <p className="mt-3 text-xs text-muted">
+                हिंदी डब: <span className="text-white">{anime.dubStudio}</span> · ऑडियो:{' '}
+                {ep.audio.map((t) => AUDIO_LABELS[t.lang]).join(', ')}
+              </p>
+            )}
+
             <div className="mt-5 flex items-center justify-between gap-3">
               {prev ? (
-                <Link href={`/watch/${anime.slug}/${prev.number}`} className="btn-ghost min-w-0 px-4 py-2.5 text-xs">
+                <Link
+                  href={`/watch/${anime.slug}/${prev.number}`}
+                  className="btn-ghost min-w-0 px-4 py-2.5 text-xs"
+                >
                   <ChevronLeft size={15} />
-                  <span className="truncate">पिछला · EP {prev.number}</span>
+                  <span className="truncate">पिछला · एपिसोड {prev.number}</span>
                 </Link>
               ) : (
                 <span />
               )}
               {next && (
-                <Link href={`/watch/${anime.slug}/${next.number}`} className="btn-primary min-w-0 px-4 py-2.5 text-xs">
-                  <span className="truncate">अगला · EP {next.number}</span>
+                <Link
+                  href={`/watch/${anime.slug}/${next.number}`}
+                  className="btn-primary min-w-0 px-4 py-2.5 text-xs"
+                >
+                  <span className="truncate">अगला · एपिसोड {next.number}</span>
                   <ChevronRight size={15} />
                 </Link>
               )}
@@ -140,7 +160,6 @@ export default async function WatchPage({
           </div>
         </div>
 
-        {/* episode sidebar */}
         <aside className="lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pr-1">
           <EpisodeList anime={anime} currentEpisode={current} />
         </aside>

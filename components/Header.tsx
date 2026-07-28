@@ -3,15 +3,15 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bookmark, Compass, Home, Menu, Search, Tv, X } from 'lucide-react';
+import { Bookmark, Compass, Home, Menu, Mic, Search, Tv, X } from 'lucide-react';
 import { useWatchlist } from '@/hooks/useWatchlist';
 import { cn } from '@/lib/utils';
 
 const NAV = [
   { href: '/', label: 'होम', icon: Home },
-  { href: '/browse', label: 'ब्राउज़', icon: Compass },
+  { href: '/browse', label: 'सभी सीरीज़', icon: Compass },
   { href: '/genres', label: 'श्रेणियाँ', icon: Tv },
-  { href: '/watchlist', label: 'Watchlist', icon: Bookmark },
+  { href: '/watchlist', label: 'मेरी लिस्ट', icon: Bookmark },
 ];
 
 export default function Header() {
@@ -55,12 +55,16 @@ export default function Header() {
         )}
       >
         <div className="container-page flex h-16 items-center gap-4 sm:h-[68px]">
-          <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Kitsune Stream home">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-neon text-sm font-black">
-              狐
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-2"
+            aria-label="एनिमे हिंदी डब — होम"
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-accent to-neon">
+              <Mic size={15} className="text-white" />
             </span>
-            <span className="hidden text-lg font-black tracking-tight sm:block">
-              Kitsune<span className="text-accent">Stream</span>
+            <span className="hidden text-base font-black leading-tight tracking-tight sm:block">
+              एनिमे<span className="text-accent">हिंदी</span>डब
             </span>
           </Link>
 
@@ -77,7 +81,7 @@ export default function Header() {
                   )}
                 >
                   {label}
-                  {label === 'Watchlist' && hydrated && count > 0 && (
+                  {href === '/watchlist' && hydrated && count > 0 && (
                     <span className="ml-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold">
                       {count}
                     </span>
@@ -92,12 +96,15 @@ export default function Header() {
 
           <form onSubmit={submit} className="ml-auto hidden max-w-xs flex-1 md:block">
             <div className="group flex items-center gap-2 rounded-xl border border-line bg-panel/70 px-3 py-2 transition-colors focus-within:border-accent/70">
-              <Search size={16} className="shrink-0 text-muted transition-colors group-focus-within:text-accent" />
+              <Search
+                size={16}
+                className="shrink-0 text-muted transition-colors group-focus-within:text-accent"
+              />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Anime खोजें..."
-                aria-label="Search anime"
+                placeholder="एनिमे खोजें..."
+                aria-label="एनिमे खोजें"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
               />
             </div>
@@ -106,7 +113,7 @@ export default function Header() {
           <div className="ml-auto flex items-center gap-2 md:ml-0">
             <Link
               href="/search"
-              aria-label="Search"
+              aria-label="खोजें"
               className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-panel/70 text-muted transition-colors hover:text-white md:hidden"
             >
               <Search size={17} />
@@ -114,7 +121,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              aria-label="Toggle menu"
+              aria-label="मेन्यू"
               aria-expanded={open}
               className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-panel/70 text-white transition-colors hover:border-accent lg:hidden"
             >
@@ -127,7 +134,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* mobile drawer */}
       <div
         className={cn(
           'fixed inset-0 z-40 lg:hidden',
@@ -156,12 +162,14 @@ export default function Header() {
                   href={href}
                   className={cn(
                     'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors',
-                    active ? 'bg-accent/15 text-white' : 'text-muted hover:bg-white/5 hover:text-white',
+                    active
+                      ? 'bg-accent/15 text-white'
+                      : 'text-muted hover:bg-white/5 hover:text-white',
                   )}
                 >
                   <Icon size={18} />
                   {label}
-                  {label === 'Watchlist' && hydrated && count > 0 && (
+                  {href === '/watchlist' && hydrated && count > 0 && (
                     <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-white">
                       {count}
                     </span>

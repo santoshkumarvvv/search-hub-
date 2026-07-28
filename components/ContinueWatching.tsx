@@ -25,8 +25,7 @@ export default function ContinueWatching() {
       const key = window.localStorage.key(i);
       if (!key?.startsWith('kitsune:pos:')) continue;
 
-      const id = key.replace('kitsune:pos:', '');
-      const match = id.match(/^(.*)-(\d+)$/);
+      const match = key.replace('kitsune:pos:', '').match(/^(.*)-(\d+)$/);
       if (!match) continue;
 
       const anime = getBySlug(match[1]);
@@ -72,7 +71,7 @@ export default function ContinueWatching() {
               <div className="relative aspect-video">
                 <Image
                   src={episode.thumbnail}
-                  alt={episode.title}
+                  alt={episode.titleHindi ?? episode.title}
                   fill
                   sizes="280px"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -88,16 +87,16 @@ export default function ContinueWatching() {
                 </div>
               </div>
               <div className="p-3">
-                <p className="truncate text-sm font-semibold">{anime.title}</p>
+                <p className="truncate text-sm font-semibold">{anime.titleHindi ?? anime.title}</p>
                 <p className="mt-0.5 truncate text-xs text-muted">
-                  EP {episode.number} · {episode.title}
+                  एपिसोड {episode.number} · {episode.titleHindi ?? episode.title}
                 </p>
               </div>
             </Link>
             <button
               type="button"
               onClick={() => remove(key)}
-              aria-label="Remove from continue watching"
+              aria-label="सूची से हटाएँ"
               className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-black/70 opacity-0 backdrop-blur-sm transition-opacity hover:bg-accent group-hover:opacity-100"
             >
               <X size={13} />
