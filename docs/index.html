@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kitsu — Hindi Anime Hub | Trending Anime, Trailers & Watchlist</title>
+  <meta name="description" content="Trending anime खोजें, trailers देखें और अपनी watchlist बनाएं। Kitsu Hindi — free anime discovery hub powered by Jikan API." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9B%A9%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="navbar" id="top">
+    <div class="nav-inner">
+      <a class="logo" href="#top">K<span>itsu</span><em>HINDI</em></a>
+
+      <nav class="nav-links" aria-label="मुख्य नैविगेशन">
+        <a href="#top">Home</a>
+        <a href="#trending">Trending</a>
+        <a href="#genres">Genres</a>
+        <a href="#browse">Browse</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="searchInput" type="text" placeholder="Anime खोजें… (Naruto, One Piece)" autocomplete="off" aria-label="Anime search" />
+        </div>
+        <button id="watchlistBtn" class="wl-btn" type="button">
+          ♥ Watchlist <span id="wlCount" class="wl-count">0</span>
+        </button>
+        <button id="menuBtn" class="menu-btn" type="button" aria-label="Menu">☰</button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="mobile-menu">
+      <input id="searchInputM" type="text" placeholder="Anime खोजें…" autocomplete="off" aria-label="Anime search" />
+      <a href="#top">Home</a>
+      <a href="#trending">Trending</a>
+      <a href="#genres">Genres</a>
+      <a href="#browse">Browse</a>
+    </div>
+  </header>
+
+  <!-- ================= HERO / SPOTLIGHT ================= -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-fade"></div>
+    <div class="hero-content">
+      <p class="hero-tag">🔥 TRENDING #1 · अभी देखें</p>
+      <h1 class="hero-title" id="heroTitle">लोड हो रहा है…</h1>
+      <p class="hero-meta" id="heroMeta"></p>
+      <p class="hero-desc" id="heroDesc"></p>
+      <div class="hero-actions">
+        <button class="btn primary" id="heroTrailer" type="button">▶ Details &amp; Trailer</button>
+        <button class="btn ghost" id="heroWl" type="button">+ Watchlist</button>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- ================= SEARCH RESULTS ================= -->
+    <section id="searchSection" class="section hidden" aria-live="polite">
+      <h2 class="section-title" id="searchTitle">नतीजे</h2>
+      <div class="grid" id="searchGrid"></div>
+    </section>
+
+    <!-- ================= TRENDING ================= -->
+    <section class="section" id="trending">
+      <div class="section-head">
+        <h2 class="section-title">🔥 Trending Now</h2>
+        <span class="section-sub">इस सीज़न में सबसे ज़्यादा देखे जाने वाले</span>
+      </div>
+      <div class="row" id="trendingRow"></div>
+    </section>
+
+    <!-- ================= POPULAR ================= -->
+    <section class="section" id="popular">
+      <div class="section-head">
+        <h2 class="section-title">⭐ All-Time Popular</h2>
+        <span class="section-sub">दुनिया भर में सबसे पसंद किए गए</span>
+      </div>
+      <div class="row" id="popularRow"></div>
+    </section>
+
+    <!-- ================= TOP RATED ================= -->
+    <section class="section" id="topRated">
+      <div class="section-head">
+        <h2 class="section-title">🏆 Top Rated</h2>
+        <span class="section-sub">सबसे high rating वाले legends</span>
+      </div>
+      <div class="row" id="topRatedRow"></div>
+    </section>
+
+    <!-- ================= GENRES ================= -->
+    <section class="section" id="genres">
+      <div class="section-head">
+        <h2 class="section-title">🎭 Genres</h2>
+        <span class="section-sub">मूड के हिसाब से चुनो</span>
+      </div>
+      <div class="chips" id="genreChips"></div>
+    </section>
+
+    <!-- ================= BROWSE GRID ================= -->
+    <section class="section" id="browse">
+      <div class="section-head">
+        <h2 class="section-title" id="browseTitle">📺 Browse All</h2>
+        <span class="section-sub">पूरा collection, page by page</span>
+      </div>
+      <div class="grid" id="browseGrid"></div>
+      <div class="load-more-wrap">
+        <button class="btn primary" id="loadMore" type="button">और दिखाओ ↓</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= WATCHLIST DRAWER ================= -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="drawer" aria-label="Watchlist">
+    <div class="drawer-head">
+      <h2>♥ मेरी Watchlist</h2>
+      <button class="icon-btn" id="drawerClose" type="button" aria-label="बंद करें">✕</button>
+    </div>
+    <div class="drawer-list" id="drawerList"></div>
+    <p class="drawer-note">💾 Watchlist तुम्हारे browser में save रहती है</p>
+  </aside>
+
+  <!-- ================= DETAIL MODAL ================= -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="icon-btn modal-close" id="modalClose" type="button" aria-label="बंद करें">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST ================= -->
+  <div class="toast" id="toast"></div>
+
+  <footer class="footer">
+    <p><strong>Kitsu Hindi</strong> — designed by <strong>Santosh</strong> · Data: <a href="https://jikan.moe" target="_blank" rel="noopener">Jikan API</a> (MyAnimeList) · Trailers: YouTube</p>
+    <p class="footer-small">Stream responsibly — official platforms (Crunchyroll, Netflix, Muse Asia YouTube) पर देखना सबसे अच्छा। © 2026</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
