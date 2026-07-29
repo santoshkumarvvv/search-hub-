@@ -1,146 +1,170 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kitsu — Hindi Anime Hub | Trending Anime, Trailers & Watchlist</title>
-  <meta name="description" content="Trending anime खोजें, trailers देखें और अपनी watchlist बनाएं। Kitsu Hindi — free anime discovery hub powered by Jikan API." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9B%A9%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <title>ANIFLIX • Premium Anime Streaming</title>
+  <meta name="description" content="Watch premium anime in stunning 4K. Dark themed Netflix-style streaming experience with local data." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='78' font-size='72' fill='%23E50914'%3E▶%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- ================= NAVBAR ================= -->
-  <header class="navbar" id="top">
-    <div class="nav-inner">
-      <a class="logo" href="#top">K<span>itsu</span><em>HINDI</em></a>
-
-      <nav class="nav-links" aria-label="मुख्य नैविगेशन">
-        <a href="#top">Home</a>
-        <a href="#trending">Trending</a>
-        <a href="#genres">Genres</a>
-        <a href="#browse">Browse</a>
-      </nav>
-
-      <div class="nav-actions">
-        <div class="search-box">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="searchInput" type="text" placeholder="Anime खोजें… (Naruto, One Piece)" autocomplete="off" aria-label="Anime search" />
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="logo">
+          <span class="logo-red">ANI</span>FLIX
         </div>
-        <button id="watchlistBtn" class="wl-btn" type="button">
-          ♥ Watchlist <span id="wlCount" class="wl-count">0</span>
+        <div class="nav-links">
+          <a href="#hero" class="nav-link active">Home</a>
+          <a href="#browse" class="nav-link">Browse</a>
+          <a href="#categories" class="nav-link">Categories</a>
+          <a href="#mylist" class="nav-link">My List</a>
+        </div>
+      </div>
+      <div class="nav-right">
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search anime titles..." autocomplete="off" />
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </div>
+        <button id="profileBtn" class="profile-btn">
+          <img src="https://picsum.photos/id/1005/32/32" alt="Profile" />
         </button>
-        <button id="menuBtn" class="menu-btn" type="button" aria-label="Menu">☰</button>
       </div>
     </div>
+  </nav>
 
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="mobile-menu">
-      <input id="searchInputM" type="text" placeholder="Anime खोजें…" autocomplete="off" aria-label="Anime search" />
-      <a href="#top">Home</a>
-      <a href="#trending">Trending</a>
-      <a href="#genres">Genres</a>
-      <a href="#browse">Browse</a>
-    </div>
-  </header>
-
-  <!-- ================= HERO / SPOTLIGHT ================= -->
+  <!-- HERO / SPOTLIGHT -->
   <section class="hero" id="hero">
     <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-fade"></div>
+    <div class="hero-gradient"></div>
     <div class="hero-content">
-      <p class="hero-tag">🔥 TRENDING #1 · अभी देखें</p>
-      <h1 class="hero-title" id="heroTitle">लोड हो रहा है…</h1>
-      <p class="hero-meta" id="heroMeta"></p>
-      <p class="hero-desc" id="heroDesc"></p>
-      <div class="hero-actions">
-        <button class="btn primary" id="heroTrailer" type="button">▶ Details &amp; Trailer</button>
-        <button class="btn ghost" id="heroWl" type="button">+ Watchlist</button>
+      <div class="hero-badge">🔥 #1 TRENDING THIS WEEK</div>
+      <h1 class="hero-title" id="heroTitle">Jujutsu Kaisen</h1>
+      <div class="hero-meta">
+        <span class="meta-score">★ 9.0</span>
+        <span class="meta-year">2023</span>
+        <span class="meta-ep">24 Episodes</span>
+        <span class="meta-rating">TV-14</span>
       </div>
+      <p class="hero-desc" id="heroDesc">In a world where cursed spirits feed on unsuspecting humans, Yuji Itadori swallows a powerful finger to protect his friends and joins the Tokyo Jujutsu High to fight evil.</p>
+      
+      <div class="hero-actions">
+        <button class="btn btn-play" id="heroPlayBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <span>PLAY TRAILER</span>
+        </button>
+        <button class="btn btn-info" id="heroInfoBtn">
+          <span>More Info</span>
+        </button>
+        <button class="btn btn-list" id="heroListBtn">+ My List</button>
+      </div>
+    </div>
+    <div class="hero-fade"></div>
+  </section>
+
+  <!-- CATEGORY FILTERS -->
+  <section class="categories" id="categories">
+    <div class="section-header">
+      <h2>Browse by Category</h2>
+    </div>
+    <div class="filter-chips" id="filterChips">
+      <!-- Populated by JS -->
     </div>
   </section>
 
-  <main>
-    <!-- ================= SEARCH RESULTS ================= -->
-    <section id="searchSection" class="section hidden" aria-live="polite">
-      <h2 class="section-title" id="searchTitle">नतीजे</h2>
-      <div class="grid" id="searchGrid"></div>
-    </section>
-
-    <!-- ================= TRENDING ================= -->
-    <section class="section" id="trending">
-      <div class="section-head">
-        <h2 class="section-title">🔥 Trending Now</h2>
-        <span class="section-sub">इस सीज़न में सबसे ज़्यादा देखे जाने वाले</span>
-      </div>
-      <div class="row" id="trendingRow"></div>
-    </section>
-
-    <!-- ================= POPULAR ================= -->
-    <section class="section" id="popular">
-      <div class="section-head">
-        <h2 class="section-title">⭐ All-Time Popular</h2>
-        <span class="section-sub">दुनिया भर में सबसे पसंद किए गए</span>
-      </div>
-      <div class="row" id="popularRow"></div>
-    </section>
-
-    <!-- ================= TOP RATED ================= -->
-    <section class="section" id="topRated">
-      <div class="section-head">
-        <h2 class="section-title">🏆 Top Rated</h2>
-        <span class="section-sub">सबसे high rating वाले legends</span>
-      </div>
-      <div class="row" id="topRatedRow"></div>
-    </section>
-
-    <!-- ================= GENRES ================= -->
-    <section class="section" id="genres">
-      <div class="section-head">
-        <h2 class="section-title">🎭 Genres</h2>
-        <span class="section-sub">मूड के हिसाब से चुनो</span>
-      </div>
-      <div class="chips" id="genreChips"></div>
-    </section>
-
-    <!-- ================= BROWSE GRID ================= -->
-    <section class="section" id="browse">
-      <div class="section-head">
-        <h2 class="section-title" id="browseTitle">📺 Browse All</h2>
-        <span class="section-sub">पूरा collection, page by page</span>
-      </div>
-      <div class="grid" id="browseGrid"></div>
-      <div class="load-more-wrap">
-        <button class="btn primary" id="loadMore" type="button">और दिखाओ ↓</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- ================= WATCHLIST DRAWER ================= -->
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <aside class="drawer" id="drawer" aria-label="Watchlist">
-    <div class="drawer-head">
-      <h2>♥ मेरी Watchlist</h2>
-      <button class="icon-btn" id="drawerClose" type="button" aria-label="बंद करें">✕</button>
+  <!-- TRENDING ROW -->
+  <section class="content-row">
+    <div class="row-header">
+      <h2>🔥 Trending Now</h2>
+      <span class="row-subtitle">Most watched this week</span>
     </div>
-    <div class="drawer-list" id="drawerList"></div>
-    <p class="drawer-note">💾 Watchlist तुम्हारे browser में save रहती है</p>
-  </aside>
+    <div class="row-scroll" id="trendingRow"></div>
+  </section>
 
-  <!-- ================= DETAIL MODAL ================= -->
-  <div class="modal-overlay hidden" id="modalOverlay">
-    <div class="modal" role="dialog" aria-modal="true">
-      <button class="icon-btn modal-close" id="modalClose" type="button" aria-label="बंद करें">✕</button>
-      <div id="modalBody"></div>
+  <!-- TOP RATED ROW -->
+  <section class="content-row">
+    <div class="row-header">
+      <h2>⭐ Top Rated</h2>
+      <span class="row-subtitle">Highest acclaimed anime</span>
+    </div>
+    <div class="row-scroll" id="topRatedRow"></div>
+  </section>
+
+  <!-- BROWSE SECTION -->
+  <section class="browse-section" id="browse">
+    <div class="section-header">
+      <h2>📺 All Anime</h2>
+      <div class="browse-controls">
+        <span id="resultsCount">Showing 15 titles</span>
+      </div>
+    </div>
+    
+    <div class="anime-grid" id="animeGrid">
+      <!-- Populated dynamically by JS -->
+    </div>
+  </section>
+
+  <!-- MY LIST SECTION -->
+  <section class="content-row" id="mylist">
+    <div class="row-header">
+      <h2>❤️ My List</h2>
+      <span class="row-subtitle">Your saved anime</span>
+    </div>
+    <div class="row-scroll" id="myListRow"></div>
+    <div id="myListEmpty" class="empty-list">Your list is empty. Add titles from the grid above!</div>
+  </section>
+
+  <!-- TRAILER POPUP MODAL -->
+  <div class="modal-overlay" id="trailerModal">
+    <div class="trailer-modal">
+      <button class="modal-close" id="closeTrailer">&times;</button>
+      <div class="trailer-header">
+        <h3 id="trailerTitle"></h3>
+      </div>
+      <div class="trailer-player">
+        <iframe id="trailerIframe" width="100%" height="100%" frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+      </div>
+      <div class="trailer-footer">
+        <button class="btn btn-secondary" id="closeTrailerBtn">Close Player</button>
+      </div>
     </div>
   </div>
 
-  <!-- ================= TOAST ================= -->
+  <!-- DETAIL MODAL -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="detail-modal">
+      <button class="modal-close" id="closeDetail">&times;</button>
+      <div class="detail-hero" id="detailHero"></div>
+      <div class="detail-content">
+        <div class="detail-header">
+          <h2 id="detailTitle"></h2>
+          <div class="detail-meta" id="detailMeta"></div>
+        </div>
+        <div class="detail-genres" id="detailGenres"></div>
+        <p class="detail-synopsis" id="detailSynopsis"></p>
+        
+        <div class="detail-actions">
+          <button class="btn btn-play" id="detailPlayBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <span>Watch Trailer</span>
+          </button>
+          <button class="btn btn-list" id="detailListBtn">+ Add to My List</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
-  <footer class="footer">
-    <p><strong>Kitsu Hindi</strong> — designed by <strong>Santosh</strong> · Data: <a href="https://jikan.moe" target="_blank" rel="noopener">Jikan API</a> (MyAnimeList) · Trailers: YouTube</p>
-    <p class="footer-small">Stream responsibly — official platforms (Crunchyroll, Netflix, Muse Asia YouTube) पर देखना सबसे अच्छा। © 2026</p>
+  <footer>
+    <p>ANIFLIX © 2026 • Premium Dark Anime Experience • All data local • Inspired by Netflix</p>
   </footer>
 
   <script src="script.js"></script>
