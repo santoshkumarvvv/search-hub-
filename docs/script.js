@@ -183,6 +183,7 @@ function setHero(a) {
       { textContent: `· ${a.year || 'New'} · ${a.episodes ? a.episodes + ' Episodes' : 'Airing'} · ${a.type || 'TV'}` })
   );
   heroDesc.textContent = truncate(a.synopsis, 260);
+  updateWlButtons(a.mal_id);
 }
 
 $('#heroTrailer').addEventListener('click', () => { if (heroAnime) openModal(heroAnime.mal_id, { autoplayTrailer: true }); });
