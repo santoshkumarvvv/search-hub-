@@ -321,6 +321,41 @@ Object.keys(MB_DB).forEach(function(k) {
   }
 });
 
+// Build the visible catalog from the built-in MovieBox map as well as the
+// curated seed list.  The previous page only rendered the 12 seeds until the
+// remote API responded, so offline/API-blocked visits looked incomplete.  This
+// guarantees the UI has the full 140+ local anime catalog on first paint.
+function hydrateCatalogFromMovieBox() {
+  var seen = {};
+  ANIME.forEach(function(a) { seen[String(a.id)] = true; });
+
+  Object.keys(MB_DB).forEach(function(k) {
+    var e = MB_DB[k];
+    if (!e || !e.title) return;
+
+    var id = e.tmdbId || k;
+    if (seen[String(id)]) return;
+    seen[String(id)] = true;
+
+    ANIME.push({
+      id: id,
+      title: e.title,
+      eps: e.episodes || 12,
+      score: e.score || 0,
+      year: e.year || '',
+      studio: e.studio || 'Anime',
+      genres: e.genres || [],
+      poster: e.poster || ('https://picsum.photos/seed/anime-'+encodeURIComponent(String(id))+'/300/450'),
+      banner: e.banner || ('https://picsum.photos/seed/anime-banner-'+encodeURIComponent(String(id))+'/900/500'),
+      synopsis: e.synopsis || ('Watch '+e.title+' episodes with the Titan multi-source player.'),
+      langs: e.langs || {hindi:true, english:true, japanese:true},
+      _mbKey: k,
+      _local:true
+    });
+  });
+}
+hydrateCatalogFromMovieBox();
+
 // ─── TITAN RESOLVER ENGINE ───
 var TITAN = {
   // Find the best matching MovieBox entry for a given anime
@@ -589,51 +624,38 @@ openPanel = function(a) {
   }
 };
 
-// Hook into playEpisode — use Titan pipeline instead of generic
-var _origPlayEpisode = playEpisode;
+// Hook into playEpisode — use Titan pipeline instead of generic.
+// Some older builds did not declare playEpisode before this hook, which threw a
+// ReferenceError and stopped the whole boot script before renderGrid() ran.
+var _origPlayEpisode = (typeof playEpisode === 'function') ? playEpisode : function(epNum) {
+  if (S.cur) TITAN.play(S.cur, epNum, S.audio || 'hindi');
+};
 playEpisode = function(epNum) {
   S.ep = epNum;
-  // Check for user override first
-  var chips = document.querySelectorAll('.ep-chip[data-episode="'+epNum+'"]');
+  if (!S.cur) {
+    _origPlayEpisode(epNum);
+    return;
+  }
+
+  // Check for user/pre-resolved stream overrides first.
   var userSrc = null;
+  var chips = document.querySelectorAll('.ep-chip[data-episode="'+epNum+'"]');
   chips.forEach(function(c) {
     var src = c.getAttribute('data-user-'+S.audio);
     if (src && src.length > 5) userSrc = src;
   });
+
   if (userSrc) {
     $('playerIframe').src = userSrc;
-    toast('🔒 Private Link: EP '+epNum);
-    UD.markWatched(S.cur.id, epNum);
-    renderEpChips();
-    return;
+    toast('▶ EP '+epNum+' — '+S.cur.title);
+  } else {
+    TITAN.play(S.cur, epNum, S.audio || 'hindi');
   }
 
-  // Use Titan pipeline for MovieBox-resolved or standard catalog entries
-  if (S.cur) {
-    var mbEntry = TITAN.find(S.cur);
-
-    // Recheck: chips may have been resolved in the meantime
-    var chips2 = document.querySelectorAll('.ep-chip[data-episode="'+epNum+'"]');
-    chips2.forEach(function(c) {
-      var src = c.getAttribute('data-user-'+S.audio);
-      if (src && src.length > 5) {
-        $('playerIframe').src = src;
-        toast('▶ EP '+epNum+' — '+S.cur.title);
-        UD.markWatched(S.cur.id, epNum);
-        renderEpChips();
-        return;
-      }
-    });
-
-    TITAN.play(S.cur, epNum, S.audio);
-    UD.markWatched(S.cur.id, epNum);
-    renderEpChips();
-    return;
-  }
-
-  // Fallback to generic pipeline
-  _origPlayEpisode(epNum);
+  UD.markWatched(S.cur.id, epNum);
+  renderEpChips();
 };
+window.playEpisode = playEpisode;
 
 /* ═══════════════════════════════════════════════
    STANDARD ENGINE (preserved from previous)
@@ -668,7 +690,7 @@ function renderEpChips(){var g=$('epGrid'),jump=$('rangeJump');g.innerHTML='';ju
       if (S.resolvedStreams && S.resolvedStreams.japanese && S.resolvedStreams.japanese[ep]) {
         chip.setAttribute('data-user-japanese', S.resolvedStreams.japanese[ep]);
       }
-      chip.addEventListener('click',function(){var userSrc=chip.getAttribute('data-user-'+S.audio);if(userSrc&&userSrc.length>5){$('playerIframe').src=userSrc;toast('▶ EP '+ep+' — '+S.cur.title);S.ep=ep;UD.markWatched(S.cur.id,ep);renderEpChips();return;}TITAN.play(S.cur,ep,S.audio);UD.markWatched(S.cur.id,ep);renderEpChips();});g.appendChild(chip);})(i);}}
+      chip.addEventListener('click',function(){playEpisode(ep);});g.appendChild(chip);})(i);}}
 
 function updateSaveBtn(){var b=$('actSave');if(!S.cur)return;var sv=UD.isSaved(S.cur.id);b.innerHTML=sv?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Saved':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Save';b.style.color=sv?'#22c55e':'';}
 
