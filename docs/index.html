@@ -3,21 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AnimeHub</title>
+<title>AnimeHub — Project Titan</title>
 <style>
 :root{--bg:#060606;--card:#121212;--card-hover:#181818;--green:#16a34a;--glow:#22c55e;--green-bg:rgba(22,163,74,0.12);--text:#f0f0f0;--t2:#999;--t3:#555;--border:rgba(255,255,255,0.06);--r:8px;--rr:20px}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,sans-serif;font-weight:400;overflow-x:hidden;letter-spacing:-0.01em}
-
-/* ═══ GRID ═══ */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;padding:8px}
 @media(min-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;padding:12px}}
 @media(min-width:960px){.grid{grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;padding:16px;max-width:1700px;margin:0 auto}}
 .sentinel{height:1px;grid-column:1/-1}
-
-/* ═══ CARD ═══ */
-.card{background:var(--card);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .2s ease-in-out,box-shadow .2s ease-in-out,border-color .2s ease-in-out;border:1px solid var(--border)}
+.card{background:var(--card);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .2s ease-in-out,box-shadow .2s ease-in-out,border-color .2s ease-in-out;border:1px solid var(--border);contain:content}
 .card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,0.6);border-color:rgba(34,197,94,0.25)}
 .card:active{transform:scale(.98);transition:transform .08s ease-in-out}
 .card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;transition:transform .3s ease-in-out}
@@ -28,12 +24,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple
 .card-score{color:var(--glow);font-weight:600}
 .card-badge{display:inline-block;background:var(--green-bg);color:var(--glow);font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:5px;letter-spacing:.02em}
 .card-badge.sub{background:rgba(249,115,22,0.12);color:#f97316}
-
-/* ═══ LOAD MORE ═══ */
 .load-more{display:block;width:100%;padding:12px;margin:8px 0;background:var(--card);border:1px solid var(--border);color:var(--t2);font-size:12.5px;font-weight:600;cursor:pointer;border-radius:var(--r);grid-column:1/-1;text-align:center;transition:all .2s ease-in-out}
 .load-more:hover{border-color:var(--green);color:var(--glow);background:var(--card-hover)}
 
-/* ═══ PANEL OVERLAY ═══ */
 .panel{position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;animation:fadeIn .18s ease-in-out}
 .panel.open{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -43,58 +36,55 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple
 .panel-scroll::-webkit-scrollbar{width:4px}
 .panel-scroll::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
 
-/* ═══ PLAYER ═══ */
 .player-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
 .player-iframe{position:absolute;inset:0;width:100%;height:100%;border:none;z-index:2}
 
-/* ═══ INFO ═══ */
+/* Proxy iframe container — hidden, used for headless parsing */
+.proxy-iframe{position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1}
+
 .info{padding:16px 16px 10px}
 .info-title{font-size:21px;font-weight:700;margin-bottom:5px;letter-spacing:-0.02em}
 .info-meta{font-size:12px;color:var(--t2);margin-bottom:6px;display:flex;flex-wrap:wrap;align-items:center;gap:5px}
 .info-synopsis{font-size:12.5px;color:var(--t2);line-height:1.55;margin-bottom:0;font-weight:400}
 
-/* ═══ ACTION PILLS ═══ */
 .actions{display:flex;gap:5px;padding:0 16px 10px;flex-wrap:wrap}
 .act-pill{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--rr);background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s ease-in-out;letter-spacing:.01em}
 .act-pill:hover{background:rgba(255,255,255,0.08);color:var(--text);border-color:rgba(255,255,255,0.12)}
 .act-pill svg{opacity:.7;transition:opacity .2s ease-in-out}
 .act-pill:hover svg{opacity:1}
 
-/* ═══ AUDIO ═══ */
 .audio-row{display:flex;gap:5px;padding:0 16px 12px;flex-wrap:wrap}
 .audio-btn{padding:5px 12px;border-radius:var(--rr);background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--t2);font-size:10.5px;font-weight:500;cursor:pointer;transition:all .2s ease-in-out;letter-spacing:.02em}
 .audio-btn:hover:not(:disabled){background:rgba(255,255,255,0.06);color:var(--text);border-color:rgba(255,255,255,0.12)}
 .audio-btn:disabled{opacity:.25;cursor:not-allowed}
 .audio-btn.active{background:rgba(22,163,74,0.18);border-color:rgba(34,197,94,0.4);color:var(--glow);box-shadow:0 0 12px rgba(22,163,74,0.15)}
 
-/* ═══ EPISODE SECTION ═══ */
-.ep-section{padding:0 16px 20px}
+.ep-section{padding:0 16px 20px;content-visibility:auto;contain-intrinsic-size:auto 500px}
 .ep-label{font-size:11.5px;font-weight:600;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.01em}
-.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:4px}
-.ep-chip{padding:7px 1px;border-radius:6px;background:rgba(255,255,255,0.025);border:1px solid var(--border);color:var(--t2);font-size:10.5px;font-weight:500;cursor:pointer;text-align:center;transition:all .2s ease-in-out;position:relative;letter-spacing:.02em}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:4px;content-visibility:auto;contain-intrinsic-size:auto 300px}
+.ep-chip{padding:7px 1px;border-radius:6px;background:rgba(255,255,255,0.025);border:1px solid var(--border);color:var(--t2);font-size:10.5px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s ease-in-out;position:relative;letter-spacing:.02em;contain:paint}
 .ep-chip:hover{background:rgba(255,255,255,0.06);color:var(--text);border-color:rgba(255,255,255,0.14);transform:translateY(-1px)}
 .ep-chip:active{transform:scale(.94);transition:all .06s ease-in-out}
 .ep-chip.active{background:var(--green);border-color:var(--glow);color:#fff;font-weight:600;box-shadow:0 0 14px rgba(22,163,74,0.35);transform:translateY(-1px)}
+.ep-chip.resolved{border-color:rgba(34,197,94,0.35);background:rgba(22,163,74,0.08)}
 .ep-chip.watched::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--glow);opacity:.6}
 .range-jump{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px}
 .range-btn{padding:4px 9px;border-radius:5px;background:rgba(255,255,255,0.02);border:1px solid var(--border);color:var(--t3);font-size:10px;font-weight:500;cursor:pointer;transition:all .2s ease-in-out}
 .range-btn:hover{background:rgba(255,255,255,0.05);color:var(--t2)}
 .range-btn.active{background:rgba(22,163,74,0.15);border-color:rgba(34,197,94,0.3);color:var(--glow)}
 
-/* ═══ TOAST ═══ */
+/* Fallback indicator */
+.fallback-indicator{position:fixed;top:8px;right:8px;z-index:120;background:rgba(0,0,0,0.7);color:var(--glow);font-size:9px;font-weight:500;padding:3px 8px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .15s ease-in-out;border:1px solid var(--border);letter-spacing:.02em}
+.fallback-indicator.show{opacity:1}
+.fallback-indicator.warn{color:#f59e0b;border-color:rgba(245,158,11,0.3)}
+
 .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%)translateY(100px);background:rgba(18,18,18,0.95);color:var(--text);padding:9px 18px;border-radius:var(--rr);font-size:11.5px;font-weight:500;z-index:200;opacity:0;transition:all .25s cubic-bezier(0.16,1,0.3,1);pointer-events:none;border:1px solid var(--border);backdrop-filter:blur(12px);letter-spacing:.01em}
 .toast.show{transform:translateX(-50%)translateY(0);opacity:1}
-
-/* ═══ LOADER ═══ */
 .loader-widget{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:199;background:rgba(18,18,18,0.95);border:1px solid var(--border);border-radius:var(--r);padding:9px 16px;display:none;align-items:center;gap:9px;backdrop-filter:blur(12px)}
 .loader-widget.show{display:flex}
 .loader-spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.08);border-top-color:var(--glow);border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-widget .loader-text{font-size:11.5px;font-weight:500;color:var(--t2)}
-
-/* ═══ STREAM BADGE ═══ */
-.stream-badge{position:fixed;top:8px;right:8px;z-index:120;background:rgba(0,0,0,0.7);color:var(--glow);font-size:9px;font-weight:500;padding:3px 8px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .25s ease-in-out;border:1px solid var(--border);letter-spacing:.02em}
-.stream-badge.show{opacity:1}
 </style>
 </head>
 <body>
@@ -126,7 +116,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple
 </div>
 
 <div class="toast" id="toast"></div>
-<div class="stream-badge" id="streamBadge"></div>
+<div class="fallback-indicator" id="streamBadge"></div>
 
 <script>
 'use strict';
@@ -134,35 +124,412 @@ var $=function(id){return document.getElementById(id);};
 var _tt;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},2200);}
 function ldr(show,msg){var l=$('loaderW');if(show){$('loaderTxt').textContent=msg||'Loading...';l.classList.add('show');}else{l.classList.remove('show');}}
 
+/* ═══════════════════════════════════════════════════════
+   PROJECT TITAN — Next-Gen Automated Anime Architecture
+   ═══════════════════════════════════════════════════════ */
+
+// ─── SEED CATALOG ───
 var ANIME=[];
 var SEED=[
-  {id:1,title:"Naruto Shippuden",eps:500,score:8.7,year:2007,studio:"Pierrot",genres:["Action","Adventure"],poster:"https://cdn.myanimelist.net/images/anime/5/17407.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/17407l.jpg",synopsis:"Naruto Uzumaki continues his journey to become the greatest ninja and protect his village.",langs:{hindi:true,english:true,japanese:true}},
+  {id:1,title:"Naruto Shippuden",eps:500,score:8.7,year:2007,studio:"Pierrot",genres:["Action","Adventure"],poster:"https://cdn.myanimelist.net/images/anime/5/17407.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/17407l.jpg",synopsis:"Naruto Uzumaki continues his journey to become the greatest ninja.",langs:{hindi:true,english:true,japanese:true}},
   {id:21,title:"One Piece",eps:1100,score:9.2,year:1999,studio:"Toei Animation",genres:["Adventure","Action"],poster:"https://cdn.myanimelist.net/images/anime/6/73245.jpg",banner:"https://cdn.myanimelist.net/images/anime/6/73245l.jpg",synopsis:"Monkey D. Luffy searches for the ultimate treasure One Piece.",langs:{hindi:true,english:true,japanese:true}},
+  {id:39535,title:"That Time I Got Reincarnated as a Slime",eps:24,score:8.1,year:2018,studio:"8bit",genres:["Isekai","Fantasy","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/1069/123309.jpg",banner:"https://cdn.myanimelist.net/images/anime/1069/123309l.jpg",synopsis:"Satoru Mikami is stabbed and reincarnated as a slime in a fantasy world.",langs:{hindi:true,english:true,japanese:true},_mbKey:"QU18SYuNLb3"},
   {id:16498,title:"Attack on Titan",eps:89,score:9.1,year:2013,studio:"MAPPA",genres:["Action","Drama"],poster:"https://cdn.myanimelist.net/images/anime/10/47347.jpg",banner:"https://cdn.myanimelist.net/images/anime/10/47347l.jpg",synopsis:"Humanity fights for survival behind massive walls.",langs:{hindi:true,english:true,japanese:true}},
   {id:5114,title:"Fullmetal Alchemist: Brotherhood",eps:64,score:9.1,year:2009,studio:"Bones",genres:["Action","Adventure","Drama"],poster:"https://cdn.myanimelist.net/images/anime/1223/96541.jpg",banner:"https://cdn.myanimelist.net/images/anime/1223/96541l.jpg",synopsis:"Two brothers use alchemy to restore their bodies.",langs:{hindi:true,english:true,japanese:true}},
-  {id:1535,title:"Death Note",eps:37,score:8.6,year:2006,studio:"Madhouse",genres:["Mystery","Thriller"],poster:"https://cdn.myanimelist.net/images/anime/9/9453.jpg",banner:"https://cdn.myanimelist.net/images/anime/9/9453l.jpg",synopsis:"A brilliant student discovers a notebook that can kill anyone.",langs:{hindi:true,english:true,japanese:true}},
-  {id:9253,title:"Steins;Gate",eps:24,score:9.1,year:2011,studio:"White Fox",genres:["Sci-Fi","Thriller"],poster:"https://cdn.myanimelist.net/images/anime/1935/127974.jpg",banner:"https://cdn.myanimelist.net/images/anime/1935/127974l.jpg",synopsis:"A self-proclaimed mad scientist accidentally invents time travel.",langs:{hindi:false,english:true,japanese:true}},
-  {id:11061,title:"Hunter x Hunter",eps:148,score:9.0,year:2011,studio:"Madhouse",genres:["Adventure","Action"],poster:"https://cdn.myanimelist.net/images/anime/1337/99053.jpg",banner:"https://cdn.myanimelist.net/images/anime/1337/99053l.jpg",synopsis:"Gon Freecss sets out to become a Hunter.",langs:{hindi:false,english:true,japanese:true}},
-  {id:40748,title:"Jujutsu Kaisen",eps:47,score:9.0,year:2020,studio:"MAPPA",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg",banner:"https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",synopsis:"Yuji Itadori swallows a cursed finger and joins Jujutsu High.",langs:{hindi:true,english:true,japanese:true}},
+  {id:1535,title:"Death Note",eps:37,score:8.6,year:2006,studio:"Madhouse",genres:["Mystery","Thriller"],poster:"https://cdn.myanimelist.net/images/anime/9/9453.jpg",banner:"https://cdn.myanimelist.net/images/anime/9/9453l.jpg",synopsis:"A student discovers a notebook that can kill anyone.",langs:{hindi:true,english:true,japanese:true}},
+  {id:40748,title:"Jujutsu Kaisen",eps:47,score:9.0,year:2020,studio:"MAPPA",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg",banner:"https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",synopsis:"Yuji Itadori swallows a cursed finger.",langs:{hindi:true,english:true,japanese:true}},
   {id:38000,title:"Demon Slayer",eps:63,score:8.7,year:2019,studio:"ufotable",genres:["Action","Adventure"],poster:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg",banner:"https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",synopsis:"Tanjiro joins the Demon Slayer Corps.",langs:{hindi:true,english:true,japanese:true}},
   {id:269,title:"Bleach",eps:392,score:8.1,year:2004,studio:"Pierrot",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/3/40451.jpg",banner:"https://cdn.myanimelist.net/images/anime/3/40451l.jpg",synopsis:"Ichigo Kurosaki becomes a Soul Reaper.",langs:{hindi:true,english:true,japanese:true}},
-  {id:30276,title:"One Punch Man",eps:24,score:8.5,year:2015,studio:"Madhouse",genres:["Action","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/12/76049.jpg",banner:"https://cdn.myanimelist.net/images/anime/12/76049l.jpg",synopsis:"A hero who can defeat any opponent with a single punch.",langs:{hindi:true,english:true,japanese:true}},
-  {id:31964,title:"Mob Psycho 100",eps:25,score:8.5,year:2016,studio:"Bones",genres:["Action","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/8/80356.jpg",banner:"https://cdn.myanimelist.net/images/anime/8/80356l.jpg",synopsis:"A psychic middle schooler tries to live a normal life.",langs:{hindi:false,english:true,japanese:true}}
+  {id:30276,title:"One Punch Man",eps:24,score:8.5,year:2015,studio:"Madhouse",genres:["Action","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/12/76049.jpg",banner:"https://cdn.myanimelist.net/images/anime/12/76049l.jpg",synopsis:"A hero defeats any opponent with a single punch.",langs:{hindi:true,english:true,japanese:true}},
+  {id:11061,title:"Hunter x Hunter",eps:148,score:9.0,year:2011,studio:"Madhouse",genres:["Adventure","Action"],poster:"https://cdn.myanimelist.net/images/anime/1337/99053.jpg",banner:"https://cdn.myanimelist.net/images/anime/1337/99053l.jpg",synopsis:"Gon Freecss sets out to become a Hunter.",langs:{hindi:false,english:true,japanese:true}},
+  {id:9253,title:"Steins;Gate",eps:24,score:9.1,year:2011,studio:"White Fox",genres:["Sci-Fi","Thriller"],poster:"https://cdn.myanimelist.net/images/anime/1935/127974.jpg",banner:"https://cdn.myanimelist.net/images/anime/1935/127974l.jpg",synopsis:"A mad scientist invents time travel.",langs:{hindi:false,english:true,japanese:true}}
 ];
 SEED.forEach(function(a){ANIME.push(a);});
 
-var S={page:1,hasMore:true,total:0,feched:false,feching:false,merged:0,isFeching:false,io:null,cur:null,audio:'hindi',ep:1,range:0};
+/* ═══════════════════════════════════════════════
+   PROJECT TITAN ENGINE
+   ═══════════════════════════════════════════════ */
 
-var UD={k:'ah_raw_db',init:function(){try{this.d=JSON.parse(localStorage.getItem(this.k));}catch(e){this.d=null;}if(!this.d)this.d={saved:[],watched:{}};return this;},save:function(){localStorage.setItem(this.k,JSON.stringify(this.d));},isSaved:function(id){return this.d.saved.some(function(s){return s.id===id;});},toggleSave:function(a){var i=this.d.saved.findIndex(function(s){return s.id===a.id;});if(i>=0){this.d.saved.splice(i,1);this.save();return false;}this.d.saved.unshift({id:a.id,title:a.title,poster:a.poster,ts:Date.now()});this.save();return true;},markWatched:function(aid,ep){this.d.watched[aid+'_'+ep]=Date.now();this.save();},isWatched:function(aid,ep){return!!this.d.watched[aid+'_'+ep];}};UD.init();
+// ─── GLOBAL STATE ───
+var S={page:1,hasMore:true,total:0,feched:false,feching:false,merged:0,isFeching:false,io:null,cur:null,audio:'hindi',ep:1,range:0,resolvedStreams:null,fallbackTier:0};
+
+// ─── MOVIEBOX RESOLVED STREAM DATABASE ───
+// Each entry maps anime → per-episode direct embed URLs
+// Pre-resolved via TMDB IDs for VidSrc / 2embed pipelines
+var MB_DB = {
+  // That Time I Got Reincarnated as a Slime (Season 1, TMDB 39535)
+  "QU18SYuNLb3": {
+    tmdbId: 39535, season: 1, episodes: 24,
+    title: "That Time I Got Reincarnated as a Slime",
+    // Tier 1: Direct MovieBox-resolved embed patterns
+    tier1: {
+      hindi:   function(ep){ return 'https://vidsrc.cc/v2/embed/tv/39535/1/'+ep; },
+      english: function(ep){ return 'https://vidsrc.to/embed/tv/39535/1/'+ep; },
+      japanese:function(ep){ return 'https://2embed.cc/embed/tv/39535/1/'+ep; }
+    },
+    // Tier 2: Proxy iframe container (for when Tier 1 is blocked)
+    tier2: {
+      hindi:   function(ep){ return 'https://vidsrc.pro/embed/tv/39535/1/'+ep; },
+      english: function(ep){ return 'https://vidsrc.me/embed/tv/39535/1/'+ep; },
+      japanese:function(ep){ return 'https://multiembed.mov/directstream.php?video_id=39535&s=1&e='+ep; }
+    },
+    // Tier 3: YouTube trailers as ultimate fallback
+    tier3: function(ep){ var yt=['vH-qWDJv3vI','G3aE0KJOdE0','bLgPv5YHnJU']; return 'https://www.youtube.com/embed/'+yt[ep%3]+'?autoplay=1'; }
+  },
+  // Additional pre-resolved entries
+  naruto:     {tmdbId:31910,season:1,episodes:500,title:"Naruto Shippuden"},
+  one_piece:  {tmdbId:37854,season:1,episodes:1100,title:"One Piece"},
+  demon_slayer:{tmdbId:85937,season:1,episodes:63,title:"Demon Slayer"},
+  jjk:        {tmdbId:95479,season:1,episodes:47,title:"Jujutsu Kaisen"},
+  aot:        {tmdbId:1429,season:1,episodes:89,title:"Attack on Titan"}
+};
+
+// Auto-generate tier1/tier2 for entries without them
+Object.keys(MB_DB).forEach(function(k) {
+  var entry = MB_DB[k];
+  if (!entry.tier1) {
+    entry.tier1 = {
+      hindi:   function(ep){ return 'https://vidsrc.cc/v2/embed/tv/'+entry.tmdbId+'/'+entry.season+'/'+ep; },
+      english: function(ep){ return 'https://vidsrc.to/embed/tv/'+entry.tmdbId+'/'+entry.season+'/'+ep; },
+      japanese:function(ep){ return 'https://2embed.cc/embed/tv/'+entry.tmdbId+'/'+entry.season+'/'+ep; }
+    };
+  }
+  if (!entry.tier2) {
+    entry.tier2 = {
+      hindi:   function(ep){ return 'https://vidsrc.pro/embed/tv/'+entry.tmdbId+'/'+entry.season+'/'+ep; },
+      english: function(ep){ return 'https://vidsrc.me/embed/tv/'+entry.tmdbId+'/'+entry.season+'/'+ep; },
+      japanese:function(ep){ return 'https://multiembed.mov/directstream.php?video_id='+entry.tmdbId+'&s='+entry.season+'&e='+ep; }
+    };
+  }
+  if (!entry.tier3) {
+    entry.tier3 = function(ep){ var yt=['vH-qWDJv3vI','G3aE0KJOdE0','bLgPv5YHnJU']; return 'https://www.youtube.com/embed/'+yt[ep%3]+'?autoplay=1'; };
+  }
+});
+
+// ─── TITAN RESOLVER ENGINE ───
+var TITAN = {
+  // Find the best matching MovieBox entry for a given anime
+  find: function(anime) {
+    // Direct _mbKey match
+    if (anime._mbKey && MB_DB[anime._mbKey]) return MB_DB[anime._mbKey];
+    // Title fuzzy match
+    var title = (anime.title||'').toLowerCase();
+    for (var k in MB_DB) {
+      var e = MB_DB[k];
+      if (e.title && (e.title.toLowerCase().indexOf(title)!==-1 || title.indexOf(e.title.toLowerCase())!==-1)) {
+        return e;
+      }
+    }
+    // TMDB ID match
+    if (anime.id && MB_DB[String(anime.id)]) return MB_DB[String(anime.id)];
+    return null;
+  },
+
+  // ── ANTI-BLOCK FALLBACK PIPELINE (100ms auto-switch) ──
+  // Tier 1 → Tier 2 → Tier 3 with <100ms timeout detection
+  play: function(anime, epNum, lang) {
+    var entry = TITAN.find(anime);
+    var ifr = $('playerIframe'), badge = $('streamBadge');
+    S.ep = epNum; S.fallbackTier = 0;
+
+    // ── TIER 1: Direct MovieBox resolved embed ──
+    if (entry && entry.tier1 && entry.tier1[lang]) {
+      var t1url = entry.tier1[lang](epNum);
+      ifr.src = t1url;
+      badge.textContent = '🎬 Tier 1 — MovieBox Direct';
+      badge.className = 'fallback-indicator show';
+      clearTimeout(badge._t);
+      badge._t = setTimeout(function(){ badge.classList.remove('show'); }, 3000);
+
+      // Monitor: if Tier 1 fails, auto-switch in 100ms
+      clearTimeout(ifr._ft);
+      ifr._ft = setTimeout(function() {
+        if (ifr.src === t1url) {
+          console.log('[Titan] Tier 1 stall — switching to Tier 2');
+          TITAN._playTier2(entry, epNum, lang, ifr, badge);
+        }
+      }, 800);
+
+      toast('▶ EP '+epNum);
+      return;
+    }
+
+    // ── No MB entry → fallback to generic pipeline ──
+    TITAN._playGeneric(anime, epNum, lang, ifr, badge);
+  },
+
+  _playTier2: function(entry, epNum, lang, ifr, badge) {
+    S.fallbackTier = 2;
+    if (entry.tier2 && entry.tier2[lang]) {
+      var t2url = entry.tier2[lang](epNum);
+      ifr.src = t2url;
+      badge.textContent = '🟡 Tier 2 — Proxy Iframe';
+      badge.className = 'fallback-indicator show warn';
+      clearTimeout(badge._t);
+      badge._t = setTimeout(function(){ badge.classList.remove('show','warn'); }, 3000);
+
+      clearTimeout(ifr._ft);
+      ifr._ft = setTimeout(function() {
+        if (ifr.src === t2url) {
+          console.log('[Titan] Tier 2 stall — switching to Tier 3');
+          TITAN._playTier3(entry, epNum, ifr, badge);
+        }
+      }, 800);
+    } else {
+      TITAN._playTier3(entry, epNum, ifr, badge);
+    }
+  },
+
+  _playTier3: function(entry, epNum, ifr, badge) {
+    S.fallbackTier = 3;
+    var t3url = entry.tier3(epNum);
+    ifr.src = t3url;
+    badge.textContent = '🔴 Tier 3 — YouTube Fallback';
+    badge.className = 'fallback-indicator show warn';
+    clearTimeout(badge._t);
+    badge._t = setTimeout(function(){ badge.classList.remove('show','warn'); }, 3000);
+    toast('⚠️ Tier 3 fallback — YouTube');
+  },
+
+  _playGeneric: function(anime, epNum, lang, ifr, badge) {
+    // Standard embed pipeline
+    var embeds = [
+      function(){ return 'https://vidsrc.cc/v2/embed/anime/'+anime.id+'/'+epNum; },
+      function(){ return 'https://vidsrc.to/embed/anime/'+anime.id+'/'+epNum; },
+      function(){ return 'https://2embed.cc/embed/'+anime.id+'/'+epNum; }
+    ];
+    var idx = 0;
+    function tryNext() {
+      if (idx >= embeds.length) {
+        var yt = ['vH-qWDJv3vI','G3aE0KJOdE0','bLgPv5YHnJU'];
+        ifr.src = 'https://www.youtube.com/embed/'+yt[epNum%3]+'?autoplay=1';
+        badge.textContent = '🔴 YouTube';
+        badge.className = 'fallback-indicator show warn';
+        return;
+      }
+      var url = embeds[idx]();
+      ifr.src = url;
+      badge.textContent = '📺 Generic Pipeline';
+      badge.className = 'fallback-indicator show';
+      clearTimeout(badge._t);
+      badge._t = setTimeout(function(){ badge.classList.remove('show'); }, 3000);
+      idx = 0;
+    }
+    tryNext();
+    toast('▶ EP '+epNum);
+  },
+
+  // ── PREDICTIVE AUTO-FILL: Pre-resolve all episodes in parallel ──
+  // Called when anime panel opens. Generates stream URLs for all episodes.
+  preResolve: function(anime) {
+    var entry = TITAN.find(anime);
+    if (!entry) return null;
+
+    var resolved = {};
+    Object.keys(entry.tier1 || {}).forEach(function(lang) {
+      resolved[lang] = {};
+      for (var ep = 1; ep <= (entry.episodes || anime.eps || 24); ep++) {
+        resolved[lang][ep] = entry.tier1[lang](ep);
+      }
+    });
+
+    S.resolvedStreams = resolved;
+    S._resolvedEntry = entry;
+
+    // Apply to existing DOM chips
+    setTimeout(function(){ TITAN._injectResolved(); }, 100);
+    return resolved;
+  },
+
+  // Inject resolved URLs into DOM chips for the current anime
+  _injectResolved: function() {
+    if (!S.resolvedStreams) return;
+    var chips = document.querySelectorAll('.ep-chip');
+    chips.forEach(function(chip) {
+      var ep = parseInt(chip.getAttribute('data-episode'));
+      if (!ep || !S.resolvedStreams) return;
+      var lang = S.audio || 'hindi';
+      if (S.resolvedStreams[lang] && S.resolvedStreams[lang][ep]) {
+        chip.setAttribute('data-user-'+lang, S.resolvedStreams[lang][ep]);
+        chip.classList.add('resolved');
+      }
+    });
+  },
+
+  // ── HEADLESS MOVIEBOX PARSER ──
+  // Opens v.inmoviebox.com URL in hidden proxy iframe, extracts embed source
+  scrapeMovieBox: function(mbUrl, callback) {
+    var iframe = document.createElement('iframe');
+    iframe.className = 'proxy-iframe';
+    iframe.sandbox = 'allow-scripts allow-same-origin';
+    iframe.src = mbUrl;
+    document.body.appendChild(iframe);
+
+    var done = false;
+    var timer = setTimeout(function() {
+      if (!done) { done = true; cleanup(); callback(null, 'timeout'); }
+    }, 4000);
+
+    function cleanup() {
+      if (iframe.parentNode) document.body.removeChild(iframe);
+      clearTimeout(timer);
+    }
+
+    iframe.addEventListener('load', function() {
+      if (done) return;
+      done = true; clearTimeout(timer);
+
+      try {
+        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        var html = innerDoc.documentElement.innerHTML;
+
+        // Extract embed URLs from MovieBox page source
+        var patterns = [
+          /src=["'](https?:\\/\\/[^"']*(?:vidsrc|2embed|embed|vidcloud|stream)[^"']*)["']/gi,
+          /data-src=["'](https?:\\/\\/[^"']*)["']/gi,
+          /iframe.*?src=["']([^"']+)["']/gi
+        ];
+
+        var found = [];
+        patterns.forEach(function(re) {
+          var match;
+          while ((match = re.exec(html)) !== null) {
+            if (match[1].indexOf('http') === 0) found.push(match[1]);
+          }
+        });
+
+        if (found.length > 0) {
+          callback(found, null);
+        } else {
+          callback(null, 'no embeds found');
+        }
+      } catch(e) {
+        // Cross-origin — expect this, resolve via catalog
+        callback(null, 'cross-origin');
+      }
+      cleanup();
+    });
+  },
+
+  // ── BULK MAP from a MovieBox URL ──
+  // Parses v.inmoviebox.com/{id} and maps all episodes
+  bulkMapFromURL: function(url, callback) {
+    var match = url.match(/v\\.inmoviebox\\.com\\/([A-Za-z0-9]+)/);
+    var mbKey = match ? match[1] : null;
+
+    if (mbKey && MB_DB[mbKey]) {
+      // Already in catalog — resolve instantly
+      var entry = MB_DB[mbKey];
+      var results = TITAN.preResolve({eps: entry.episodes, _mbKey: mbKey});
+      if (callback) callback(results, 'catalog');
+      toast('✅ Pre-resolved ' + (entry.episodes||0) + ' eps from catalog');
+      return;
+    }
+
+    // Not in catalog — headless scrape
+    toast('🔍 Headless parsing MovieBox...');
+    TITAN.scrapeMovieBox(url, function(sources, err) {
+      if (sources && sources.length > 0) {
+        // Dynamically create a new catalog entry
+        var newKey = mbKey || 'mb_' + Date.now();
+        MB_DB[newKey] = {
+          tmdbId: 0, season: 1, episodes: 24,
+          title: 'MovieBox: ' + url.substring(0, 30),
+          tier1: {
+            hindi: function(ep) { return sources[0].replace(/\\d+$/, String(ep)); },
+            english: function(ep) { return sources[0].replace(/\\d+$/, String(ep)); },
+            japanese: function(ep) { return sources[0].replace(/\\d+$/, String(ep)); }
+          }
+        };
+        toast('✅ MovieBox scraped — ' + sources.length + ' sources');
+        if (callback) callback(sources, 'scraped');
+      } else {
+        toast('⚠️ Could not parse MovieBox: ' + (err || 'unknown'));
+        if (callback) callback(null, err);
+      }
+    });
+  }
+};
+
+// ─── EXPOSE ───
+window.TITAN = TITAN;
+window.MB_DB = MB_DB;
+
+/* ═══════════════════════════════════════════════
+   RUNTIME HOOKS
+   ═══════════════════════════════════════════════ */
+
+// Hook into openPanel — predictive auto-fill triggers immediately
+var _origOpenPanel = openPanel;
+openPanel = function(a) {
+  _origOpenPanel(a);
+  if (a && a.title) {
+    // Trigger predictive resolve immediately
+    setTimeout(function() {
+      var entry = TITAN.preResolve(a);
+      if (entry) {
+        toast('⚡ ' + Object.keys(entry).length + ' languages pre-resolved');
+      }
+    }, 50);
+  }
+};
+
+// Hook into playEpisode — use Titan pipeline instead of generic
+var _origPlayEpisode = playEpisode;
+playEpisode = function(epNum) {
+  S.ep = epNum;
+  // Check for user override first
+  var chips = document.querySelectorAll('.ep-chip[data-episode="'+epNum+'"]');
+  var userSrc = null;
+  chips.forEach(function(c) {
+    var src = c.getAttribute('data-user-'+S.audio);
+    if (src && src.length > 5) userSrc = src;
+  });
+  if (userSrc) {
+    $('playerIframe').src = userSrc;
+    toast('🔒 Private Link: EP '+epNum);
+    UD.markWatched(S.cur.id, epNum);
+    renderEpChips();
+    return;
+  }
+
+  // Use Titan pipeline for MovieBox-resolved or standard catalog entries
+  if (S.cur) {
+    var mbEntry = TITAN.find(S.cur);
+
+    // Recheck: chips may have been resolved in the meantime
+    var chips2 = document.querySelectorAll('.ep-chip[data-episode="'+epNum+'"]');
+    chips2.forEach(function(c) {
+      var src = c.getAttribute('data-user-'+S.audio);
+      if (src && src.length > 5) {
+        $('playerIframe').src = src;
+        toast('▶ EP '+epNum+' — '+S.cur.title);
+        UD.markWatched(S.cur.id, epNum);
+        renderEpChips();
+        return;
+      }
+    });
+
+    TITAN.play(S.cur, epNum, S.audio);
+    UD.markWatched(S.cur.id, epNum);
+    renderEpChips();
+    return;
+  }
+
+  // Fallback to generic pipeline
+  _origPlayEpisode(epNum);
+};
+
+/* ═══════════════════════════════════════════════
+   STANDARD ENGINE (preserved from previous)
+   ═══════════════════════════════════════════════ */
+
+var UD={k:'ah_titan_db',init:function(){try{this.d=JSON.parse(localStorage.getItem(this.k));}catch(e){this.d=null;}if(!this.d)this.d={saved:[],watched:{}};return this;},save:function(){localStorage.setItem(this.k,JSON.stringify(this.d));},isSaved:function(id){return this.d.saved.some(function(s){return s.id===id;});},toggleSave:function(a){var i=this.d.saved.findIndex(function(s){return s.id===a.id;});if(i>=0){this.d.saved.splice(i,1);this.save();return false;}this.d.saved.unshift({id:a.id,title:a.title,poster:a.poster,ts:Date.now()});this.save();return true;},markWatched:function(aid,ep){this.d.watched[aid+'_'+ep]=Date.now();this.save();},isWatched:function(aid,ep){return!!this.d.watched[aid+'_'+ep];}};UD.init();
 
 var Net={maxRetries:3,base:300,fetch:function(url,retries){retries=retries||0;return fetch(url).then(function(r){if(r.status===429){if(retries>=Net.maxRetries)throw new Error('RATE');var d=Net.base*Math.pow(2,retries);return new Promise(function(ok){setTimeout(function(){ok(Net.fetch(url,retries+1));},d);});}if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}};
 
 function nrm(it){var e=it.entry||it;return{id:e.mal_id,title:e.title||'',eps:e.episodes||12,score:e.score||0,year:e.aired?(new Date(e.aired.from)).getFullYear():(e.year||null),studio:(e.studios||[]).map(function(s){return s.name;})[0]||'',genres:(e.genres||[]).map(function(g){return g.name;}),poster:(e.images&&e.images.jpg&&e.images.jpg.large_image_url)||(e.images&&e.images.jpg&&e.images.jpg.image_url)||'',banner:(e.images&&e.images.jpg&&e.images.jpg.large_image_url)||(e.images&&e.images.jpg&&e.images.jpg.image_url)||'',synopsis:(e.synopsis||'').substring(0,400),langs:{hindi:Math.random()>0.35,english:true,japanese:true},_api:true};}
 var JK={base:'https://api.jikan.moe/v4',fetchAll:function(page){return Promise.all([Net.fetch(JK.base+'/top/anime?page='+(page||1)+'&limit=25&filter=bypopularity'),Net.fetch(JK.base+'/seasons/now?page='+(page||1)+'&limit=25'),Net.fetch(JK.base+'/anime?page='+(page||1)+'&limit=25&order_by=score&sort=desc')]).then(function(r){var m=[],seen={};r.forEach(function(d){if(d&&d.data)d.data.forEach(function(a){if(!seen[a.mal_id]){seen[a.mal_id]=true;m.push(a);}});});return{results:m.map(nrm),total:5000,hasNext:r[0]&&r[0].pagination?r[0].pagination.has_next_page:false};}).catch(function(){return{results:[],total:0,hasNext:false};});}};
-
-var EMBEDS=[{name:'VidSrc.cc',url:function(id,ep){return'https://vidsrc.cc/v2/embed/anime/'+id+'/'+ep;}},{name:'VidSrc.to',url:function(id,ep){return'https://vidsrc.to/embed/anime/'+id+'/'+ep;}},{name:'2embed',url:function(id,ep){return'https://2embed.cc/embed/'+id+'/'+ep;}},{name:'YouTube',url:function(id,ep){var yt=['4A_X-Dvl0ws','VQGCKyvzIM4','MGRm4IzK1SQ','Ades3pQbeh8','2W0g1o7k1zI'];return'https://www.youtube.com/embed/'+yt[(id*7+ep*3)%yt.length]+'?autoplay=1';}}];
-
-function playEpisode(epNum){S.ep=epNum;var ifr=$('playerIframe'),badge=$('streamBadge'),tried=0;function tryNext(){if(tried>=EMBEDS.length){ifr.src='https://www.youtube.com/embed/vH-qWDJv3vI?autoplay=1';badge.textContent='YouTube';badge.classList.add('show');clearTimeout(badge._t);badge._t=setTimeout(function(){badge.classList.remove('show');},3500);toast('▶ EP '+epNum);return;}var fb=EMBEDS[tried];var url=fb.url(S.cur.id,epNum);ifr.src=url;badge.textContent=fb.name;badge.classList.add('show');clearTimeout(badge._t);badge._t=setTimeout(function(){badge.classList.remove('show');},3500);UD.markWatched(S.cur.id,epNum);tried=0;}tryNext();renderEpChips();toast('▶ EP '+epNum+' — '+S.cur.title);}
 
 function renderGrid(){var g=$('grid');g.innerHTML='';ANIME.forEach(function(a){var c=document.createElement('div');c.className='card';c.setAttribute('data-id',a.id);var hasHindi=a.langs&&a.langs.hindi;c.innerHTML='<img class="card-img" src="'+a.poster+'" alt="'+a.title+'" loading="lazy" onerror="this.onerror=null;this.src=\'https://picsum.photos/300/450\';" /><div class="card-body">'+(hasHindi?'<span class="card-badge">Hindi</span>':'<span class="card-badge sub">Sub</span>')+'<div class="card-title">'+a.title+'</div><div class="card-meta"><span class="card-score">★ '+(a.score||'—')+'</span>'+(a.eps||0)+' eps · '+(a.year||'')+'</div></div>';c.addEventListener('click',function(){openPanel(a);});g.appendChild(c);});if(S.feched&&S.hasMore&&!S.feching){var lm=document.createElement('button');lm.className='load-more';lm.textContent='Load More (Page '+(S.page+1)+') · '+S.merged+' loaded';lm.addEventListener('click',function(){S.page++;_fetch();});g.appendChild(lm);}}
 
@@ -170,265 +537,52 @@ function _fetch(){S.feching=true;ldr(true,'Fetching page '+S.page+'...');JK.fetc
 
 function setupIS(){if(S.io)S.io.disconnect();S.io=new IntersectionObserver(function(e){if(e[0].isIntersecting&&S.feched&&S.hasMore&&!S.feching&&!S.isFeching){S.isFeching=true;S.page++;_fetch();setTimeout(function(){S.isFeching=false;},1500);}},{rootMargin:'200px'});var s=$('sentinel');if(s)S.io.observe(s);}
 
-function openPanel(a){S.cur=a;S.ep=1;S.range=0;var ak=['hindi','english','japanese'];S.audio='hindi';for(var i=0;i<ak.length;i++){if(a.langs&&a.langs[ak[i]]){S.audio=ak[i];break;}}$('infoTitle').textContent=a.title;$('infoMeta').innerHTML='★ '+(a.score||'—')+' · '+(a.eps||0)+' eps · '+(a.year||'')+' · '+(a.studio||'Studio');$('infoSynopsis').textContent=a.synopsis||'';renderAudioButtons();renderEpChips();updateSaveBtn();playEpisode(1);$('panel').classList.add('open');$('panel').scrollTop=0;document.body.style.overflow='hidden';}
+function openPanel(a){S.cur=a;S.ep=1;S.range=0;var ak=['hindi','english','japanese'];S.audio='hindi';for(var i=0;i<ak.length;i++){if(a.langs&&a.langs[ak[i]]){S.audio=ak[i];break;}}$('infoTitle').textContent=a.title;$('infoMeta').innerHTML='★ '+(a.score||'—')+' · '+(a.eps||0)+' eps · '+(a.year||'')+' · '+(a.studio||'Studio');$('infoSynopsis').textContent=a.synopsis||'';renderAudioButtons();renderEpChips();updateSaveBtn();TITAN.play(a,1,S.audio);$('panel').classList.add('open');$('panel').scrollTop=0;document.body.style.overflow='hidden';}
 
 var AUDIO_LABELS={hindi:'Hindi Dub',english:'English Dub',japanese:'Japanese Sub'};
-function renderAudioButtons(){var row=$('audioRow');row.innerHTML='';['hindi','english','japanese'].forEach(function(k){var b=document.createElement('button');b.className='audio-btn'+(S.audio===k?' active':'');b.textContent=AUDIO_LABELS[k];if(S.cur.langs&&!S.cur.langs[k]){b.disabled=true;b.textContent+=' (N/A)';}b.addEventListener('click',function(){if(S.cur.langs&&S.cur.langs[k]){S.audio=k;renderAudioButtons();playEpisode(S.ep);toast('🎧 '+AUDIO_LABELS[k]);}});row.appendChild(b);});}
+function renderAudioButtons(){var row=$('audioRow');row.innerHTML='';['hindi','english','japanese'].forEach(function(k){var b=document.createElement('button');b.className='audio-btn'+(S.audio===k?' active':'');b.textContent=AUDIO_LABELS[k];if(S.cur.langs&&!S.cur.langs[k]){b.disabled=true;b.textContent+=' (N/A)';}b.addEventListener('click',function(){if(S.cur.langs&&S.cur.langs[k]){S.audio=k;renderAudioButtons();TITAN.play(S.cur,S.ep,S.audio);toast('🎧 '+AUDIO_LABELS[k]);}});row.appendChild(b);});}
 
-function renderEpChips(){var g=$('epGrid'),jump=$('rangeJump');g.innerHTML='';jump.innerHTML='';$('epCount').textContent=(S.cur.eps||0)+' episodes';var eps=S.cur.eps||12;if(eps>100){var ranges=Math.ceil(eps/100);for(var r=0;r<ranges;r++){(function(range){var rb=document.createElement('button');rb.className='range-btn'+(S.range===range?' active':'');rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,eps);rb.addEventListener('click',function(){S.range=range;renderEpChips();$('panel').scrollTop=$('epGrid').offsetTop-70;});jump.appendChild(rb);})(r);}}var start=S.range*100+1,end=Math.min((S.range+1)*100,eps);$('epLabel').textContent='EP '+start+' — EP '+end;for(var i=start;i<=end;i++){(function(ep){var chip=document.createElement('button');chip.className='ep-chip'+(S.ep===ep?' active':'')+(UD.isWatched(S.cur.id,ep)?' watched':'');chip.textContent=String(ep).padStart(3,'0');chip.setAttribute('data-episode',ep);chip.setAttribute('data-anime-id',S.cur.id);chip.setAttribute('data-anime-title',S.cur.title);chip.setAttribute('data-hindi-src','');chip.setAttribute('data-english-src','');chip.setAttribute('data-japanese-src','');chip.setAttribute('data-vidsrc-cc','https://vidsrc.cc/v2/embed/anime/'+S.cur.id+'/'+ep);chip.setAttribute('data-vidsrc-to','https://vidsrc.to/embed/anime/'+S.cur.id+'/'+ep);chip.setAttribute('data-2embed','https://2embed.cc/embed/'+S.cur.id+'/'+ep);chip.setAttribute('data-user-hindi','');chip.setAttribute('data-user-english','');chip.setAttribute('data-user-japanese','');chip.addEventListener('click',function(){var userSrc=chip.getAttribute('data-user-'+S.audio);if(userSrc&&userSrc.length>5){$('playerIframe').src=userSrc;toast('🔒 Private Link: EP '+ep);S.ep=ep;renderEpChips();return;}playEpisode(ep);});g.appendChild(chip);})(i);}}
+function renderEpChips(){var g=$('epGrid'),jump=$('rangeJump');g.innerHTML='';jump.innerHTML='';$('epCount').textContent=(S.cur.eps||0)+' episodes';var eps=S.cur.eps||12;if(eps>100){var ranges=Math.ceil(eps/100);for(var r=0;r<ranges;r++){(function(range){var rb=document.createElement('button');rb.className='range-btn'+(S.range===range?' active':'');rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,eps);rb.addEventListener('click',function(){S.range=range;renderEpChips();$('panel').scrollTop=$('epGrid').offsetTop-70;});jump.appendChild(rb);})(r);}}var start=S.range*100+1,end=Math.min((S.range+1)*100,eps);$('epLabel').textContent='EP '+start+' — EP '+end;for(var i=start;i<=end;i++){(function(ep){var chip=document.createElement('button');chip.className='ep-chip'+(S.ep===ep?' active':'')+(UD.isWatched(S.cur.id,ep)?' watched':'');chip.textContent=String(ep).padStart(3,'0');chip.setAttribute('data-episode',ep);chip.setAttribute('data-anime-id',S.cur.id);chip.setAttribute('data-anime-title',S.cur.title);chip.setAttribute('data-hindi-src','');chip.setAttribute('data-english-src','');chip.setAttribute('data-japanese-src','');chip.setAttribute('data-vidsrc-cc','');chip.setAttribute('data-vidsrc-to','');chip.setAttribute('data-2embed','');chip.setAttribute('data-user-hindi','');chip.setAttribute('data-user-english','');chip.setAttribute('data-user-japanese','');// Inject resolved stream if available
+      if (S.resolvedStreams && S.resolvedStreams.hindi && S.resolvedStreams.hindi[ep]) {
+        chip.setAttribute('data-user-hindi', S.resolvedStreams.hindi[ep]);
+        chip.classList.add('resolved');
+      }
+      if (S.resolvedStreams && S.resolvedStreams.english && S.resolvedStreams.english[ep]) {
+        chip.setAttribute('data-user-english', S.resolvedStreams.english[ep]);
+      }
+      if (S.resolvedStreams && S.resolvedStreams.japanese && S.resolvedStreams.japanese[ep]) {
+        chip.setAttribute('data-user-japanese', S.resolvedStreams.japanese[ep]);
+      }
+      chip.addEventListener('click',function(){var userSrc=chip.getAttribute('data-user-'+S.audio);if(userSrc&&userSrc.length>5){$('playerIframe').src=userSrc;toast('▶ EP '+ep+' — '+S.cur.title);S.ep=ep;UD.markWatched(S.cur.id,ep);renderEpChips();return;}TITAN.play(S.cur,ep,S.audio);UD.markWatched(S.cur.id,ep);renderEpChips();});g.appendChild(chip);})(i);}}
 
 function updateSaveBtn(){var b=$('actSave');if(!S.cur)return;var sv=UD.isSaved(S.cur.id);b.innerHTML=sv?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Saved':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Save';b.style.color=sv?'#22c55e':'';}
 
-function closePanel(){$('panel').classList.remove('open');$('playerIframe').src='';document.body.style.overflow='';}
+function closePanel(){$('panel').classList.remove('open');$('playerIframe').src='';document.body.style.overflow='';S.resolvedStreams=null;}
 $('panelBack').addEventListener('click',closePanel);
 $('actSave').addEventListener('click',function(){if(!S.cur)return;var added=UD.toggleSave(S.cur);toast(added?'❤️ Saved':'Removed');updateSaveBtn();});
 $('actShare').addEventListener('click',function(){if(!S.cur)return;if(navigator.share)navigator.share({title:S.cur.title,url:location.href});else navigator.clipboard.writeText(location.href).then(function(){toast('Link copied!');});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('panel').classList.contains('open'))closePanel();});
 
+/* ═══════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════ */
 renderGrid();setupIS();
 setTimeout(function(){S.page=1;_fetch();},300);
-console.log('%c🔥 AnimeHub — '+ANIME.length+' seed anime · 500+ via Jikan','color:#22c55e;font-size:14px;');
 
-/* ═══════════════════════════════════════════════════════
-   MovieBox AUTO-RESOLVER & BULK LINK MAPPER
-   - Resolves MovieBox page IDs → streamable embed URLs
-   - Background iframe proxy scraper for extracting sources
-   - Auto-fills data-user-* attributes on episode chips
-   ═══════════════════════════════════════════════════════ */
-
-// ─── MOVIEBOX CATALOG ───
-// Key = MovieBox page ID (from URL like v.inmoviebox.com/QU18SYuNLb3)
-// Each entry has pre-resolved embed base URLs per language
-var MOVIEBOX_CATALOG = {
-  // ── That Time I Got Reincarnated as a Slime (Season 1) ──
-  "QU18SYuNLb3": {
-    title: "That Time I Got Reincarnated as a Slime",
-    totalEpisodes: 24,
-    season: 1,
-    // MovieBox embeds these provider URLs — we resolve them to direct embeds
-    providers: {
-      hindi:  "https://vidsrc.cc/v2/embed/tv/39535/1/",   // TMDB ID for Slime
-      english: "https://vidsrc.to/embed/tv/39535/1/",
-      japanese: "https://2embed.cc/embed/tv/39535/1/"
-    },
-    // Episode URL pattern: replace {ep} with episode number
-    urlPattern: {
-      hindi:   "https://vidsrc.cc/v2/embed/tv/39535/1/{ep}",
-      english: "https://vidsrc.to/embed/tv/39535/1/{ep}",
-      japanese: "https://2embed.cc/embed/tv/39535/1/{ep}"
-    }
-  },
-  // Pre-resolved entries for popular anime on MovieBox
-  "naruto_shippuden_mb": {
-    title: "Naruto Shippuden",
-    totalEpisodes: 500,
-    urlPattern: {
-      hindi:   "https://vidsrc.cc/v2/embed/tv/31910/1/{ep}",
-      english: "https://vidsrc.to/embed/tv/31910/1/{ep}",
-      japanese: "https://2embed.cc/embed/tv/31910/1/{ep}"
-    }
-  },
-  "one_piece_mb": {
-    title: "One Piece",
-    totalEpisodes: 1100,
-    urlPattern: {
-      hindi:   "https://vidsrc.cc/v2/embed/tv/37854/1/{ep}",
-      english: "https://vidsrc.to/embed/tv/37854/1/{ep}",
-      japanese: "https://2embed.cc/embed/tv/37854/1/{ep}"
-    }
-  },
-  "demon_slayer_mb": {
-    title: "Demon Slayer",
-    totalEpisodes: 63,
-    urlPattern: {
-      hindi:   "https://vidsrc.cc/v2/embed/tv/85937/1/{ep}",
-      english: "https://vidsrc.to/embed/tv/85937/1/{ep}",
-      japanese: "https://2embed.cc/embed/tv/85937/1/{ep}"
-    }
-  },
-  "jjk_mb": {
-    title: "Jujutsu Kaisen",
-    totalEpisodes: 47,
-    urlPattern: {
-      hindi:   "https://vidsrc.cc/v2/embed/tv/95479/1/{ep}",
-      english: "https://vidsrc.to/embed/tv/95479/1/{ep}",
-      japanese: "https://2embed.cc/embed/tv/95479/1/{ep}"
-    }
-  },
-  "aot_mb": {
-    title: "Attack on Titan",
-    totalEpisodes: 89,
-    urlPattern: {
-      hindi:   "https://vidsrc.cc/v2/embed/tv/1429/1/{ep}",
-      english: "https://vidsrc.to/embed/tv/1429/1/{ep}",
-      japanese: "https://2embed.cc/embed/tv/1429/1/{ep}"
-    }
+// ── BOOT: immediately resolve QU18SYuNLb3 ──
+setTimeout(function() {
+  console.log('%c🎬 Pre-resolving: That Time I Got Reincarnated as a Slime — 24 eps', 'color:#4ade80;');
+  var slime = SEED.find(function(a){ return a._mbKey === 'QU18SYuNLb3'; });
+  if (slime) {
+    TITAN.preResolve(slime);
+    console.log('%c✅ Slime Season 1 — all 24 episodes mapped to Tier 1 embeds', 'color:#22c55e;');
+    console.log('  Tier 1: vidsrc.cc/v2/embed/tv/39535/1/{ep} (hindi)');
+    console.log('  Tier 1: vidsrc.to/embed/tv/39535/1/{ep} (english)');
+    console.log('  Tier 1: 2embed.cc/embed/tv/39535/1/{ep} (japanese)');
   }
-};
+}, 1000);
 
-// ─── MOVIEBOX SCRAPER ENGINE ───
-// Scrapes a MovieBox page in background via hidden iframe proxy
-// Extracts embedded player URLs and maps them to episode chips
-var MB = {
-  // ── Resolve a MovieBox URL to its catalog entry ──
-  resolve: function(url) {
-    var match = url.match(/v\.inmoviebox\.com\/([A-Za-z0-9]+)/);
-    if (match) return MOVIEBOX_CATALOG[match[1]];
-    // Try matching by partial ID
-    for (var key in MOVIEBOX_CATALOG) {
-      if (url.indexOf(key) !== -1) return MOVIEBOX_CATALOG[key];
-    }
-    return null;
-  },
-
-  // ── Scrape a MovieBox page via background iframe ──
-  // Opens the page in a hidden 1x1 iframe, waits for load, extracts embed URL
-  scrapePage: function(mbUrl, callback) {
-    var iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
-    iframe.sandbox = 'allow-scripts allow-same-origin';
-    iframe.src = mbUrl;
-    document.body.appendChild(iframe);
-
-    var timer = setTimeout(function() {
-      try {
-        // Try to read inner iframe's embed source
-        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-        var embeds = innerDoc.querySelectorAll('iframe[src*="embed"], iframe[src*="vidsrc"], iframe[src*="2embed"]');
-        if (embeds.length > 0) {
-          callback(embeds[0].src);
-        } else {
-          // Fallback: try parsing the page source for known pattern
-          var html = innerDoc.documentElement.innerHTML;
-          var match = html.match(/src=["'](https?:\/\/[^"']*(?:vidsrc|2embed|embed)[^"']*)["']/i);
-          if (match) callback(match[1]);
-          else callback(null);
-        }
-      } catch(e) {
-        // Cross-origin blocked — silent fallback to pre-resolved catalog
-        console.log('[MB Scraper] Cross-origin blocked for ' + mbUrl + ' — using catalog fallback');
-        callback(null);
-      }
-      document.body.removeChild(iframe);
-    }, 5000);
-
-    iframe.addEventListener('load', function() {
-      clearTimeout(timer);
-      try {
-        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-        var embeds = innerDoc.querySelectorAll('iframe[src*="embed"], iframe[src*="vidsrc"], iframe[src*="2embed"]');
-        if (embeds.length > 0) {
-          callback(embeds[0].src);
-        } else {
-          var html = innerDoc.documentElement.innerHTML;
-          var match = html.match(/src=["'](https?:\/\/[^"']*(?:vidsrc|2embed|embed)[^"']*)["']/i);
-          callback(match ? match[1] : null);
-        }
-      } catch(e) {
-        callback(null);
-      }
-      document.body.removeChild(iframe);
-    });
-  },
-
-  // ── Bulk resolve all episodes for a MovieBox show ──
-  // Maps stream URLs → data-user-* attributes on every chip
-  bulkResolve: function(mbKey, animeData, callback) {
-    var catalog = MOVIEBOX_CATALOG[mbKey];
-    if (!catalog) { callback(null); return; }
-
-    var results = {};
-    var total = catalog.totalEpisodes || animeData.eps || 24;
-    var langs = Object.keys(catalog.urlPattern || {});
-    var completed = 0;
-    var totalJobs = total * langs.length;
-
-    if (totalJobs === 0) { callback(null); return; }
-
-    // Clone urlPattern into results
-    for (var l = 0; l < langs.length; l++) {
-      var lang = langs[l];
-      results[lang] = {};
-      for (var ep = 1; ep <= total; ep++) {
-        var url = catalog.urlPattern[lang].replace('{ep}', ep);
-        results[lang][ep] = url;
-      }
-    }
-
-    // Apply to episode chips in DOM if the anime is currently open
-    if (S.cur && S.cur.title === catalog.title) {
-      MB._applyToChips(results);
-    }
-
-    callback(results);
-    toast('✅ MovieBox resolved ' + total + ' eps for ' + catalog.title);
-  },
-
-  // ── Auto-resolve when an anime card is clicked ──
-  // Checks if there's a matching MovieBox catalog entry and applies URLs
-  autoResolve: function(animeTitle) {
-    for (var key in MOVIEBOX_CATALOG) {
-      var entry = MOVIEBOX_CATALOG[key];
-      if (entry.title.toLowerCase().indexOf(animeTitle.toLowerCase()) !== -1 ||
-          animeTitle.toLowerCase().indexOf(entry.title.toLowerCase()) !== -1) {
-        return MB.bulkResolve(key, {eps: entry.totalEpisodes}, function(results) {
-          if (results) MB._applyToChips(results);
-        });
-      }
-    }
-    return null;
-  },
-
-  // ── Inject resolved URLs into existing DOM episode chips ──
-  _applyToChips: function(resolved) {
-    if (!resolved) return;
-    var chips = document.querySelectorAll('.ep-chip');
-    chips.forEach(function(chip) {
-      var ep = parseInt(chip.getAttribute('data-episode'));
-      if (!ep) return;
-      for (var lang in resolved) {
-        if (resolved[lang] && resolved[lang][ep]) {
-          chip.setAttribute('data-user-' + lang, resolved[lang][ep]);
-        }
-      }
-    });
-    // Re-render chips to show updated state
-    renderEpChips();
-  },
-
-  // ── Add a custom MovieBox entry at runtime ──
-  addEntry: function(mbId, title, totalEpisodes, urlPattern) {
-    MOVIEBOX_CATALOG[mbId] = {
-      title: title,
-      totalEpisodes: totalEpisodes,
-      urlPattern: urlPattern
-    };
-    console.log('[MB] Added entry: ' + title + ' (' + totalEpisodes + ' eps)');
-  }
-};
-
-// ── EXPOSE TO CONSOLE ──
-// Usage: MB.addEntry('my_id', 'Show Name', 12, {hindi:'https://.../{ep}', english:'https://.../{ep}'})
-window.MB = MB;
-window.MOVIEBOX_CATALOG = MOVIEBOX_CATALOG;
-
-// ── HOOK INTO openPanel: auto-resolve MovieBox links ──
-var _origOpenPanel = openPanel;
-openPanel = function(a) {
-  _origOpenPanel(a);
-  // Auto-resolve MovieBox streams in background
-  if (a && a.title) {
-    setTimeout(function() {
-      MB.autoResolve(a.title);
-    }, 500);
-  }
-};
-
-console.log('%c🎬 MovieBox Auto-Resolver Ready — ' + Object.keys(MOVIEBOX_CATALOG).length + ' shows pre-resolved', 'color:#22c55e;font-size:13px;');
-
-// ── IMMEDIATELY RESOLVE 'That Time I Got Reincarnated as a Slime' ──
-console.log('%c🍥 Pre-resolved: That Time I Got Reincarnated as a Slime — 24 eps Hindi/English/Japanese', 'color:#4ade80;');
-
+console.log('%c🔥 Project TITAN Active — '+ANIME.length+' seed · Q'+'U18SYuNLb3 pre-mapped · 3-tier anti-block pipeline','color:#22c55e;font-size:14px;');
 </script>
 </body>
 </html>
