@@ -3,69 +3,97 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AnimeHub — 500+ Anime · 15000+ Episodes</title>
+<title>AnimeHub</title>
 <style>
-:root{--bg:#080808;--card:#141414;--green:#16a34a;--glow:#22c55e;--text:#fff;--t2:#aaa;--t3:#555;--border:#222}
-*{margin:0;padding:0;box-sizing:border-box}
-html{background:var(--bg);scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;overflow-x:hidden}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:10px}
-@media(min-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;padding:14px}}
-@media(min-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;padding:18px;max-width:1600px;margin:0 auto}}
-.card{background:var(--card);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .15s;border:1px solid var(--border)}
-.card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.5);border-color:var(--glow)}
-.card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
-.card-body{padding:10px 12px 12px}
-.card-title{font-size:13px;font-weight:700;line-height:1.2;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-ep{font-size:11px;color:var(--t2)}
-.card-badge{display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px}
-.card-badge.sub{background:#f97316}
-.load-more{display:block;width:100%;padding:14px;margin:10px 0;background:var(--card);border:1px solid var(--border);color:var(--glow);font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;grid-column:1/-1;text-align:center}
-.load-more:hover{border-color:var(--green);background:#1a1a1a}
+:root{--bg:#060606;--card:#121212;--card-hover:#181818;--green:#16a34a;--glow:#22c55e;--green-bg:rgba(22,163,74,0.12);--text:#f0f0f0;--t2:#999;--t3:#555;--border:rgba(255,255,255,0.06);--r:8px;--rr:20px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,sans-serif;font-weight:400;overflow-x:hidden;letter-spacing:-0.01em}
+
+/* ═══ GRID ═══ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;padding:8px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;padding:12px}}
+@media(min-width:960px){.grid{grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;padding:16px;max-width:1700px;margin:0 auto}}
 .sentinel{height:1px;grid-column:1/-1}
 
-/* ─── DETAIL PANEL ─── */
-.panel{position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;display:none;flex-direction:column}
+/* ═══ CARD ═══ */
+.card{background:var(--card);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .2s ease-in-out,box-shadow .2s ease-in-out,border-color .2s ease-in-out;border:1px solid var(--border)}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,0.6);border-color:rgba(34,197,94,0.25)}
+.card:active{transform:scale(.98);transition:transform .08s ease-in-out}
+.card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;transition:transform .3s ease-in-out}
+.card:hover .card-img{transform:scale(1.04)}
+.card-body{padding:9px 10px 10px}
+.card-title{font-size:12.5px;font-weight:600;line-height:1.25;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--text)}
+.card-meta{font-size:10.5px;color:var(--t2);display:flex;align-items:center;gap:5px}
+.card-score{color:var(--glow);font-weight:600}
+.card-badge{display:inline-block;background:var(--green-bg);color:var(--glow);font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:5px;letter-spacing:.02em}
+.card-badge.sub{background:rgba(249,115,22,0.12);color:#f97316}
+
+/* ═══ LOAD MORE ═══ */
+.load-more{display:block;width:100%;padding:12px;margin:8px 0;background:var(--card);border:1px solid var(--border);color:var(--t2);font-size:12.5px;font-weight:600;cursor:pointer;border-radius:var(--r);grid-column:1/-1;text-align:center;transition:all .2s ease-in-out}
+.load-more:hover{border-color:var(--green);color:var(--glow);background:var(--card-hover)}
+
+/* ═══ PANEL OVERLAY ═══ */
+.panel{position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;animation:fadeIn .18s ease-in-out}
 .panel.open{display:flex}
-.panel-back{position:fixed;top:10px;left:10px;z-index:110;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.6);border:none;color:#fff;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
-.panel-back:hover{background:var(--green)}
-.panel-scroll{flex:1;overflow-y:auto;padding-bottom:60px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.panel-back{position:fixed;top:10px;left:10px;z-index:110;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--t2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s ease-in-out;backdrop-filter:blur(10px)}
+.panel-back:hover{background:var(--green);color:#fff;border-color:var(--green);transform:scale(1.06)}
+.panel-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:50px;scroll-behavior:smooth}
+.panel-scroll::-webkit-scrollbar{width:4px}
+.panel-scroll::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+
+/* ═══ PLAYER ═══ */
 .player-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
 .player-iframe{position:absolute;inset:0;width:100%;height:100%;border:none;z-index:2}
-.info{padding:14px 16px}
-.info-title{font-size:20px;font-weight:800;margin-bottom:6px}
-.info-meta{font-size:12px;color:var(--t2);margin-bottom:8px}
-.info-synopsis{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:12px}
 
-.audio-row{display:flex;gap:6px;padding:0 16px 12px;flex-wrap:wrap}
-.audio-btn{padding:7px 14px;border-radius:999px;background:#181818;border:1px solid #2a2a2a;color:#aaa;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
-.audio-btn:hover:not(:disabled){background:#222;color:#fff}
-.audio-btn:disabled{opacity:.3;cursor:not-allowed}
-.audio-btn.active{background:#14532d;border-color:var(--green);color:#4ade80;box-shadow:0 0 10px rgba(22,163,74,0.3)}
+/* ═══ INFO ═══ */
+.info{padding:16px 16px 10px}
+.info-title{font-size:21px;font-weight:700;margin-bottom:5px;letter-spacing:-0.02em}
+.info-meta{font-size:12px;color:var(--t2);margin-bottom:6px;display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.info-synopsis{font-size:12.5px;color:var(--t2);line-height:1.55;margin-bottom:0;font-weight:400}
 
-.ep-section{padding:0 16px;margin-bottom:16px}
-.ep-label{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:5px}
-.ep-chip{padding:8px 2px;border-radius:6px;background:#181818;border:1px solid #2a2a2a;color:#bbb;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .1s;position:relative}
-.ep-chip:hover{background:#222;color:#fff;border-color:#444}
-.ep-chip.active{background:var(--green);border-color:var(--glow);color:#fff;box-shadow:0 0 12px rgba(22,163,74,0.45)}
-.ep-chip.watched::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#4ade80}
-.range-jump{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.range-btn{padding:5px 10px;border-radius:5px;background:#141414;border:1px solid #2a2a2a;color:#888;font-size:10px;font-weight:700;cursor:pointer;transition:all .12s}
-.range-btn:hover{background:#1e1e1e;color:#fff}
-.range-btn.active{background:var(--green-dark);border-color:var(--green);color:#4ade80}
-.actions{display:flex;gap:6px;padding:0 16px 14px;flex-wrap:wrap}
-.act-pill{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:999px;background:#181818;border:1px solid #2a2a2a;color:#ccc;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
-.act-pill:hover{background:#252525;color:#fff}
+/* ═══ ACTION PILLS ═══ */
+.actions{display:flex;gap:5px;padding:0 16px 10px;flex-wrap:wrap}
+.act-pill{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--rr);background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s ease-in-out;letter-spacing:.01em}
+.act-pill:hover{background:rgba(255,255,255,0.08);color:var(--text);border-color:rgba(255,255,255,0.12)}
+.act-pill svg{opacity:.7;transition:opacity .2s ease-in-out}
+.act-pill:hover svg{opacity:1}
 
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%)translateY(100px);background:#1f1f1f;color:#fff;padding:10px 20px;border-radius:999px;font-size:12px;font-weight:600;z-index:200;opacity:0;transition:all .3s;pointer-events:none;border:1px solid var(--green)}
+/* ═══ AUDIO ═══ */
+.audio-row{display:flex;gap:5px;padding:0 16px 12px;flex-wrap:wrap}
+.audio-btn{padding:5px 12px;border-radius:var(--rr);background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--t2);font-size:10.5px;font-weight:500;cursor:pointer;transition:all .2s ease-in-out;letter-spacing:.02em}
+.audio-btn:hover:not(:disabled){background:rgba(255,255,255,0.06);color:var(--text);border-color:rgba(255,255,255,0.12)}
+.audio-btn:disabled{opacity:.25;cursor:not-allowed}
+.audio-btn.active{background:rgba(22,163,74,0.18);border-color:rgba(34,197,94,0.4);color:var(--glow);box-shadow:0 0 12px rgba(22,163,74,0.15)}
+
+/* ═══ EPISODE SECTION ═══ */
+.ep-section{padding:0 16px 20px}
+.ep-label{font-size:11.5px;font-weight:600;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;letter-spacing:.01em}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:4px}
+.ep-chip{padding:7px 1px;border-radius:6px;background:rgba(255,255,255,0.025);border:1px solid var(--border);color:var(--t2);font-size:10.5px;font-weight:500;cursor:pointer;text-align:center;transition:all .2s ease-in-out;position:relative;letter-spacing:.02em}
+.ep-chip:hover{background:rgba(255,255,255,0.06);color:var(--text);border-color:rgba(255,255,255,0.14);transform:translateY(-1px)}
+.ep-chip:active{transform:scale(.94);transition:all .06s ease-in-out}
+.ep-chip.active{background:var(--green);border-color:var(--glow);color:#fff;font-weight:600;box-shadow:0 0 14px rgba(22,163,74,0.35);transform:translateY(-1px)}
+.ep-chip.watched::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--glow);opacity:.6}
+.range-jump{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px}
+.range-btn{padding:4px 9px;border-radius:5px;background:rgba(255,255,255,0.02);border:1px solid var(--border);color:var(--t3);font-size:10px;font-weight:500;cursor:pointer;transition:all .2s ease-in-out}
+.range-btn:hover{background:rgba(255,255,255,0.05);color:var(--t2)}
+.range-btn.active{background:rgba(22,163,74,0.15);border-color:rgba(34,197,94,0.3);color:var(--glow)}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%)translateY(100px);background:rgba(18,18,18,0.95);color:var(--text);padding:9px 18px;border-radius:var(--rr);font-size:11.5px;font-weight:500;z-index:200;opacity:0;transition:all .25s cubic-bezier(0.16,1,0.3,1);pointer-events:none;border:1px solid var(--border);backdrop-filter:blur(12px);letter-spacing:.01em}
 .toast.show{transform:translateX(-50%)translateY(0);opacity:1}
-.loader-widget{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:199;background:#1a1a1a;border:1px solid var(--green);border-radius:10px;padding:10px 18px;display:none;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(22,163,74,0.2)}
+
+/* ═══ LOADER ═══ */
+.loader-widget{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:199;background:rgba(18,18,18,0.95);border:1px solid var(--border);border-radius:var(--r);padding:9px 16px;display:none;align-items:center;gap:9px;backdrop-filter:blur(12px)}
 .loader-widget.show{display:flex}
-.loader-spin{width:18px;height:18px;border:2.5px solid #333;border-top-color:var(--glow);border-radius:50%;animation:spin .7s linear infinite}
+.loader-spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.08);border-top-color:var(--glow);border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loader-widget .loader-text{font-size:12px;font-weight:600;color:var(--t2)}
-.stream-badge{position:fixed;top:8px;right:8px;z-index:120;background:rgba(0,0,0,0.75);color:#4ade80;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .3s}
+.loader-widget .loader-text{font-size:11.5px;font-weight:500;color:var(--t2)}
+
+/* ═══ STREAM BADGE ═══ */
+.stream-badge{position:fixed;top:8px;right:8px;z-index:120;background:rgba(0,0,0,0.7);color:var(--glow);font-size:9px;font-weight:500;padding:3px 8px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .25s ease-in-out;border:1px solid var(--border);letter-spacing:.02em}
 .stream-badge.show{opacity:1}
 </style>
 </head>
@@ -85,12 +113,12 @@ body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,
       <div class="info-synopsis" id="infoSynopsis"></div>
     </div>
     <div class="actions">
-      <button class="act-pill" id="actSave"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Save</button>
-      <button class="act-pill" id="actShare"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
+      <button class="act-pill" id="actSave"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Save</button>
+      <button class="act-pill" id="actShare"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
     </div>
     <div class="audio-row" id="audioRow"></div>
     <div class="ep-section">
-      <div class="ep-label"><span id="epLabel">All Episodes</span><span id="epCount" style="color:var(--t3);font-size:11px"></span></div>
+      <div class="ep-label"><span id="epLabel">All Episodes</span><span id="epCount" style="color:var(--t3);font-size:10.5px"></span></div>
       <div class="range-jump" id="rangeJump"></div>
       <div class="ep-grid" id="epGrid"></div>
     </div>
@@ -102,15 +130,10 @@ body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,
 
 <script>
 'use strict';
-/* ============================================================
-   AnimeHub RAW ENGINE — 500+ anime · real episode data-* attrs
-   Jikan API + Kitsu fallback · VidSrc.cc/v2 → VidSrc.to → 2embed
-   ============================================================ */
 var $=function(id){return document.getElementById(id);};
 var _tt;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},2200);}
 function ldr(show,msg){var l=$('loaderW');if(show){$('loaderTxt').textContent=msg||'Loading...';l.classList.add('show');}else{l.classList.remove('show');}}
 
-/* ─── SEED CATALOG (instant, replaced by API) ─── */
 var ANIME=[];
 var SEED=[
   {id:1,title:"Naruto Shippuden",eps:500,score:8.7,year:2007,studio:"Pierrot",genres:["Action","Adventure"],poster:"https://cdn.myanimelist.net/images/anime/5/17407.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/17407l.jpg",synopsis:"Naruto Uzumaki continues his journey to become the greatest ninja and protect his village.",langs:{hindi:true,english:true,japanese:true}},
@@ -120,185 +143,51 @@ var SEED=[
   {id:1535,title:"Death Note",eps:37,score:8.6,year:2006,studio:"Madhouse",genres:["Mystery","Thriller"],poster:"https://cdn.myanimelist.net/images/anime/9/9453.jpg",banner:"https://cdn.myanimelist.net/images/anime/9/9453l.jpg",synopsis:"A brilliant student discovers a notebook that can kill anyone.",langs:{hindi:true,english:true,japanese:true}},
   {id:9253,title:"Steins;Gate",eps:24,score:9.1,year:2011,studio:"White Fox",genres:["Sci-Fi","Thriller"],poster:"https://cdn.myanimelist.net/images/anime/1935/127974.jpg",banner:"https://cdn.myanimelist.net/images/anime/1935/127974l.jpg",synopsis:"A self-proclaimed mad scientist accidentally invents time travel.",langs:{hindi:false,english:true,japanese:true}},
   {id:11061,title:"Hunter x Hunter",eps:148,score:9.0,year:2011,studio:"Madhouse",genres:["Adventure","Action"],poster:"https://cdn.myanimelist.net/images/anime/1337/99053.jpg",banner:"https://cdn.myanimelist.net/images/anime/1337/99053l.jpg",synopsis:"Gon Freecss sets out to become a Hunter.",langs:{hindi:false,english:true,japanese:true}},
-  {id:32281,title:"Your Name",eps:1,score:8.8,year:2016,studio:"CoMix Wave",genres:["Drama","Romance"],poster:"https://cdn.myanimelist.net/images/anime/5/87048.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/87048l.jpg",synopsis:"Two strangers find themselves swapping bodies.",langs:{hindi:true,english:true,japanese:true}},
   {id:40748,title:"Jujutsu Kaisen",eps:47,score:9.0,year:2020,studio:"MAPPA",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg",banner:"https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",synopsis:"Yuji Itadori swallows a cursed finger and joins Jujutsu High.",langs:{hindi:true,english:true,japanese:true}},
   {id:38000,title:"Demon Slayer",eps:63,score:8.7,year:2019,studio:"ufotable",genres:["Action","Adventure"],poster:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg",banner:"https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",synopsis:"Tanjiro joins the Demon Slayer Corps.",langs:{hindi:true,english:true,japanese:true}},
   {id:269,title:"Bleach",eps:392,score:8.1,year:2004,studio:"Pierrot",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/3/40451.jpg",banner:"https://cdn.myanimelist.net/images/anime/3/40451l.jpg",synopsis:"Ichigo Kurosaki becomes a Soul Reaper.",langs:{hindi:true,english:true,japanese:true}},
-  {id:30276,title:"One Punch Man",eps:24,score:8.5,year:2015,studio:"Madhouse",genres:["Action","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/12/76049.jpg",banner:"https://cdn.myanimelist.net/images/anime/12/76049l.jpg",synopsis:"A hero who can defeat any opponent with a single punch.",langs:{hindi:true,english:true,japanese:true}}
+  {id:30276,title:"One Punch Man",eps:24,score:8.5,year:2015,studio:"Madhouse",genres:["Action","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/12/76049.jpg",banner:"https://cdn.myanimelist.net/images/anime/12/76049l.jpg",synopsis:"A hero who can defeat any opponent with a single punch.",langs:{hindi:true,english:true,japanese:true}},
+  {id:31964,title:"Mob Psycho 100",eps:25,score:8.5,year:2016,studio:"Bones",genres:["Action","Comedy"],poster:"https://cdn.myanimelist.net/images/anime/8/80356.jpg",banner:"https://cdn.myanimelist.net/images/anime/8/80356l.jpg",synopsis:"A psychic middle schooler tries to live a normal life.",langs:{hindi:false,english:true,japanese:true}}
 ];
 SEED.forEach(function(a){ANIME.push(a);});
 
-/* ─── STATE ─── */
 var S={page:1,hasMore:true,total:0,feched:false,feching:false,merged:0,isFeching:false,io:null,cur:null,audio:'hindi',ep:1,range:0};
 
-/* ─── USER DB ─── */
-var UD={k:'ah_raw_db',init:function(){try{this.d=JSON.parse(localStorage.getItem(this.k));}catch(e){this.d=null;}if(!this.d)this.d={saved:[],history:{},watched:{}};if(!this.d.watched)this.d.watched={};return this;},save:function(){localStorage.setItem(this.k,JSON.stringify(this.d));},isSaved:function(id){return this.d.saved.some(function(s){return s.id===id;});},toggleSave:function(a){var i=this.d.saved.findIndex(function(s){return s.id===a.id;});if(i>=0){this.d.saved.splice(i,1);this.save();return false;}this.d.saved.unshift({id:a.id,title:a.title,poster:a.poster,ts:Date.now()});this.save();return true;},markWatched:function(aid,ep){var k=aid+'_'+ep;this.d.watched[k]=Date.now();this.save();},isWatched:function(aid,ep){return!!this.d.watched[aid+'_'+ep];}};UD.init();
+var UD={k:'ah_raw_db',init:function(){try{this.d=JSON.parse(localStorage.getItem(this.k));}catch(e){this.d=null;}if(!this.d)this.d={saved:[],watched:{}};return this;},save:function(){localStorage.setItem(this.k,JSON.stringify(this.d));},isSaved:function(id){return this.d.saved.some(function(s){return s.id===id;});},toggleSave:function(a){var i=this.d.saved.findIndex(function(s){return s.id===a.id;});if(i>=0){this.d.saved.splice(i,1);this.save();return false;}this.d.saved.unshift({id:a.id,title:a.title,poster:a.poster,ts:Date.now()});this.save();return true;},markWatched:function(aid,ep){this.d.watched[aid+'_'+ep]=Date.now();this.save();},isWatched:function(aid,ep){return!!this.d.watched[aid+'_'+ep];}};UD.init();
 
-/* ─── NET ─── */
 var Net={maxRetries:3,base:300,fetch:function(url,retries){retries=retries||0;return fetch(url).then(function(r){if(r.status===429){if(retries>=Net.maxRetries)throw new Error('RATE');var d=Net.base*Math.pow(2,retries);return new Promise(function(ok){setTimeout(function(){ok(Net.fetch(url,retries+1));},d);});}if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}};
 
-/* ─── JIKAN ─── */
 function nrm(it){var e=it.entry||it;return{id:e.mal_id,title:e.title||'',eps:e.episodes||12,score:e.score||0,year:e.aired?(new Date(e.aired.from)).getFullYear():(e.year||null),studio:(e.studios||[]).map(function(s){return s.name;})[0]||'',genres:(e.genres||[]).map(function(g){return g.name;}),poster:(e.images&&e.images.jpg&&e.images.jpg.large_image_url)||(e.images&&e.images.jpg&&e.images.jpg.image_url)||'',banner:(e.images&&e.images.jpg&&e.images.jpg.large_image_url)||(e.images&&e.images.jpg&&e.images.jpg.image_url)||'',synopsis:(e.synopsis||'').substring(0,400),langs:{hindi:Math.random()>0.35,english:true,japanese:true},_api:true};}
 var JK={base:'https://api.jikan.moe/v4',fetchAll:function(page){return Promise.all([Net.fetch(JK.base+'/top/anime?page='+(page||1)+'&limit=25&filter=bypopularity'),Net.fetch(JK.base+'/seasons/now?page='+(page||1)+'&limit=25'),Net.fetch(JK.base+'/anime?page='+(page||1)+'&limit=25&order_by=score&sort=desc')]).then(function(r){var m=[],seen={};r.forEach(function(d){if(d&&d.data)d.data.forEach(function(a){if(!seen[a.mal_id]){seen[a.mal_id]=true;m.push(a);}});});return{results:m.map(nrm),total:5000,hasNext:r[0]&&r[0].pagination?r[0].pagination.has_next_page:false};}).catch(function(){return{results:[],total:0,hasNext:false};});}};
 
-/* ─── EMBED PIPELINE ─── */
-var EMBEDS=[
-  {name:'VidSrc.cc v2',url:function(id,ep){return'https://vidsrc.cc/v2/embed/anime/'+id+'/'+ep;}},
-  {name:'VidSrc.to',url:function(id,ep){return'https://vidsrc.to/embed/anime/'+id+'/'+ep;}},
-  {name:'2embed.cc',url:function(id,ep){return'https://2embed.cc/embed/'+id+'/'+ep;}},
-  {name:'YouTube',url:function(id,ep){var yt=['4A_X-Dvl0ws','VQGCKyvzIM4','MGRm4IzK1SQ','Ades3pQbeh8','2W0g1o7k1zI'];return'https://www.youtube.com/embed/'+yt[(id*7+ep*3)%yt.length]+'?autoplay=1';}}
-];
+var EMBEDS=[{name:'VidSrc.cc',url:function(id,ep){return'https://vidsrc.cc/v2/embed/anime/'+id+'/'+ep;}},{name:'VidSrc.to',url:function(id,ep){return'https://vidsrc.to/embed/anime/'+id+'/'+ep;}},{name:'2embed',url:function(id,ep){return'https://2embed.cc/embed/'+id+'/'+ep;}},{name:'YouTube',url:function(id,ep){var yt=['4A_X-Dvl0ws','VQGCKyvzIM4','MGRm4IzK1SQ','Ades3pQbeh8','2W0g1o7k1zI'];return'https://www.youtube.com/embed/'+yt[(id*7+ep*3)%yt.length]+'?autoplay=1';}}];
 
-function playEpisode(epNum){
-  S.ep=epNum;
-  var ifr=$('playerIframe'),badge=$('streamBadge'),tried=0;
-  function tryNext(){
-    if(tried>=EMBEDS.length){ifr.src='https://www.youtube.com/embed/vH-qWDJv3vI?autoplay=1';badge.textContent='YouTube';badge.classList.add('show');clearTimeout(badge._t);badge._t=setTimeout(function(){badge.classList.remove('show');},4000);toast('▶ EP '+epNum);return;}
-    var fb=EMBEDS[tried];
-    var url=fb.url(S.cur.id,epNum);
-    ifr.src=url;badge.textContent=fb.name;badge.classList.add('show');clearTimeout(badge._t);badge._t=setTimeout(function(){badge.classList.remove('show');},4000);
-    UD.markWatched(S.cur.id,epNum);
-    tried=0;
-  }
-  tryNext();renderEpChips();toast('▶ EP '+epNum+' — '+S.cur.title);
-}
+function playEpisode(epNum){S.ep=epNum;var ifr=$('playerIframe'),badge=$('streamBadge'),tried=0;function tryNext(){if(tried>=EMBEDS.length){ifr.src='https://www.youtube.com/embed/vH-qWDJv3vI?autoplay=1';badge.textContent='YouTube';badge.classList.add('show');clearTimeout(badge._t);badge._t=setTimeout(function(){badge.classList.remove('show');},3500);toast('▶ EP '+epNum);return;}var fb=EMBEDS[tried];var url=fb.url(S.cur.id,epNum);ifr.src=url;badge.textContent=fb.name;badge.classList.add('show');clearTimeout(badge._t);badge._t=setTimeout(function(){badge.classList.remove('show');},3500);UD.markWatched(S.cur.id,epNum);tried=0;}tryNext();renderEpChips();toast('▶ EP '+epNum+' — '+S.cur.title);}
 
-/* ─── RENDER GRID ─── */
-function renderGrid(){
-  var g=$('grid');g.innerHTML='';
-  ANIME.forEach(function(a){
-    var c=document.createElement('div');c.className='card';c.setAttribute('data-id',a.id);
-    var hasHindi=a.langs&&a.langs.hindi;
-    c.innerHTML=
-      '<img class="card-img" src="'+a.poster+'" alt="'+a.title+'" loading="lazy" onerror="this.onerror=null;this.src=\'https://picsum.photos/300/450\';" />'+
-      '<div class="card-body">'+
-      (hasHindi?'<span class="card-badge">Hindi</span>':'<span class="card-badge sub">Sub</span>')+
-      '<div class="card-title">'+a.title+'</div>'+
-      '<div class="card-ep">★ '+(a.score||'—')+' · '+(a.eps||0)+' eps · '+(a.year||'')+'</div>'+
-      '</div>';
-    c.addEventListener('click',function(){openPanel(a);});g.appendChild(c);
-  });
-  if(S.feched&&S.hasMore&&!S.feching){
-    var lm=document.createElement('button');lm.className='load-more';lm.textContent='Load More (Page '+(S.page+1)+') · '+S.merged+' loaded';
-    lm.addEventListener('click',function(){S.page++;_fetch();});g.appendChild(lm);
-  }
-}
+function renderGrid(){var g=$('grid');g.innerHTML='';ANIME.forEach(function(a){var c=document.createElement('div');c.className='card';c.setAttribute('data-id',a.id);var hasHindi=a.langs&&a.langs.hindi;c.innerHTML='<img class="card-img" src="'+a.poster+'" alt="'+a.title+'" loading="lazy" onerror="this.onerror=null;this.src=\'https://picsum.photos/300/450\';" /><div class="card-body">'+(hasHindi?'<span class="card-badge">Hindi</span>':'<span class="card-badge sub">Sub</span>')+'<div class="card-title">'+a.title+'</div><div class="card-meta"><span class="card-score">★ '+(a.score||'—')+'</span>'+(a.eps||0)+' eps · '+(a.year||'')+'</div></div>';c.addEventListener('click',function(){openPanel(a);});g.appendChild(c);});if(S.feched&&S.hasMore&&!S.feching){var lm=document.createElement('button');lm.className='load-more';lm.textContent='Load More (Page '+(S.page+1)+') · '+S.merged+' loaded';lm.addEventListener('click',function(){S.page++;_fetch();});g.appendChild(lm);}}
 
-/* ─── API FETCH ─── */
-function _fetch(){
-  S.feching=true;ldr(true,'Fetching page '+S.page+'...');
-  JK.fetchAll(S.page).then(function(d){
-    if(d.results.length>0){
-      if(S.page===1){ANIME=ANIME.filter(function(a){return !a._api;});}
-      var ei={};ANIME.forEach(function(a){ei[a.id]=true;});
-      d.results.forEach(function(a){if(!ei[a.id]){ANIME.push(a);S.merged++;ei[a.id]=true;}});
-      S.total=Math.max(S.total,d.total);S.hasMore=d.hasNext;S.feched=true;
-    }
-    ldr(false);renderGrid();S.feching=false;
-  }).catch(function(){ldr(false);S.feching=false;});
-}
+function _fetch(){S.feching=true;ldr(true,'Fetching page '+S.page+'...');JK.fetchAll(S.page).then(function(d){if(d.results.length>0){if(S.page===1){ANIME=ANIME.filter(function(a){return !a._api;});}var ei={};ANIME.forEach(function(a){ei[a.id]=true;});d.results.forEach(function(a){if(!ei[a.id]){ANIME.push(a);S.merged++;ei[a.id]=true;}});S.total=Math.max(S.total,d.total);S.hasMore=d.hasNext;S.feched=true;}ldr(false);renderGrid();S.feching=false;}).catch(function(){ldr(false);S.feching=false;});}
 
-/* ─── INFINITE SCROLL ─── */
-function setupIS(){
-  if(S.io)S.io.disconnect();
-  S.io=new IntersectionObserver(function(e){if(e[0].isIntersecting&&S.feched&&S.hasMore&&!S.feching&&!S.isFeching){S.isFeching=true;S.page++;_fetch();setTimeout(function(){S.isFeching=false;},1500);}},{rootMargin:'200px'});
-  var s=$('sentinel');if(s)S.io.observe(s);
-}
+function setupIS(){if(S.io)S.io.disconnect();S.io=new IntersectionObserver(function(e){if(e[0].isIntersecting&&S.feched&&S.hasMore&&!S.feching&&!S.isFeching){S.isFeching=true;S.page++;_fetch();setTimeout(function(){S.isFeching=false;},1500);}},{rootMargin:'200px'});var s=$('sentinel');if(s)S.io.observe(s);}
 
-/* ─── OPEN PANEL ─── */
-function openPanel(a){
-  S.cur=a;S.ep=1;S.range=0;
-  // Auto-select first available audio
-  var ak=['hindi','english','japanese'];
-  S.audio='hindi';
-  for(var i=0;i<ak.length;i++){if(a.langs&&a.langs[ak[i]]){S.audio=ak[i];break;}}
+function openPanel(a){S.cur=a;S.ep=1;S.range=0;var ak=['hindi','english','japanese'];S.audio='hindi';for(var i=0;i<ak.length;i++){if(a.langs&&a.langs[ak[i]]){S.audio=ak[i];break;}}$('infoTitle').textContent=a.title;$('infoMeta').innerHTML='★ '+(a.score||'—')+' · '+(a.eps||0)+' eps · '+(a.year||'')+' · '+(a.studio||'Studio');$('infoSynopsis').textContent=a.synopsis||'';renderAudioButtons();renderEpChips();updateSaveBtn();playEpisode(1);$('panel').classList.add('open');$('panel').scrollTop=0;document.body.style.overflow='hidden';}
 
-  $('infoTitle').textContent=a.title;
-  $('infoMeta').innerHTML='★ '+(a.score||'—')+' · '+(a.eps||0)+' eps · '+(a.year||'')+' · '+(a.studio||'Studio');
-  $('infoSynopsis').textContent=a.synopsis||'';
-  renderAudioButtons();
-  renderEpChips();
-  updateSaveBtn();
-  playEpisode(1);
-  $('panel').classList.add('open');$('panel').scrollTop=0;document.body.style.overflow='hidden';
-}
-
-/* ─── AUDIO BUTTONS ─── */
 var AUDIO_LABELS={hindi:'Hindi Dub',english:'English Dub',japanese:'Japanese Sub'};
-function renderAudioButtons(){
-  var row=$('audioRow');row.innerHTML='';
-  ['hindi','english','japanese'].forEach(function(k){
-    var b=document.createElement('button');b.className='audio-btn'+(S.audio===k?' active':'');
-    b.textContent=AUDIO_LABELS[k];
-    if(S.cur.langs&&!S.cur.langs[k]){b.disabled=true;b.textContent+=' (N/A)';}
-    b.addEventListener('click',function(){if(S.cur.langs&&S.cur.langs[k]){S.audio=k;renderAudioButtons();playEpisode(S.ep);toast('🎧 '+AUDIO_LABELS[k]);}});
-    row.appendChild(b);
-  });
-}
+function renderAudioButtons(){var row=$('audioRow');row.innerHTML='';['hindi','english','japanese'].forEach(function(k){var b=document.createElement('button');b.className='audio-btn'+(S.audio===k?' active':'');b.textContent=AUDIO_LABELS[k];if(S.cur.langs&&!S.cur.langs[k]){b.disabled=true;b.textContent+=' (N/A)';}b.addEventListener('click',function(){if(S.cur.langs&&S.cur.langs[k]){S.audio=k;renderAudioButtons();playEpisode(S.ep);toast('🎧 '+AUDIO_LABELS[k]);}});row.appendChild(b);});}
 
-/* ─── EPISODE CHIPS ─── */
-function renderEpChips(){
-  var g=$('epGrid'),jump=$('rangeJump');
-  g.innerHTML='';jump.innerHTML='';
-  $('epCount').textContent=(S.cur.eps||0)+' episodes';
+function renderEpChips(){var g=$('epGrid'),jump=$('rangeJump');g.innerHTML='';jump.innerHTML='';$('epCount').textContent=(S.cur.eps||0)+' episodes';var eps=S.cur.eps||12;if(eps>100){var ranges=Math.ceil(eps/100);for(var r=0;r<ranges;r++){(function(range){var rb=document.createElement('button');rb.className='range-btn'+(S.range===range?' active':'');rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,eps);rb.addEventListener('click',function(){S.range=range;renderEpChips();$('panel').scrollTop=$('epGrid').offsetTop-70;});jump.appendChild(rb);})(r);}}var start=S.range*100+1,end=Math.min((S.range+1)*100,eps);$('epLabel').textContent='EP '+start+' — EP '+end;for(var i=start;i<=end;i++){(function(ep){var chip=document.createElement('button');chip.className='ep-chip'+(S.ep===ep?' active':'')+(UD.isWatched(S.cur.id,ep)?' watched':'');chip.textContent=String(ep).padStart(3,'0');chip.setAttribute('data-episode',ep);chip.setAttribute('data-anime-id',S.cur.id);chip.setAttribute('data-anime-title',S.cur.title);chip.setAttribute('data-hindi-src','');chip.setAttribute('data-english-src','');chip.setAttribute('data-japanese-src','');chip.setAttribute('data-vidsrc-cc','https://vidsrc.cc/v2/embed/anime/'+S.cur.id+'/'+ep);chip.setAttribute('data-vidsrc-to','https://vidsrc.to/embed/anime/'+S.cur.id+'/'+ep);chip.setAttribute('data-2embed','https://2embed.cc/embed/'+S.cur.id+'/'+ep);chip.setAttribute('data-user-hindi','');chip.setAttribute('data-user-english','');chip.setAttribute('data-user-japanese','');chip.addEventListener('click',function(){var userSrc=chip.getAttribute('data-user-'+S.audio);if(userSrc&&userSrc.length>5){$('playerIframe').src=userSrc;toast('🔒 Private Link: EP '+ep);S.ep=ep;renderEpChips();return;}playEpisode(ep);});g.appendChild(chip);})(i);}}
 
-  var eps=S.cur.eps||12;
-  if(eps>100){
-    var ranges=Math.ceil(eps/100);
-    for(var r=0;r<ranges;r++){
-      (function(range){var rb=document.createElement('button');rb.className='range-btn'+(S.range===range?' active':'');rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,eps);rb.addEventListener('click',function(){S.range=range;renderEpChips();$('panel').scrollTop=$('epGrid').offsetTop-80;});jump.appendChild(rb);})(r);
-    }
-  }
+function updateSaveBtn(){var b=$('actSave');if(!S.cur)return;var sv=UD.isSaved(S.cur.id);b.innerHTML=sv?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Saved':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Save';b.style.color=sv?'#22c55e':'';}
 
-  var start=S.range*100+1,end=Math.min((S.range+1)*100,eps);
-  $('epLabel').textContent='EP '+start+' — EP '+end;
-
-  for(var i=start;i<=end;i++){
-    (function(ep){
-      var chip=document.createElement('button');
-      chip.className='ep-chip'+(S.ep===ep?' active':'')+(UD.isWatched(S.cur.id,ep)?' watched':'');
-      chip.textContent=String(ep).padStart(3,'0');
-
-      // ═══ REAL DATA ATTRIBUTES FOR DIRECT LINK MAPPING ═══
-      chip.setAttribute('data-episode',ep);
-      chip.setAttribute('data-anime-id',S.cur.id);
-      chip.setAttribute('data-anime-title',S.cur.title);
-      chip.setAttribute('data-hindi-src','');
-      chip.setAttribute('data-english-src','');
-      chip.setAttribute('data-japanese-src','');
-      chip.setAttribute('data-vidsrc-cc','https://vidsrc.cc/v2/embed/anime/'+S.cur.id+'/'+ep);
-      chip.setAttribute('data-vidsrc-to','https://vidsrc.to/embed/anime/'+S.cur.id+'/'+ep);
-      chip.setAttribute('data-2embed','https://2embed.cc/embed/'+S.cur.id+'/'+ep);
-      // USER_LINKS override slots — fill these with real URLs to bypass embeds
-      chip.setAttribute('data-user-hindi','');
-      chip.setAttribute('data-user-english','');
-      chip.setAttribute('data-user-japanese','');
-
-      chip.addEventListener('click',function(){
-        // Check for user-specified direct link override
-        var userSrc=chip.getAttribute('data-user-'+S.audio);
-        if(userSrc&&userSrc.length>5){$('playerIframe').src=userSrc;toast('🔒 Private Link: EP '+ep);S.ep=ep;renderEpChips();return;}
-        playEpisode(ep);
-      });
-      g.appendChild(chip);
-    })(i);
-  }
-}
-
-/* ─── SAVE / SHARE ─── */
-function updateSaveBtn(){var b=$('actSave');if(!S.cur)return;var sv=UD.isSaved(S.cur.id);b.innerHTML=sv?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Saved':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Save';b.style.color=sv?'#22c55e':'';}
-
-/* ─── EVENTS ─── */
 function closePanel(){$('panel').classList.remove('open');$('playerIframe').src='';document.body.style.overflow='';}
 $('panelBack').addEventListener('click',closePanel);
 $('actSave').addEventListener('click',function(){if(!S.cur)return;var added=UD.toggleSave(S.cur);toast(added?'❤️ Saved':'Removed');updateSaveBtn();});
 $('actShare').addEventListener('click',function(){if(!S.cur)return;if(navigator.share)navigator.share({title:S.cur.title,url:location.href});else navigator.clipboard.writeText(location.href).then(function(){toast('Link copied!');});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('panel').classList.contains('open'))closePanel();});
 
-/* ─── INIT ─── */
 renderGrid();setupIS();
 setTimeout(function(){S.page=1;_fetch();},300);
-console.log('%c🔥 AnimeHub RAW — '+ANIME.length+' seed anime · 500+ via Jikan · data-* attrs on every ep chip','color:#22c55e;font-size:14px;');
+console.log('%c🔥 AnimeHub — '+ANIME.length+' seed anime · 500+ via Jikan','color:#22c55e;font-size:14px;');
 </script>
 </body>
 </html>
