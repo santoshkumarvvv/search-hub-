@@ -1,5 +1,42 @@
-node_modules
-.next
+# ── dependencies ──
+node_modules/
+.pnp/
+.pnp.js
+
+# ── build output ──
+.next/
+out/
+dist/
+build/
+
+# ── environment & secrets ──
 .env
 .env.local
+.env.*.local
+*.pem
+*.key
+.netrc
+.git-credentials
+
+# ── logs ──
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── caches ──
+.cache/
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# ── editor / OS ──
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ── misc ──
+coverage/
+.vercel

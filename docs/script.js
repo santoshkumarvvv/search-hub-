@@ -1,16 +1,23 @@
 /* ============================================================
-   AnimeHub v18 — SAFE BOOT / SELF-HEALING BUILD
-   - NEVER a black screen: hardcoded fallback renders instantly
-   - catalog.json fetched with timeout + catch; failure shows a
-     visible error banner and uses embedded FALLBACK_CATALOG.
-   - All DOM refs guarded; any error during boot is caught and
-     surfaced to the user instead of throwing silently.
+   AnimeHub — safe-boot catalog renderer
+   Author: Santosh Kumar
+   License: MIT
+
+   Design rules:
+     1. Never show a blank screen. An embedded catalog renders
+        before any network call is made.
+     2. Every DOM lookup is null-guarded; every boot step is
+        wrapped so one failure never white-screens the page.
+     3. All user-reachable strings are escaped, all URLs are
+        protocol-validated before they touch the DOM.
    ============================================================ */
 (function () {
   'use strict';
 
-  // ───────────── HARDCODED FALLBACK CATALOG ─────────────
-  // Works 100% offline, no network needed.
+  var VERSION = '19';
+
+  // ───────────── EMBEDDED FALLBACK CATALOG ─────────────
+  // Renders with zero network. Keeps the app usable offline.
   var FALLBACK_CATALOG = [
     {id:1,title:"Jujutsu Kaisen",year:2020,episodes:47,score:9.0,studio:"MAPPA",rating:"TV-14",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg",banner:"https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",synopsis:"Yuji Itadori swallows a cursed finger to protect his friends and enters a world of curses and sorcerers.",trending:true,newRelease:false,hindi:true,langDubs:{hindi:true,english:true,japanese:true}},
     {id:2,title:"Demon Slayer",year:2019,episodes:63,score:8.7,studio:"ufotable",rating:"TV-MA",genres:["Action","Adventure"],poster:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg",banner:"https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",synopsis:"Tanjiro joins the Demon Slayer Corps after his family is slaughtered and his sister turned into a demon.",trending:true,newRelease:false,hindi:true,langDubs:{hindi:true,english:true,japanese:true}},
@@ -26,346 +33,649 @@
     {id:269,title:"Bleach",year:2004,episodes:392,score:8.1,studio:"Pierrot",rating:"TV-14",genres:["Action","Supernatural"],poster:"https://cdn.myanimelist.net/images/anime/3/40451.jpg",banner:"https://cdn.myanimelist.net/images/anime/3/40451l.jpg",synopsis:"Ichigo Kurosaki gains Soul Reaper powers and must defend the living from Hollows.",trending:false,newRelease:false,hindi:true,langDubs:{hindi:true,english:true,japanese:true}}
   ];
 
-  // ───────────── SAFE DOM BOOT ─────────────
-  // Wrap every step in try/catch. If anything throws, the page stays usable.
-  function $(id) { return document.getElementById(id); }
-  function safe(fn, label) {
-    try { return fn(); }
-    catch (err) { console.error('[AnimeHub]', label || 'error', err); showStatus('err', 'Non-fatal error: ' + (err && err.message ? err.message : String(err))); return null; }
-  }
+  var LANGS = [
+    { k: 'hindi',    label: 'Hindi' },
+    { k: 'english',  label: 'English' },
+    { k: 'tamil',    label: 'Tamil' },
+    { k: 'telugu',   label: 'Telugu' },
+    { k: 'japanese', label: 'Japanese (Sub)' }
+  ];
+  var LANG_LABEL = { hindi:'Hindi', english:'English', tamil:'Tamil', telugu:'Telugu', japanese:'Japanese' };
 
-  var grid, statusEl, statusText, statusSpin, countEl, searchEl, toastEl;
-  var panel, panelBack, playerEl, playerPh, dTitle, dMeta, dSyn, actPlay, actSave, actShare, audioRow, epGrid, epCount, hero;
+  var FILTERS = [
+    { k: 'all',      label: 'All' },
+    { k: 'hindi',    label: 'Hindi Dub' },
+    { k: 'trending', label: 'Trending' },
+    { k: 'new',      label: 'New' },
+    { k: 'saved',    label: 'My List' }
+  ];
 
+  var SORTS = [
+    { k: 'default',  label: 'Default' },
+    { k: 'score',    label: 'Top rated' },
+    { k: 'year',     label: 'Newest' },
+    { k: 'title',    label: 'A–Z' },
+    { k: 'episodes', label: 'Most episodes' }
+  ];
+
+  // ───────────── STATE ─────────────
   var CATALOG = FALLBACK_CATALOG.slice();
   var filterText = '';
+  var activeFilter = 'all';
+  var activeSort = 'default';
   var selected = null;
   var selectedEp = 1;
   var selectedLang = 'hindi';
   var usingFallback = true;
-  var catalogLoadError = null;
-  var _tt;
+  var lastFocused = null;
+  var _tt, _searchDebounce;
 
-  // ───────────── STATUS / TOAST ─────────────
-  function setStatus(kind, msg, spinning) {
-    if (!statusEl) return;
-    statusEl.className = 'status show ' + kind;
-    if (statusText) statusText.textContent = msg;
-    if (statusSpin) statusSpin.style.display = spinning ? '' : 'none';
-    if (!spinning) {
-      clearTimeout(statusEl._t);
-      statusEl._t = setTimeout(function () { statusEl.classList.remove('show'); }, 4500);
+  var els = {};
+
+  // ───────────── UTILITIES ─────────────
+  function $(id) { return document.getElementById(id); }
+
+  function safe(fn, label) {
+    try { return fn(); }
+    catch (err) {
+      console.error('[AnimeHub]', label || 'error', err);
+      showStatus('err', 'Non-fatal error in ' + (label || 'app'));
+      return null;
     }
-  }
-  function showStatus(kind, msg) { setStatus(kind, msg, false); }
-  function toast(msg) {
-    if (!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(_tt);
-    _tt = setTimeout(function () { toastEl.classList.remove('show'); }, 2200);
-  }
-
-  // ───────────── RENDERING ─────────────
-  function initialsOf(title) {
-    return (title || '??').split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
-  }
-
-  function renderCard(a) {
-    var card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-id', a.id);
-    var isHindi = !!(a.hindi || (a.langDubs && a.langDubs.hindi));
-    var badge = isHindi ? '<span class="badge">HINDI</span>' : '<span class="badge sub">SUB</span>';
-    var genres = (a.genres && a.genres.length) ? '<span class="tag">' + a.genres.slice(0, 2).join(' · ') + '</span>' : '';
-    var score = a.score ? '<span class="score">★ ' + a.score.toFixed(1) + '</span>' : '';
-    var poster = a.poster || '';
-    var initials = initialsOf(a.title);
-    card.innerHTML =
-      '<div class="thumb">' +
-        '<div class="ph">' + initials + '</div>' +
-        (poster ? '<img alt="" loading="lazy" referrerpolicy="no-referrer" />' : '') +
-        badge + score +
-      '</div>' +
-      '<div class="card-body">' +
-        '<div class="card-title">' + escapeHtml(a.title || 'Untitled') + '</div>' +
-        '<div class="card-meta">' +
-          '<span>' + (a.year || '—') + '</span>' +
-          '<span>·</span>' +
-          '<span>' + (a.episodes || '?') + ' eps</span>' +
-          (genres ? '<span>·</span>' + genres : '') +
-        '</div>' +
-      '</div>';
-
-    var img = card.querySelector('img');
-    if (img && poster) {
-      img.onload = function () { img.classList.add('loaded'); };
-      img.onerror = function () { img.remove(); }; // keep the initials placeholder
-      img.src = poster;
-    }
-    card.addEventListener('click', function () { openDetail(a); });
-    return card;
-  }
-
-  function renderGrid() {
-    if (!grid) return;
-    grid.innerHTML = '';
-    var q = (filterText || '').trim().toLowerCase();
-    var list = CATALOG;
-    if (q) {
-      list = CATALOG.filter(function (a) {
-        var hay = (a.title + ' ' + (a.studio || '') + ' ' + (a.genres || []).join(' ')).toLowerCase();
-        return hay.indexOf(q) !== -1;
-      });
-    }
-    if (countEl) countEl.textContent = list.length + ' title' + (list.length === 1 ? '' : 's') + (usingFallback ? ' · offline' : '');
-    if (list.length === 0) {
-      var empty = document.createElement('div');
-      empty.className = 'empty';
-      empty.innerHTML = '<h2>No matches</h2><p>Try a different search term.</p>';
-      grid.appendChild(empty);
-      return;
-    }
-    var frag = document.createDocumentFragment();
-    list.forEach(function (a) { frag.appendChild(renderCard(a)); });
-    grid.appendChild(frag);
   }
 
   function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+      return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
     });
   }
 
+  /** Only allow http(s) image URLs. Blocks javascript:, data:, vbscript:. */
+  function safeUrl(u) {
+    if (!u) return '';
+    var s = String(u).trim();
+    if (!/^https?:\/\//i.test(s)) return '';
+    return s;
+  }
+
+  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+  function debounce(fn, ms) {
+    var t;
+    return function () {
+      var args = arguments, self = this;
+      clearTimeout(t);
+      t = setTimeout(function () { fn.apply(self, args); }, ms);
+    };
+  }
+
+  // ───────────── STATUS / TOAST ─────────────
+  function setStatus(kind, msg, spinning) {
+    if (!els.status) return;
+    els.status.className = 'status show ' + kind;
+    if (els.statusText) els.statusText.textContent = msg;
+    if (els.statusSpin) els.statusSpin.style.display = spinning ? '' : 'none';
+    if (!spinning) {
+      clearTimeout(els.status._t);
+      els.status._t = setTimeout(function () {
+        els.status.classList.remove('show');
+      }, 4500);
+    }
+  }
+  function showStatus(kind, msg) { setStatus(kind, msg, false); }
+
+  function toast(msg) {
+    if (!els.toast) return;
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(_tt);
+    _tt = setTimeout(function () { els.toast.classList.remove('show'); }, 2200);
+  }
+
+  // ───────────── PERSISTENCE (quota-safe) ─────────────
+  var Store = (function () {
+    var KEY = 'animehub_v' + VERSION;
+    var data = { saved: [], progress: {} };
+
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') data = parsed;
+      }
+    } catch (e) { /* private mode / corrupt payload — use defaults */ }
+
+    if (!Array.isArray(data.saved)) data.saved = [];
+    if (!data.progress || typeof data.progress !== 'object') data.progress = {};
+
+    function persist() {
+      try { localStorage.setItem(KEY, JSON.stringify(data)); }
+      catch (e) {
+        // Quota exceeded — trim oldest entries and retry once.
+        data.saved = data.saved.slice(0, 50);
+        try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e2) {}
+      }
+    }
+
+    return {
+      isSaved: function (id) {
+        return data.saved.some(function (x) { return x.id === id; });
+      },
+      savedIds: function () {
+        return data.saved.map(function (x) { return x.id; });
+      },
+      count: function () { return data.saved.length; },
+      toggle: function (a) {
+        var i = data.saved.findIndex(function (x) { return x.id === a.id; });
+        if (i >= 0) { data.saved.splice(i, 1); persist(); return false; }
+        data.saved.unshift({ id: a.id, title: a.title, poster: a.poster, ts: Date.now() });
+        persist();
+        return true;
+      },
+      setProgress: function (id, ep) { data.progress[id] = ep; persist(); },
+      getProgress: function (id) { return data.progress[id] || 0; }
+    };
+  })();
+
+  // ───────────── RENDERING: CARDS ─────────────
+  function initialsOf(title) {
+    return (title || '??').split(/\s+/).filter(Boolean).slice(0, 2)
+      .map(function (w) { return w[0]; }).join('').toUpperCase();
+  }
+
+  function renderCard(a) {
+    var card = document.createElement('article');
+    card.className = 'card';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('data-id', a.id);
+    card.setAttribute('aria-label', a.title + (a.year ? ', ' + a.year : ''));
+
+    var isHindi = !!(a.hindi || (a.langDubs && a.langDubs.hindi));
+    var badge = isHindi
+      ? '<span class="badge">HINDI</span>'
+      : '<span class="badge sub">SUB</span>';
+    var genres = (a.genres && a.genres.length)
+      ? '<span class="tag">' + escapeHtml(a.genres.slice(0, 2).join(' · ')) + '</span>'
+      : '';
+    var score = a.score ? '<span class="score">★ ' + a.score.toFixed(1) + '</span>' : '';
+    var savedMark = Store.isSaved(a.id) ? '<span class="saved-dot" title="In My List">✓</span>' : '';
+    var poster = safeUrl(a.poster);
+
+    card.innerHTML =
+      '<div class="thumb">' +
+        '<div class="ph">' + escapeHtml(initialsOf(a.title)) + '</div>' +
+        badge + score + savedMark +
+      '</div>' +
+      '<div class="card-body">' +
+        '<h3 class="card-title">' + escapeHtml(a.title || 'Untitled') + '</h3>' +
+        '<div class="card-meta">' +
+          '<span>' + escapeHtml(a.year || '—') + '</span>' +
+          '<span aria-hidden="true">·</span>' +
+          '<span>' + escapeHtml(a.episodes || '?') + ' eps</span>' +
+          (genres ? '<span aria-hidden="true">·</span>' + genres : '') +
+        '</div>' +
+      '</div>';
+
+    if (poster) {
+      var img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      img.onload = function () { img.classList.add('loaded'); };
+      img.onerror = function () { img.remove(); }; // initials placeholder stays
+      img.src = poster;
+      var thumb = card.querySelector('.thumb');
+      if (thumb) thumb.appendChild(img);
+    }
+
+    function open() { openDetail(a); }
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    return card;
+  }
+
+  // ───────────── RENDERING: GRID ─────────────
+  function applyFilters() {
+    var q = (filterText || '').trim().toLowerCase();
+    var list = CATALOG.slice();
+
+    if (activeFilter === 'hindi') {
+      list = list.filter(function (a) { return !!(a.hindi || (a.langDubs && a.langDubs.hindi)); });
+    } else if (activeFilter === 'trending') {
+      list = list.filter(function (a) { return !!a.trending; });
+    } else if (activeFilter === 'new') {
+      list = list.filter(function (a) { return !!a.newRelease; });
+    } else if (activeFilter === 'saved') {
+      var ids = Store.savedIds();
+      list = list.filter(function (a) { return ids.indexOf(a.id) !== -1; });
+    }
+
+    if (q) {
+      list = list.filter(function (a) {
+        var hay = (a.title + ' ' + (a.studio || '') + ' ' + (a.genres || []).join(' ')).toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+    }
+
+    if (activeSort === 'score') {
+      list.sort(function (x, y) { return (y.score || 0) - (x.score || 0); });
+    } else if (activeSort === 'year') {
+      list.sort(function (x, y) { return (y.year || 0) - (x.year || 0); });
+    } else if (activeSort === 'title') {
+      list.sort(function (x, y) { return String(x.title).localeCompare(String(y.title)); });
+    } else if (activeSort === 'episodes') {
+      list.sort(function (x, y) { return (y.episodes || 0) - (x.episodes || 0); });
+    }
+
+    return list;
+  }
+
+  function renderGrid() {
+    if (!els.grid) return;
+    var list = applyFilters();
+
+    if (els.count) {
+      els.count.textContent = list.length + ' title' + (list.length === 1 ? '' : 's') +
+        (usingFallback ? ' · offline' : '');
+    }
+    if (els.savedCount) {
+      var n = Store.count();
+      els.savedCount.textContent = n ? String(n) : '';
+      els.savedCount.style.display = n ? '' : 'none';
+    }
+
+    els.grid.innerHTML = '';
+
+    if (list.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'empty';
+      var h = document.createElement('h2');
+      h.textContent = activeFilter === 'saved' ? 'Your list is empty' : 'No matches';
+      var p = document.createElement('p');
+      p.textContent = activeFilter === 'saved'
+        ? 'Tap ＋ Save on any title to add it here.'
+        : 'Try a different search term or filter.';
+      empty.appendChild(h);
+      empty.appendChild(p);
+      els.grid.appendChild(empty);
+      return;
+    }
+
+    var frag = document.createDocumentFragment();
+    list.forEach(function (a) { frag.appendChild(renderCard(a)); });
+    els.grid.appendChild(frag);
+  }
+
+  function renderChips() {
+    if (els.filterRow) {
+      els.filterRow.innerHTML = '';
+      FILTERS.forEach(function (f) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'chip' + (activeFilter === f.k ? ' active' : '');
+        b.textContent = f.label;
+        b.setAttribute('aria-pressed', activeFilter === f.k ? 'true' : 'false');
+        b.addEventListener('click', function () {
+          activeFilter = f.k;
+          renderChips();
+          renderGrid();
+        });
+        els.filterRow.appendChild(b);
+      });
+    }
+    if (els.sortSelect && !els.sortSelect.options.length) {
+      SORTS.forEach(function (s) {
+        var o = document.createElement('option');
+        o.value = s.k;
+        o.textContent = s.label;
+        els.sortSelect.appendChild(o);
+      });
+    }
+  }
+
   // ───────────── DETAIL PANEL ─────────────
-  function openDetail(a) {
+  function openDetail(a, skipHash) {
+    if (!a) return;
     selected = a;
-    selectedEp = 1;
-    // pick first available language
+    selectedEp = clamp(Store.getProgress(a.id) || 1, 1, a.episodes || 12);
+    lastFocused = document.activeElement;
+
+    // Pick the best available audio track.
     if (a.langDubs) {
-      if (a.langDubs[selectedLang]) { /* keep */ }
-      else if (a.langDubs.english) selectedLang = 'english';
-      else selectedLang = 'japanese';
+      if (!a.langDubs[selectedLang]) {
+        selectedLang = a.langDubs.hindi ? 'hindi'
+                     : a.langDubs.english ? 'english'
+                     : 'japanese';
+      }
     } else {
       selectedLang = a.hindi ? 'hindi' : 'japanese';
     }
 
-    if (dTitle) dTitle.textContent = a.title;
-    if (dSyn) dSyn.textContent = a.synopsis || 'No synopsis available.';
-    if (dMeta) {
-      var parts = [];
-      if (a.score) parts.push('<span class="star">★ ' + a.score.toFixed(1) + '</span>');
-      if (a.year) parts.push(String(a.year));
-      if (a.rating) parts.push(a.rating);
-      if (a.studio) parts.push(a.studio);
-      if (a.episodes) parts.push(a.episodes + ' episodes');
-      if (a.genres && a.genres.length) parts.push(a.genres.slice(0, 4).map(function (g) { return '<span class="tag">' + escapeHtml(g) + '</span>'; }).join(' '));
-      dMeta.innerHTML = parts.join(' <span style="opacity:.4">|</span> ');
+    if (els.dTitle) els.dTitle.textContent = a.title;
+    if (els.dSyn) els.dSyn.textContent = a.synopsis || 'No synopsis available.';
+
+    if (els.dMeta) {
+      els.dMeta.innerHTML = '';
+      var bits = [];
+      if (a.score) bits.push(['star', '★ ' + a.score.toFixed(1)]);
+      if (a.year) bits.push(['', String(a.year)]);
+      if (a.rating) bits.push(['', a.rating]);
+      if (a.studio) bits.push(['', a.studio]);
+      if (a.episodes) bits.push(['', a.episodes + ' episodes']);
+      bits.forEach(function (b, i) {
+        if (i) {
+          var sep = document.createElement('span');
+          sep.className = 'sep';
+          sep.setAttribute('aria-hidden', 'true');
+          sep.textContent = '|';
+          els.dMeta.appendChild(sep);
+        }
+        var s = document.createElement('span');
+        if (b[0]) s.className = b[0];
+        s.textContent = b[1];
+        els.dMeta.appendChild(s);
+      });
+      (a.genres || []).slice(0, 4).forEach(function (g) {
+        var t = document.createElement('span');
+        t.className = 'tag';
+        t.textContent = g;
+        els.dMeta.appendChild(t);
+      });
     }
-    if (hero) {
-      hero.innerHTML = a.banner ? '<img alt="" referrerpolicy="no-referrer" />' : '';
-      var himg = hero.querySelector('img');
-      if (himg) { himg.onerror = function () { himg.remove(); }; himg.src = a.banner; }
+
+    if (els.hero) {
+      els.hero.innerHTML = '';
+      var banner = safeUrl(a.banner);
+      if (banner) {
+        var himg = document.createElement('img');
+        himg.alt = '';
+        himg.decoding = 'async';
+        himg.referrerPolicy = 'no-referrer';
+        himg.onerror = function () { himg.remove(); };
+        himg.src = banner;
+        els.hero.appendChild(himg);
+      }
     }
+
     renderAudio();
     renderEpisodes();
-    renderPlayer();
+    renderPlayerPlaceholder();
     updateSaveBtn();
-    if (panel) { panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); }
+
+    if (els.panel) {
+      els.panel.classList.add('open');
+      els.panel.setAttribute('aria-hidden', 'false');
+    }
     document.body.style.overflow = 'hidden';
-  }
-  function closeDetail() {
-    selected = null;
-    if (panel) { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); }
-    document.body.style.overflow = '';
-    if (playerEl) {
-      // remove any iframe
-      var ifr = playerEl.querySelector('iframe');
-      if (ifr) ifr.remove();
-      if (playerPh) playerPh.style.display = '';
+    if (els.panelBack) els.panelBack.focus();
+
+    if (!skipHash) {
+      try { history.pushState({ anime: a.id }, '', '#anime=' + a.id); } catch (e) {}
     }
   }
+
+  function closeDetail(skipHash) {
+    selected = null;
+    if (els.panel) {
+      els.panel.classList.remove('open');
+      els.panel.setAttribute('aria-hidden', 'true');
+    }
+    document.body.style.overflow = '';
+    if (els.player) {
+      var ifr = els.player.querySelector('iframe');
+      if (ifr) ifr.remove();                     // stop playback immediately
+      if (els.playerPh) els.playerPh.style.display = '';
+    }
+    if (lastFocused && lastFocused.focus) lastFocused.focus();
+    if (!skipHash && location.hash.indexOf('#anime=') === 0) {
+      try { history.pushState(null, '', location.pathname + location.search); } catch (e) {}
+    }
+    renderGrid(); // refresh saved markers
+  }
+
   function renderAudio() {
-    if (!audioRow || !selected) return;
-    audioRow.innerHTML = '';
-    var langs = [
-      { k: 'hindi', label: 'Hindi' },
-      { k: 'english', label: 'English' },
-      { k: 'tamil', label: 'Tamil' },
-      { k: 'telugu', label: 'Telugu' },
-      { k: 'japanese', label: 'Japanese (Sub)' }
-    ];
-    langs.forEach(function (l) {
+    if (!els.audioRow || !selected) return;
+    els.audioRow.innerHTML = '';
+    LANGS.forEach(function (l) {
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'audio-btn' + (selectedLang === l.k ? ' active' : '');
-      var supported = selected.langDubs ? !!selected.langDubs[l.k] : (l.k === 'japanese' ? true : !!selected.hindi);
-      if (l.k === 'japanese') supported = true; // always supported (sub fallback)
-      if (!supported) b.disabled = true;
+      var supported = l.k === 'japanese'
+        ? true
+        : (selected.langDubs ? !!selected.langDubs[l.k] : !!selected.hindi);
+      b.disabled = !supported;
       b.textContent = l.label;
+      b.setAttribute('aria-pressed', selectedLang === l.k ? 'true' : 'false');
       b.addEventListener('click', function () {
         selectedLang = l.k;
         renderAudio();
-        renderPlayer();
+        renderPlayerPlaceholder();
         toast('Audio: ' + l.label);
       });
-      audioRow.appendChild(b);
+      els.audioRow.appendChild(b);
     });
   }
+
   function renderEpisodes() {
-    if (!epGrid || !epCount || !selected) return;
-    epGrid.innerHTML = '';
+    if (!els.epGrid || !selected) return;
+    els.epGrid.innerHTML = '';
     var n = selected.episodes || 12;
-    epCount.textContent = n + ' total';
+    if (els.epCount) els.epCount.textContent = n + ' total';
+
+    var cap = Math.min(n, 60);
     var frag = document.createDocumentFragment();
-    var cap = Math.min(n, 60); // cap to keep UI snappy
     for (var i = 1; i <= cap; i++) {
       (function (ep) {
         var c = document.createElement('button');
         c.type = 'button';
         c.className = 'ep-chip' + (selectedEp === ep ? ' active' : '');
         c.textContent = String(ep).padStart(2, '0');
-        c.addEventListener('click', function () { selectedEp = ep; renderEpisodes(); renderPlayer(); });
+        c.setAttribute('aria-label', 'Episode ' + ep);
+        c.setAttribute('aria-pressed', selectedEp === ep ? 'true' : 'false');
+        c.addEventListener('click', function () {
+          selectedEp = ep;
+          Store.setProgress(selected.id, ep);
+          renderEpisodes();
+          renderPlayerPlaceholder();
+          if (els.actPlay) els.actPlay.textContent = '▶ Play EP ' + String(ep).padStart(2, '0');
+        });
         frag.appendChild(c);
       })(i);
     }
-    epGrid.appendChild(frag);
+    els.epGrid.appendChild(frag);
+
     if (n > cap) {
       var more = document.createElement('div');
-      more.className = 'ep-chip';
-      more.style.cursor = 'default';
+      more.className = 'ep-chip muted';
       more.textContent = '+' + (n - cap) + ' more';
-      epGrid.appendChild(more);
+      els.epGrid.appendChild(more);
     }
+    if (els.actPlay) els.actPlay.textContent = '▶ Play EP ' + String(selectedEp).padStart(2, '0');
   }
-  function renderPlayer() {
-    if (!playerEl || !selected) return;
-    if (playerPh) playerPh.style.display = 'none';
 
-    // Remove existing iframe
-    var prev = playerEl.querySelector('iframe');
+  function renderPlayerPlaceholder() {
+    if (!els.player || !selected) return;
+    if (els.playerPh) els.playerPh.style.display = 'none';
+
+    var prev = els.player.querySelector('iframe');
     if (prev) prev.remove();
+    var oldNote = els.player.querySelector('.play-note');
+    if (oldNote) oldNote.remove();
 
-    var langLabel = ({hindi:'Hindi',english:'English',tamil:'Tamil',telugu:'Telugu',japanese:'Japanese'})[selectedLang] || 'Japanese';
     var note = document.createElement('div');
-    note.className = 'ph';
-    note.style.position = 'absolute';
-    note.style.inset = '0';
-    note.style.background = 'rgba(15,23,42,.75)';
-    note.innerHTML = '<b>▶ EP ' + String(selectedEp).padStart(2, '0') + ' · ' + langLabel + '</b>' +
-                     '<span style="color:#94a3b8;font-size:11px">' + escapeHtml(selected.title) + '</span>' +
-                     '<button class="pill primary" id="__play" style="margin-top:10px;pointer-events:auto">▶ Open embed</button>';
-    playerEl.appendChild(note);
-    var playBtn = note.querySelector('#__play');
-    playBtn.addEventListener('click', function () { loadEmbed(); });
+    note.className = 'ph play-note';
 
-    // auto-load embed after short delay for ep1 (no autoplay, user gesture-friendly)
+    var b = document.createElement('b');
+    b.textContent = '▶ EP ' + String(selectedEp).padStart(2, '0') + ' · ' +
+                    (LANG_LABEL[selectedLang] || 'Japanese');
+    var sub = document.createElement('span');
+    sub.className = 'sub';
+    sub.textContent = selected.title;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pill primary';
+    btn.textContent = '▶ Load player';
+    btn.addEventListener('click', loadEmbed);
+
+    note.appendChild(b);
+    note.appendChild(sub);
+    note.appendChild(btn);
+    els.player.appendChild(note);
   }
+
   function loadEmbed() {
-    if (!playerEl || !selected) return;
-    var note = playerEl.querySelector('.ph');
-    if (note) note.innerHTML = '<b>Loading embed…</b><span style="color:#94a3b8;font-size:11px">If blocked, tap ▶ in the player.</span>';
+    if (!els.player || !selected) return;
+    var note = els.player.querySelector('.play-note');
+    if (note) {
+      note.innerHTML = '';
+      var b = document.createElement('b');
+      b.textContent = 'Loading player…';
+      note.appendChild(b);
+    }
+
     var ifr = document.createElement('iframe');
+    ifr.title = selected.title + ' — episode ' + selectedEp;
+    ifr.loading = 'lazy';
     ifr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
     ifr.allowFullscreen = true;
     ifr.referrerPolicy = 'no-referrer';
-    // Use a safe YouTube embed as ultimate fallback (anime-related trailers/AMVs by id rotation)
-    var yt = ['4A_X-Dvl0ws', 'VQGCKyvzIM4', 'MGRm4IzK1SQ', '2W0g1o7k1zI', 'jUwRQ9rDFW8'];
-    var pick = yt[Math.abs(selected.id * 7 + selectedEp * 3) % yt.length];
-    ifr.src = 'https://www.youtube-nocookie.com/embed/' + pick + '?rel=0';
-    playerEl.appendChild(ifr);
+    // Restrict what the embedded frame is allowed to do.
+    ifr.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
+
+    // Demonstration embeds only — replace with a licensed provider in production.
+    var ids = ['4A_X-Dvl0ws', 'VQGCKyvzIM4', 'MGRm4IzK1SQ', 'jUwRQ9rDFW8'];
+    var pick = ids[Math.abs(selected.id * 7 + selectedEp * 3) % ids.length];
+    ifr.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(pick) + '?rel=0&modestbranding=1';
+
     ifr.addEventListener('load', function () { if (note) note.style.display = 'none'; });
+    els.player.appendChild(ifr);
   }
 
-  // ───────────── SAVE / SHARE (localStorage wrapped) ─────────────
-  var U = (function () {
-    var k = 'ah_safeboot_v18';
-    var d = { saved: [] };
-    try {
-      var raw = localStorage.getItem(k);
-      if (raw) d = JSON.parse(raw) || d;
-      if (!d.saved) d.saved = [];
-    } catch (e) { /* ignore */ }
-    function save() { try { localStorage.setItem(k, JSON.stringify(d)); } catch (e) {} }
-    return {
-      isSaved: function (id) { return d.saved.some(function (x) { return x.id === id; }); },
-      toggle: function (a) {
-        var i = d.saved.findIndex(function (x) { return x.id === a.id; });
-        if (i >= 0) { d.saved.splice(i, 1); save(); return false; }
-        d.saved.unshift({ id: a.id, title: a.title, poster: a.poster, ts: Date.now() });
-        save(); return true;
-      }
-    };
-  })();
   function updateSaveBtn() {
-    if (!actSave || !selected) return;
-    var saved = U.isSaved(selected.id);
-    actSave.textContent = saved ? '✓ Saved' : '＋ Save';
+    if (!els.actSave || !selected) return;
+    var saved = Store.isSaved(selected.id);
+    els.actSave.textContent = saved ? '✓ Saved' : '＋ Save';
+    els.actSave.setAttribute('aria-pressed', saved ? 'true' : 'false');
+  }
+
+  // ───────────── ROUTER (deep links) ─────────────
+  function findById(id) {
+    return CATALOG.filter(function (a) { return String(a.id) === String(id); })[0] || null;
+  }
+
+  function syncFromHash() {
+    var m = /^#anime=(.+)$/.exec(location.hash || '');
+    if (m) {
+      var a = findById(decodeURIComponent(m[1]));
+      if (a) { openDetail(a, true); return; }
+    }
+    if (selected) closeDetail(true);
   }
 
   // ───────────── EVENTS ─────────────
   function bindEvents() {
-    if (panelBack) panelBack.addEventListener('click', closeDetail);
-    if (panel) panel.addEventListener('click', function (e) { if (e.target === panel) closeDetail(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && selected) closeDetail(); });
+    if (els.panelBack) els.panelBack.addEventListener('click', function () { closeDetail(); });
 
-    if (actPlay) actPlay.addEventListener('click', function () {
-      if (!selected) return;
-      if (!playerEl.querySelector('iframe')) loadEmbed();
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && selected) { closeDetail(); return; }
+      // "/" focuses search when not already typing
+      if (e.key === '/' && !selected) {
+        var tag = (document.activeElement && document.activeElement.tagName) || '';
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+          e.preventDefault();
+          if (els.search) els.search.focus();
+        }
+      }
     });
-    if (actSave) actSave.addEventListener('click', function () {
+
+    // Focus trap inside the dialog
+    if (els.panel) {
+      els.panel.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab' || !selected) return;
+        var f = els.panel.querySelectorAll(
+          'button:not([disabled]), [href], input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+    }
+
+    if (els.actPlay) els.actPlay.addEventListener('click', function () {
       if (!selected) return;
-      var added = U.toggle(selected);
-      toast(added ? 'Added to My List ❤' : 'Removed from My List');
+      if (!els.player.querySelector('iframe')) loadEmbed();
+    });
+
+    if (els.actSave) els.actSave.addEventListener('click', function () {
+      if (!selected) return;
+      var added = Store.toggle(selected);
+      toast(added ? 'Added to My List' : 'Removed from My List');
       updateSaveBtn();
     });
-    if (actShare) actShare.addEventListener('click', function () {
+
+    if (els.actShare) els.actShare.addEventListener('click', function () {
       if (!selected) return;
-      var url = window.location.href.split('#')[0] + '#anime=' + selected.id;
-      try { window.history.replaceState(null, '', url); } catch (e) {}
+      var url = location.href.split('#')[0] + '#anime=' + selected.id;
       if (navigator.share) {
         navigator.share({ title: selected.title, url: url }).catch(function () {});
-      } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(url).then(function () { toast('Link copied!'); }).catch(function () { toast(url); });
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url)
+          .then(function () { toast('Link copied'); })
+          .catch(function () { toast(url); });
       } else {
         toast(url);
       }
     });
-    if (searchEl) {
-      var _d;
-      searchEl.addEventListener('input', function () {
-        clearTimeout(_d);
-        _d = setTimeout(function () { filterText = searchEl.value; renderGrid(); }, 120);
+
+    if (els.search) {
+      var onSearch = debounce(function () {
+        filterText = els.search.value;
+        renderGrid();
+      }, 140);
+      els.search.addEventListener('input', onSearch);
+      els.search.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { els.search.value = ''; filterText = ''; renderGrid(); }
       });
     }
+
+    if (els.sortSelect) {
+      els.sortSelect.addEventListener('change', function () {
+        activeSort = els.sortSelect.value;
+        renderGrid();
+      });
+    }
+
+    window.addEventListener('popstate', function () { safe(syncFromHash, 'router'); });
+    window.addEventListener('online',  function () { showStatus('ok', 'Back online'); });
+    window.addEventListener('offline', function () { showStatus('warn', 'You are offline — cached data in use'); });
   }
 
-  // ───────────── CATALOG LOAD (with timeout + fallback) ─────────────
+  // ───────────── CATALOG LOADING ─────────────
   function fetchCatalog() {
     return new Promise(function (resolve) {
-      var to = setTimeout(function () { resolve({ ok: false, reason: 'timeout', data: null }); }, 4000);
+      var done = false;
+      var finish = function (r) { if (!done) { done = true; resolve(r); } };
+      var to = setTimeout(function () { finish({ ok: false, reason: 'timeout' }); }, 5000);
+
       fetch('./catalog.json', { cache: 'no-cache' })
         .then(function (r) {
-          clearTimeout(to);
-          if (!r.ok) return resolve({ ok: false, reason: 'http_' + r.status, data: null });
+          if (!r.ok) { clearTimeout(to); return finish({ ok: false, reason: 'http_' + r.status }); }
           return r.json().then(function (j) {
-            // accept either an array or {results:[...]} shape
-            var arr = null;
-            if (Array.isArray(j)) arr = j;
-            else if (j && Array.isArray(j.results)) arr = j.results;
-            else if (j && Array.isArray(j.data)) arr = j.data;
-            else if (j && Array.isArray(j.anime)) arr = j.anime;
-            else if (j && Array.isArray(j.items)) arr = j.items;
-            if (arr && arr.length) resolve({ ok: true, data: arr });
-            else resolve({ ok: false, reason: 'empty', data: null });
-          }).catch(function (e) {
             clearTimeout(to);
-            resolve({ ok: false, reason: 'parse:' + (e && e.message), data: null });
+            var arr = Array.isArray(j) ? j
+              : (j && (j.anime || j.results || j.data || j.items));
+            if (Array.isArray(arr) && arr.length) finish({ ok: true, data: arr });
+            else finish({ ok: false, reason: 'empty' });
           });
         })
         .catch(function (e) {
           clearTimeout(to);
-          resolve({ ok: false, reason: 'network:' + (e && e.message), data: null });
+          finish({ ok: false, reason: 'network' });
         });
     });
   }
@@ -374,15 +684,18 @@
     return (arr || []).map(function (it) {
       var langs = it.langDubs || it.langs || {};
       return {
-        id: it.id != null ? it.id : (it.mal_id || Math.floor(Math.random() * 1e9)),
+        id: it.id != null ? it.id : (it.mal_id != null ? it.mal_id : Math.floor(Math.random() * 1e9)),
         title: it.title || it.name || 'Untitled',
         year: it.year || (it.aired && it.aired.from ? new Date(it.aired.from).getFullYear() : null),
         episodes: it.episodes || 12,
         score: typeof it.score === 'number' ? it.score : null,
         studio: it.studio || (it.studios && it.studios[0] && it.studios[0].name) || '',
         rating: it.rating || 'TV-14',
-        genres: it.genres ? it.genres.map(function (g) { return typeof g === 'string' ? g : (g.name || ''); }).filter(Boolean) : [],
-        poster: it.poster || (it.images && it.images.jpg && (it.images.jpg.large_image_url || it.images.jpg.image_url)) || '',
+        genres: (it.genres || []).map(function (g) {
+          return typeof g === 'string' ? g : (g && g.name) || '';
+        }).filter(Boolean),
+        poster: it.poster || (it.images && it.images.jpg &&
+                (it.images.jpg.large_image_url || it.images.jpg.image_url)) || '',
         banner: it.banner || (it.images && it.images.jpg && it.images.jpg.large_image_url) || '',
         synopsis: it.synopsis || '',
         trending: !!it.trending,
@@ -390,58 +703,70 @@
         hindi: !!it.hindi || !!langs.hindi,
         langDubs: langs
       };
+    }).filter(function (x) { return x.title !== 'Untitled' || x.id; });
+  }
+
+  // ───────────── SERVICE WORKER ─────────────
+  function registerSW() {
+    if (!('serviceWorker' in navigator)) return;
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+    navigator.serviceWorker.register('./sw.js').catch(function () {
+      /* SW is an enhancement; failure must never break the app */
     });
   }
 
+  // ───────────── BOOT ─────────────
   function boot() {
-    // grab DOM
-    grid = $('grid'); statusEl = $('status'); statusText = $('statusText'); statusSpin = $('statusSpin');
-    countEl = $('count'); searchEl = $('search'); toastEl = $('toast');
-    panel = $('panel'); panelBack = $('panelBack'); playerEl = $('player'); playerPh = $('playerPh');
-    dTitle = $('dTitle'); dMeta = $('dMeta'); dSyn = $('dSyn');
-    actPlay = $('actPlay'); actSave = $('actSave'); actShare = $('actShare');
-    audioRow = $('audioRow'); epGrid = $('epGrid'); epCount = $('epCount'); hero = $('hero');
+    els = {
+      grid: $('grid'), status: $('status'), statusText: $('statusText'), statusSpin: $('statusSpin'),
+      count: $('count'), search: $('search'), toast: $('toast'),
+      filterRow: $('filterRow'), sortSelect: $('sortSelect'), savedCount: $('savedCount'),
+      panel: $('panel'), panelBack: $('panelBack'), player: $('player'), playerPh: $('playerPh'),
+      dTitle: $('dTitle'), dMeta: $('dMeta'), dSyn: $('dSyn'),
+      actPlay: $('actPlay'), actSave: $('actSave'), actShare: $('actShare'),
+      audioRow: $('audioRow'), epGrid: $('epGrid'), epCount: $('epCount'), hero: $('hero')
+    };
 
-    // 1) INSTANT render of fallback catalog so NO BLACK SCREEN ever
+    // 1) Paint the embedded catalog immediately — no blank screen, ever.
+    renderChips();
     renderGrid();
-    setStatus('warn', 'Rendering offline catalog…', true);
-
+    setStatus('warn', 'Loading catalog…', true);
     bindEvents();
 
-    // 2) Try to fetch catalog.json in the background
+    // 2) Hydrate from the remote catalog in the background.
     fetchCatalog().then(function (res) {
-      if (res.ok && res.data && res.data.length) {
+      if (res.ok) {
         var norm = normalizeItems(res.data);
         if (norm.length) {
           CATALOG = norm;
           usingFallback = false;
-          catalogLoadError = null;
           renderGrid();
-          setStatus('ok', 'Loaded ' + norm.length + ' titles from catalog', false);
+          setStatus('ok', 'Loaded ' + norm.length + ' titles');
+          safe(syncFromHash, 'router');
           return;
         }
       }
-      // failed -> keep fallback, show visible error
       usingFallback = true;
-      catalogLoadError = res.reason || 'unknown';
       CATALOG = FALLBACK_CATALOG.slice();
       renderGrid();
-      setStatus('err', 'Could not load catalog.json (' + catalogLoadError + ') — showing built-in sample titles.', false);
+      setStatus('err', 'Catalog unavailable (' + (res.reason || 'unknown') + ') — showing built-in titles');
+      safe(syncFromHash, 'router');
     });
+
+    registerSW();
   }
 
-  // Boot immediately after DOM is parsed (script is defer'd so DOM is ready).
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { safe(boot, 'boot'); });
   } else {
     safe(boot, 'boot');
   }
 
-  // Last-resort global error handler: ensure status bar shows something useful
+  // Last-resort handlers so failures surface instead of dying silently.
   window.addEventListener('error', function (e) {
     showStatus('err', 'Script error: ' + (e.message || 'unknown'));
   });
-  window.addEventListener('unhandledrejection', function (e) {
-    showStatus('err', 'Network error: ' + ((e.reason && e.reason.message) || 'request failed'));
+  window.addEventListener('unhandledrejection', function () {
+    showStatus('err', 'A network request failed');
   });
 })();

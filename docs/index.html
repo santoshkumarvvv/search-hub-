@@ -2,276 +2,126 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="color-scheme" content="dark light" />
-<title>AnimeHub — Project Titan (Safe Boot)</title>
-<style>
-  /* ABSOLUTE NO-BLACK GUARANTEE — always render a gradient background,
-     never solid #000. If CSS fails, inline style on <html>/<body> kicks in. */
-  :root{
-    --bg1:#0f172a;--bg2:#1e293b;--bg3:#312e81;
-    --card:#1f2937;--card2:#273449;--card-hover:#334155;
-    --text:#f8fafc;--t2:#cbd5e1;--t3:#94a3b8;
-    --accent:#22c55e;--accent2:#38bdf8;--warn:#f59e0b;--bad:#ef4444;
-    --border:rgba(255,255,255,0.10);
-    --r:10px;--rr:999px;
-    --shadow:0 8px 24px rgba(0,0,0,0.35);
-  }
-  *,*::before,*::after{box-sizing:border-box}
-  html,body{margin:0;padding:0;min-height:100%}
-  html{background:linear-gradient(135deg,#0f172a 0%,#1e293b 45%,#312e81 100%);background-attachment:fixed}
-  body{
-    color:var(--text);
-    font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-    overflow-x:hidden;
-    /* Safety net: even if CSS vars fail, no black */
-    background:linear-gradient(135deg,#1e293b,#334155);
-  }
-  /* If JS never runs, show the no-js fallback grid immediately via HTML only */
-  .nojs-note{padding:20px 16px;color:var(--t2);text-align:center;font-size:13px}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0f172a" />
 
-  header{
-    position:sticky;top:0;z-index:50;
-    backdrop-filter:blur(10px);
-    background:rgba(15,23,42,0.75);
-    border-bottom:1px solid var(--border);
-    padding:10px 14px;
-    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  }
-  .brand{
-    font-weight:800;letter-spacing:.02em;font-size:16px;
-    background:linear-gradient(90deg,var(--accent),var(--accent2));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .brand .ver{font-weight:600;color:var(--t3);font-size:11px;margin-left:6px;opacity:.8}
-  .search{
-    flex:1;min-width:160px;max-width:520px;margin-left:auto;
-    display:flex;align-items:center;gap:8px;
-    background:var(--card);border:1px solid var(--border);
-    border-radius:var(--rr);padding:6px 12px;
-  }
-  .search input{
-    flex:1;background:transparent;border:0;outline:0;color:var(--text);
-    font-size:13px;
-  }
-  .search input::placeholder{color:var(--t3)}
-  .count{font-size:11px;color:var(--t3);white-space:nowrap}
+<!-- Security: lock down script/frame sources. -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' https: data:;
+  connect-src 'self';
+  frame-src https://www.youtube-nocookie.com https://www.youtube.com;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'none';
+  frame-ancestors 'self'
+" />
+<meta name="referrer" content="no-referrer" />
 
-  /* Status bar — always shows load/error state so user never sees a blank page */
-  .status{
-    position:fixed;top:58px;left:50%;transform:translateX(-50%);z-index:60;
-    padding:6px 12px;border-radius:var(--rr);font-size:11.5px;font-weight:600;
-    display:none;align-items:center;gap:8px;
-    background:rgba(15,23,42,0.9);border:1px solid var(--border);
-    box-shadow:var(--shadow);max-width:92vw;
-  }
-  .status.show{display:flex}
-  .status.ok{color:var(--accent);border-color:rgba(34,197,94,.35)}
-  .status.warn{color:var(--warn);border-color:rgba(245,158,11,.45)}
-  .status.err{color:var(--bad);border-color:rgba(239,68,68,.45)}
-  .spin{width:12px;height:12px;border:2px solid rgba(255,255,255,.12);border-top-color:var(--accent);border-radius:50%;animation:s .7s linear infinite}
-  @keyframes s{to{transform:rotate(360deg)}}
+<title>AnimeHub — Hindi Dubbed Anime Catalog</title>
+<meta name="description" content="Browse and search a Hindi-dubbed anime catalog. Fast, offline-capable, installable. Built by Santosh Kumar." />
+<meta name="author" content="Santosh Kumar" />
 
-  .grid{
-    display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-    gap:10px;padding:14px;max-width:1700px;margin:0 auto;
-  }
-  @media(min-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:18px}}
-  @media(min-width:1000px){.grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;padding:22px}}
+<!-- Open Graph / social -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="AnimeHub — Hindi Dubbed Anime Catalog" />
+<meta property="og:description" content="Fast, offline-capable Hindi-dubbed anime catalog with instant search and watchlist." />
+<meta property="og:image" content="./icon.svg" />
+<meta name="twitter:card" content="summary_large_image" />
 
-  .card{
-    background:linear-gradient(180deg,var(--card2),var(--card));
-    border:1px solid var(--border);border-radius:var(--r);
-    overflow:hidden;cursor:pointer;
-    transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
-    display:flex;flex-direction:column;
-    contain:content;
-    /* Safety: if image fails, card still shows color */
-    min-height:260px;
-  }
-  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:rgba(56,189,248,.35)}
-  .card:active{transform:scale(.98)}
-  .thumb{
-    position:relative;width:100%;aspect-ratio:2/3;
-    background:linear-gradient(135deg,#334155,#475569);
-    display:block;overflow:hidden;
-  }
-  .thumb img{
-    position:absolute;inset:0;width:100%;height:100%;
-    object-fit:cover;display:block;
-    transition:opacity .25s ease,transform .25s ease;
-    opacity:0;
-  }
-  .thumb img.loaded{opacity:1}
-  .thumb .ph{
-    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    color:var(--t3);font-weight:700;font-size:16px;text-align:center;padding:8px;
-    text-shadow:0 2px 6px rgba(0,0,0,.4);
-    background:linear-gradient(135deg,#1e293b,#475569);
-  }
-  .badge{
-    position:absolute;top:6px;left:6px;
-    background:rgba(34,197,94,.9);color:#052e14;font-size:9px;font-weight:800;
-    padding:2px 7px;border-radius:var(--rr);letter-spacing:.04em;
-    box-shadow:0 2px 6px rgba(0,0,0,.3);
-  }
-  .badge.sub{background:rgba(245,158,11,.9);color:#3b1f00}
-  .score{
-    position:absolute;bottom:6px;right:6px;
-    background:rgba(0,0,0,.6);color:#fde68a;font-size:10px;font-weight:700;
-    padding:2px 6px;border-radius:6px;backdrop-filter:blur(4px);
-  }
-  .card-body{padding:8px 10px 10px}
-  .card-title{font-size:12.5px;font-weight:700;line-height:1.25;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .card-meta{font-size:10.5px;color:var(--t3);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-  .tag{background:rgba(56,189,248,.12);color:var(--accent2);padding:1px 6px;border-radius:6px;font-weight:600}
-
-  .empty{
-    grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--t2);
-  }
-  .empty h2{color:var(--text);margin:0 0 8px}
-
-  /* Detail panel */
-  .panel{
-    position:fixed;inset:0;z-index:100;
-    background:linear-gradient(160deg,#0f172a,#1e293b 60%,#312e81);
-    overflow-y:auto;display:none;flex-direction:column;
-  }
-  .panel.open{display:flex}
-  .panel-back{
-    position:fixed;top:10px;left:10px;z-index:110;
-    width:36px;height:36px;border-radius:50%;
-    background:rgba(15,23,42,.7);border:1px solid var(--border);
-    color:var(--text);cursor:pointer;font-size:16px;
-    display:flex;align-items:center;justify-content:center;
-    backdrop-filter:blur(10px);
-  }
-  .panel-back:hover{background:var(--accent);border-color:var(--accent)}
-  .hero{
-    position:relative;width:100%;aspect-ratio:16/9;max-height:50vh;
-    background:linear-gradient(135deg,#334155,#475569);
-    overflow:hidden;min-height:220px;
-  }
-  .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8}
-  .hero::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(15,23,42,0) 40%,rgba(15,23,42,.95) 100%);
-  }
-  .detail{padding:16px 18px 120px;max-width:1000px;margin:0 auto;width:100%}
-  .d-title{font-size:22px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
-  .d-meta{font-size:12px;color:var(--t3);margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .d-meta .star{color:#fde68a;font-weight:700}
-  .d-syn{font-size:13px;color:var(--t2);line-height:1.6;margin:0 0 14px}
-  .d-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-  .pill{
-    display:inline-flex;align-items:center;gap:6px;
-    padding:8px 14px;border-radius:var(--rr);
-    background:rgba(255,255,255,.05);border:1px solid var(--border);
-    color:var(--text);font-size:12px;font-weight:600;cursor:pointer;
-  }
-  .pill:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25)}
-  .pill.primary{background:linear-gradient(90deg,var(--accent),#16a34a);border-color:transparent;color:#052e14}
-  .audio-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-  .audio-btn{
-    padding:5px 12px;border-radius:var(--rr);
-    background:rgba(255,255,255,.04);border:1px solid var(--border);
-    color:var(--t3);font-size:11px;font-weight:600;cursor:pointer;
-  }
-  .audio-btn.active{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.45);color:var(--accent)}
-  .audio-btn:disabled{opacity:.35;cursor:not-allowed}
-  .ep-label{font-size:12px;color:var(--t3);margin-bottom:8px;display:flex;justify-content:space-between;font-weight:600}
-  .ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px}
-  .ep-chip{
-    padding:10px 4px;border-radius:8px;
-    background:rgba(255,255,255,.04);border:1px solid var(--border);
-    color:var(--t2);font-size:11px;font-weight:600;cursor:pointer;text-align:center;
-  }
-  .ep-chip:hover{background:rgba(255,255,255,.1);border-color:rgba(56,189,248,.4);color:var(--text)}
-  .ep-chip.active{background:var(--accent);border-color:var(--accent);color:#052e14}
-
-  .player{
-    width:100%;aspect-ratio:16/9;
-    background:linear-gradient(135deg,#1e293b,#334155);
-    border-radius:var(--r);border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
-    color:var(--t3);font-size:13px;margin-bottom:14px;position:relative;overflow:hidden;
-    min-height:220px;
-  }
-  .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-  .player .ph{display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
-  .player .ph b{color:var(--text);font-weight:700}
-
-  .toast{
-    position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
-    background:rgba(15,23,42,.95);border:1px solid var(--border);
-    color:var(--text);padding:10px 18px;border-radius:var(--rr);
-    font-size:12px;font-weight:600;z-index:200;opacity:0;
-    transition:all .2s ease;backdrop-filter:blur(10px);
-    box-shadow:var(--shadow);
-  }
-  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-
-  footer{
-    text-align:center;padding:24px 16px 60px;color:var(--t3);font-size:11px;
-  }
-</style>
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="./icon.svg" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="preload" href="./catalog.json" as="fetch" crossorigin="anonymous" />
+<link rel="stylesheet" href="./style.css" />
 </head>
-<!-- Inline style on html/body as an absolute last-resort against blank screens -->
-<body style="background:linear-gradient(135deg,#1e293b,#334155);color:#f8fafc;">
 
-<!-- Static fallback markup that is visible before any JS runs (no blank screen ever) -->
-<header id="header">
-  <div class="brand">AnimeHub<span class="ver">v18 · Safe Boot</span></div>
-  <div class="search">
+<body>
+
+<a class="skip-link" href="#grid">Skip to catalog</a>
+
+<header>
+  <div class="brand" aria-label="AnimeHub">
+    <svg class="brand-mark" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="bm" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#38bdf8"/>
+        </linearGradient>
+      </defs>
+      <rect x="86" y="120" width="340" height="26" rx="13" fill="url(#bm)"/>
+      <rect x="112" y="166" width="288" height="20" rx="10" fill="url(#bm)"/>
+      <rect x="140" y="186" width="30" height="200" rx="8" fill="url(#bm)"/>
+      <rect x="342" y="186" width="30" height="200" rx="8" fill="url(#bm)"/>
+      <path d="M214 214 L214 358 L338 286 Z" fill="#f8fafc"/>
+    </svg>
+    <span class="brand-text">AnimeHub</span>
+    <span class="ver">v19</span>
+  </div>
+
+  <div class="search" role="search">
     <span aria-hidden="true">🔍</span>
-    <input id="search" type="text" placeholder="Search titles, genres, studios…" autocomplete="off" />
-    <span class="count" id="count">—</span>
+    <label class="sr-only" for="search">Search anime</label>
+    <input id="search" type="search" placeholder="Search titles, genres, studios…  ( / )" autocomplete="off" />
+    <span class="count" id="count" aria-live="polite">—</span>
   </div>
 </header>
 
-<div class="status show warn" id="status">
-  <div class="spin" id="statusSpin"></div>
-  <span id="statusText">Booting up…</span>
+<div class="controls">
+  <div class="chips" id="filterRow" role="group" aria-label="Filters"></div>
+  <div class="sort-wrap">
+    <span class="saved-count" id="savedCount" title="Titles in My List" style="display:none"></span>
+    <label class="sr-only" for="sortSelect">Sort by</label>
+    <select id="sortSelect" class="sort"></select>
+  </div>
 </div>
 
-<main class="grid" id="grid" aria-label="Anime catalog">
-  <!-- Instant-loading placeholder cards (rendered by JS in <script> below;
-       if JS is disabled, the nojs-note below will be visible instead). -->
-</main>
+<div class="status show warn" id="status" role="status" aria-live="polite">
+  <div class="spin" id="statusSpin"></div>
+  <span id="statusText">Loading…</span>
+</div>
 
-<div class="panel" id="panel" role="dialog" aria-modal="true" aria-hidden="true">
-  <button class="panel-back" id="panelBack" aria-label="Close">✕</button>
+<main class="grid" id="grid" aria-label="Anime catalog"></main>
+
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="dTitle">
+  <button class="panel-back" id="panelBack" aria-label="Close details">✕</button>
   <div class="hero" id="hero"></div>
   <div class="detail">
     <div class="player" id="player">
-      <div class="ph" id="playerPh"><b>▶ Select an episode</b><span style="color:#94a3b8;font-size:11px">Video player will appear here</span></div>
+      <div class="ph" id="playerPh">
+        <b>▶ Select an episode</b>
+        <span class="sub">Video player will appear here</span>
+      </div>
     </div>
     <h1 class="d-title" id="dTitle">—</h1>
     <div class="d-meta" id="dMeta"></div>
     <p class="d-syn" id="dSyn">—</p>
     <div class="d-actions">
       <button class="pill primary" id="actPlay">▶ Play EP 01</button>
-      <button class="pill" id="actSave">＋ Save</button>
+      <button class="pill" id="actSave" aria-pressed="false">＋ Save</button>
       <button class="pill" id="actShare">↗ Share</button>
     </div>
-    <div class="audio-row" id="audioRow"></div>
+    <div class="audio-row" id="audioRow" role="group" aria-label="Audio track"></div>
     <div class="ep-label"><span>Episodes</span><span id="epCount"></span></div>
-    <div class="ep-grid" id="epGrid"></div>
+    <div class="ep-grid" id="epGrid" role="group" aria-label="Episode list"></div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <noscript>
   <div class="nojs-note">
-    <b style="color:#f8fafc">JavaScript is disabled.</b><br>
-    You're seeing a static page. Enable JavaScript for full features.
+    <b>JavaScript is disabled.</b><br />
+    AnimeHub needs JavaScript to render the catalog. Please enable it.
   </div>
 </noscript>
 
-<footer>AnimeHub v18 · Safe-boot build · Offline-capable fallback · No black screens</footer>
+<footer>
+  <p>AnimeHub · offline-capable · installable</p>
+  <p class="credit">Built by <a href="https://github.com/santoshkumarvvv" rel="noopener">Santosh Kumar</a> · MIT</p>
+</footer>
 
 <script src="./script.js" defer></script>
 </body>
