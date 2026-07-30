@@ -654,7 +654,7 @@ openPanel = function(a) {
 var _origPlayEpisode = (typeof playEpisode === 'function') ? playEpisode : function(epNum) {
   if (S.cur) TITAN.play(S.cur, epNum, S.audio || 'hindi');
 };
-playEpisode = function(epNum) {
+var playEpisode = function(epNum) {
   S.ep = epNum;
   if (!S.cur) {
     _origPlayEpisode(epNum);
