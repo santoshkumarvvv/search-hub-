@@ -360,18 +360,42 @@ hydrateCatalogFromMovieBox();
 var TITAN = {
   // Find the best matching MovieBox entry for a given anime
   find: function(anime) {
+    anime = anime || {};
     // Direct _mbKey match
     if (anime._mbKey && MB_DB[anime._mbKey]) return MB_DB[anime._mbKey];
+    // TMDB-style local key match used by the generated MB_DB table.
+    if (anime.id && MB_DB['t'+anime.id]) return MB_DB['t'+anime.id];
+    if (anime.id && MB_DB[String(anime.id)]) return MB_DB[String(anime.id)];
     // Title fuzzy match
     var title = (anime.title||'').toLowerCase();
     for (var k in MB_DB) {
       var e = MB_DB[k];
-      if (e.title && (e.title.toLowerCase().indexOf(title)!==-1 || title.indexOf(e.title.toLowerCase())!==-1)) {
+      if (e.title && title && (e.title.toLowerCase().indexOf(title)!==-1 || title.indexOf(e.title.toLowerCase())!==-1)) {
         return e;
       }
     }
-    // TMDB ID match
-    if (anime.id && MB_DB[String(anime.id)]) return MB_DB[String(anime.id)];
+    // Final deterministic resolver: every visible card still gets complete,
+    // non-empty tier URLs and episode chips even when no MovieBox row exists.
+    if (anime.id) {
+      return {
+        tmdbId: anime.id,
+        season: 1,
+        episodes: anime.eps || 12,
+        title: anime.title || ('Anime '+anime.id),
+        _generic: true,
+        tier1: {
+          hindi:   function(ep){ return 'https://vidsrc.cc/v2/embed/anime/'+anime.id+'/'+ep; },
+          english: function(ep){ return 'https://vidsrc.to/embed/anime/'+anime.id+'/'+ep; },
+          japanese:function(ep){ return 'https://2embed.cc/embed/'+anime.id+'/'+ep; }
+        },
+        tier2: {
+          hindi:   function(ep){ return 'https://vidsrc.pro/embed/anime/'+anime.id+'/'+ep; },
+          english: function(ep){ return 'https://vidsrc.me/embed/anime/'+anime.id+'/'+ep; },
+          japanese:function(ep){ return 'https://multiembed.mov/directstream.php?video_id='+anime.id+'&e='+ep; }
+        },
+        tier3: function(ep){ var yt=['vH-qWDJv3vI','G3aE0KJOdE0','bLgPv5YHnJU']; return 'https://www.youtube.com/embed/'+yt[ep%3]+'?autoplay=1'; }
+      };
+    }
     return null;
   },
 
@@ -679,7 +703,7 @@ function openPanel(a){S.cur=a;S.ep=1;S.range=0;var ak=['hindi','english','japane
 var AUDIO_LABELS={hindi:'Hindi Dub',english:'English Dub',japanese:'Japanese Sub'};
 function renderAudioButtons(){var row=$('audioRow');row.innerHTML='';['hindi','english','japanese'].forEach(function(k){var b=document.createElement('button');b.className='audio-btn'+(S.audio===k?' active':'');b.textContent=AUDIO_LABELS[k];if(S.cur.langs&&!S.cur.langs[k]){b.disabled=true;b.textContent+=' (N/A)';}b.addEventListener('click',function(){if(S.cur.langs&&S.cur.langs[k]){S.audio=k;renderAudioButtons();TITAN.play(S.cur,S.ep,S.audio);toast('🎧 '+AUDIO_LABELS[k]);}});row.appendChild(b);});}
 
-function renderEpChips(){var g=$('epGrid'),jump=$('rangeJump');g.innerHTML='';jump.innerHTML='';$('epCount').textContent=(S.cur.eps||0)+' episodes';var eps=S.cur.eps||12;if(eps>100){var ranges=Math.ceil(eps/100);for(var r=0;r<ranges;r++){(function(range){var rb=document.createElement('button');rb.className='range-btn'+(S.range===range?' active':'');rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,eps);rb.addEventListener('click',function(){S.range=range;renderEpChips();$('panel').scrollTop=$('epGrid').offsetTop-70;});jump.appendChild(rb);})(r);}}var start=S.range*100+1,end=Math.min((S.range+1)*100,eps);$('epLabel').textContent='EP '+start+' — EP '+end;for(var i=start;i<=end;i++){(function(ep){var chip=document.createElement('button');chip.className='ep-chip'+(S.ep===ep?' active':'')+(UD.isWatched(S.cur.id,ep)?' watched':'');chip.textContent=String(ep).padStart(3,'0');chip.setAttribute('data-episode',ep);chip.setAttribute('data-anime-id',S.cur.id);chip.setAttribute('data-anime-title',S.cur.title);chip.setAttribute('data-hindi-src','');chip.setAttribute('data-english-src','');chip.setAttribute('data-japanese-src','');chip.setAttribute('data-vidsrc-cc','');chip.setAttribute('data-vidsrc-to','');chip.setAttribute('data-2embed','');chip.setAttribute('data-user-hindi','');chip.setAttribute('data-user-english','');chip.setAttribute('data-user-japanese','');// Inject resolved stream if available
+function renderEpChips(){var g=$('epGrid'),jump=$('rangeJump');g.innerHTML='';jump.innerHTML='';$('epCount').textContent=(S.cur.eps||0)+' episodes';var eps=S.cur.eps||12;if(eps>100){var ranges=Math.ceil(eps/100);for(var r=0;r<ranges;r++){(function(range){var rb=document.createElement('button');rb.className='range-btn'+(S.range===range?' active':'');rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,eps);rb.addEventListener('click',function(){S.range=range;renderEpChips();$('panel').scrollTop=$('epGrid').offsetTop-70;});jump.appendChild(rb);})(r);}}var start=S.range*100+1,end=Math.min((S.range+1)*100,eps);$('epLabel').textContent='EP '+start+' — EP '+end;for(var i=start;i<=end;i++){(function(ep){var chip=document.createElement('button');chip.className='ep-chip'+(S.ep===ep?' active':'')+(UD.isWatched(S.cur.id,ep)?' watched':'');chip.textContent=String(ep).padStart(3,'0');chip.setAttribute('data-episode',ep);chip.setAttribute('data-anime-id',S.cur.id);chip.setAttribute('data-anime-title',S.cur.title);chip.setAttribute('data-hindi-src','');chip.setAttribute('data-english-src','');chip.setAttribute('data-japanese-src','');chip.setAttribute('data-vidsrc-cc','');chip.setAttribute('data-vidsrc-to','');chip.setAttribute('data-2embed','');chip.setAttribute('data-user-hindi','');chip.setAttribute('data-user-english','');chip.setAttribute('data-user-japanese','');var epEntry=TITAN.find(S.cur);if(epEntry&&epEntry.tier1){if(epEntry.tier1.hindi){chip.setAttribute('data-vidsrc-cc',epEntry.tier1.hindi(ep));}if(epEntry.tier1.english){chip.setAttribute('data-vidsrc-to',epEntry.tier1.english(ep));}if(epEntry.tier1.japanese){chip.setAttribute('data-2embed',epEntry.tier1.japanese(ep));}}// Inject resolved stream if available
       if (S.resolvedStreams && S.resolvedStreams.hindi && S.resolvedStreams.hindi[ep]) {
         chip.setAttribute('data-user-hindi', S.resolvedStreams.hindi[ep]);
         chip.classList.add('resolved');
