@@ -3,169 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANIFLIX • Premium Anime Streaming</title>
-  <meta name="description" content="Watch premium anime in stunning 4K. Dark themed Netflix-style streaming experience with local data." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='78' font-size='72' fill='%23E50914'%3E▶%3C/text%3E%3C/svg%3E" />
+  <title>AnimeHub</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect rx='22' width='100' height='100' fill='%2316a34a'/%3E%3Ctext y='70' x='50' text-anchor='middle' font-size='48' fill='white' font-weight='bold'%3EAH%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-left">
-        <div class="logo">
-          <span class="logo-red">ANI</span>FLIX
-        </div>
-        <div class="nav-links">
-          <a href="#hero" class="nav-link active">Home</a>
-          <a href="#browse" class="nav-link">Browse</a>
-          <a href="#categories" class="nav-link">Categories</a>
-          <a href="#mylist" class="nav-link">My List</a>
-        </div>
-      </div>
-      <div class="nav-right">
-        <div class="search-container">
-          <input type="text" id="searchInput" placeholder="Search anime titles..." autocomplete="off" />
-          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-        </div>
-        <button id="profileBtn" class="profile-btn">
-          <img src="https://picsum.photos/id/1005/32/32" alt="Profile" />
-        </button>
-      </div>
-    </div>
-  </nav>
 
-  <!-- HERO / SPOTLIGHT -->
-  <section class="hero" id="hero">
-    <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-gradient"></div>
-    <div class="hero-content">
-      <div class="hero-badge">🔥 #1 TRENDING THIS WEEK</div>
-      <h1 class="hero-title" id="heroTitle">Jujutsu Kaisen</h1>
-      <div class="hero-meta">
-        <span class="meta-score">★ 9.0</span>
-        <span class="meta-year">2023</span>
-        <span class="meta-ep">24 Episodes</span>
-        <span class="meta-rating">TV-14</span>
+  <div class="ah-grid" id="ahGrid"></div>
+  <div class="ah-sentinel" id="ahSentinel"></div>
+
+  <div class="ah-overlay" id="ahOverlay">
+    <button class="ah-back" id="ahBackBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="ah-detail-scroll">
+      <div class="ah-player-wrap" id="ahPlayerWrap">
+        <div class="ah-player-bg" id="ahPlayerBg"></div>
+        <div class="ah-player-gradient"></div>
+        <iframe id="ahPlayerIframe" class="ah-player-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="ah-now-playing" id="ahNowPlaying"></div>
       </div>
-      <p class="hero-desc" id="heroDesc">In a world where cursed spirits feed on unsuspecting humans, Yuji Itadori swallows a powerful finger to protect his friends and joins the Tokyo Jujutsu High to fight evil.</p>
-      
-      <div class="hero-actions">
-        <button class="btn btn-play" id="heroPlayBtn">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <span>PLAY TRAILER</span>
-        </button>
-        <button class="btn btn-info" id="heroInfoBtn">
-          <span>More Info</span>
-        </button>
-        <button class="btn btn-list" id="heroListBtn">+ My List</button>
+      <div class="ah-detail-title-row"><h1 class="ah-detail-title" id="ahTitle"></h1></div>
+      <div class="ah-meta-row" id="ahMetaRow"></div>
+      <div class="ah-action-bar">
+        <button class="ah-pill" id="ahListBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> + List</button>
+        <button class="ah-pill" id="ahShareBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
+        <button class="ah-pill" id="ahDownloadBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
       </div>
-    </div>
-    <div class="hero-fade"></div>
-  </section>
-
-  <!-- CATEGORY FILTERS -->
-  <section class="categories" id="categories">
-    <div class="section-header">
-      <h2>Browse by Category</h2>
-    </div>
-    <div class="filter-chips" id="filterChips">
-      <!-- Populated by JS -->
-    </div>
-  </section>
-
-  <!-- TRENDING ROW -->
-  <section class="content-row">
-    <div class="row-header">
-      <h2>🔥 Trending Now</h2>
-      <span class="row-subtitle">Most watched this week</span>
-    </div>
-    <div class="row-scroll" id="trendingRow"></div>
-  </section>
-
-  <!-- TOP RATED ROW -->
-  <section class="content-row">
-    <div class="row-header">
-      <h2>⭐ Top Rated</h2>
-      <span class="row-subtitle">Highest acclaimed anime</span>
-    </div>
-    <div class="row-scroll" id="topRatedRow"></div>
-  </section>
-
-  <!-- BROWSE SECTION -->
-  <section class="browse-section" id="browse">
-    <div class="section-header">
-      <h2>📺 All Anime</h2>
-      <div class="browse-controls">
-        <span id="resultsCount">Showing 15 titles</span>
+      <div class="ah-dropdowns">
+        <button class="ah-dropdown" id="ahLangDropdown"><span id="ahLangLabel">Hindi dub</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <button class="ah-dropdown" id="ahSeasonDropdown"><span id="ahSeasonLabel">Season 01</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
       </div>
+      <div class="ah-ep-wrap"><div class="ah-ep-chips" id="ahEpChips"></div></div>
+      <div class="ah-rec-grid" id="ahRecGrid"></div>
     </div>
-    
-    <div class="anime-grid" id="animeGrid">
-      <!-- Populated dynamically by JS -->
-    </div>
-  </section>
+    <button class="ah-float-dl" id="ahFloatDl"></button>
+  </div>
 
-  <!-- MY LIST SECTION -->
-  <section class="content-row" id="mylist">
-    <div class="row-header">
-      <h2>❤️ My List</h2>
-      <span class="row-subtitle">Your saved anime</span>
-    </div>
-    <div class="row-scroll" id="myListRow"></div>
-    <div id="myListEmpty" class="empty-list">Your list is empty. Add titles from the grid above!</div>
-  </section>
-
-  <!-- TRAILER POPUP MODAL -->
-  <div class="modal-overlay" id="trailerModal">
-    <div class="trailer-modal">
-      <button class="modal-close" id="closeTrailer">&times;</button>
-      <div class="trailer-header">
-        <h3 id="trailerTitle"></h3>
-      </div>
-      <div class="trailer-player">
-        <iframe id="trailerIframe" width="100%" height="100%" frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen></iframe>
-      </div>
-      <div class="trailer-footer">
-        <button class="btn btn-secondary" id="closeTrailerBtn">Close Player</button>
+  <div class="ah-sheet-overlay" id="ahLangSheetOverlay">
+    <div class="ah-sheet">
+      <div class="ah-sheet-header"><h3>Select language</h3><button class="ah-sheet-close" id="ahLangSheetClose">&times;</button></div>
+      <div class="ah-sheet-body">
+        <button class="ah-lang-btn" data-lang="original">Original Audio</button>
+        <button class="ah-lang-btn" data-lang="english">English dub</button>
+        <button class="ah-lang-btn active" data-lang="hindi">Hindi dub</button>
+        <button class="ah-lang-btn" data-lang="tamil">Tamil dub</button>
+        <button class="ah-lang-btn" data-lang="telugu">Telugu dub</button>
       </div>
     </div>
   </div>
 
-  <!-- DETAIL MODAL -->
-  <div class="modal-overlay" id="detailModal">
-    <div class="detail-modal">
-      <button class="modal-close" id="closeDetail">&times;</button>
-      <div class="detail-hero" id="detailHero"></div>
-      <div class="detail-content">
-        <div class="detail-header">
-          <h2 id="detailTitle"></h2>
-          <div class="detail-meta" id="detailMeta"></div>
+  <div class="ah-sheet-overlay" id="ahDlSheetOverlay">
+    <div class="ah-sheet">
+      <div class="ah-sheet-header"><h3>Download</h3><button class="ah-sheet-close" id="ahDlSheetClose">&times;</button></div>
+      <div class="ah-sheet-body">
+        <p class="ah-dl-subtitle">Resources by <strong>AnimeHub</strong></p>
+        <div class="ah-dl-controls">
+          <button class="ah-dropdown ah-dropdown-sm" id="ahDlLangDropdown"><span id="ahDlLangLabel">Hindi dub</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="ah-dropdown ah-dropdown-sm" id="ahDlSeasonDropdown"><span id="ahDlSeasonLabel">Season 01</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
         </div>
-        <div class="detail-genres" id="detailGenres"></div>
-        <p class="detail-synopsis" id="detailSynopsis"></p>
-        
-        <div class="detail-actions">
-          <button class="btn btn-play" id="detailPlayBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            <span>Watch Trailer</span>
-          </button>
-          <button class="btn btn-list" id="detailListBtn">+ Add to My List</button>
+        <div class="ah-dl-quality"><button class="ah-qual-btn" data-quality="360p">360P</button><button class="ah-qual-btn active" data-quality="1080p">1080P</button></div>
+        <div class="ah-dl-episodes" id="ahDlEpisodes"></div>
+        <div class="ah-dl-bottom">
+          <label class="ah-dl-select-all"><input type="checkbox" id="ahDlSelectAll" /><span>Select All</span></label>
+          <button class="ah-dl-action" id="ahDlAction"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-  <footer>
-    <p>ANIFLIX © 2026 • Premium Dark Anime Experience • All data local • Inspired by Netflix</p>
-  </footer>
+  <div class="ah-toast" id="ahToast"></div>
+  <div class="ah-loader" id="ahLoader"><div class="ah-loader-spin"></div><div class="ah-loader-text" id="ahLoaderText">Loading...</div></div>
+  <div class="ah-stream-badge" id="ahStreamBadge"></div>
 
   <script src="script.js"></script>
 </body>
