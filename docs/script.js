@@ -1,5 +1,5 @@
 /* ============================================================
-   AnimeHub v17 — SAFE BOOT / SELF-HEALING BUILD
+   AnimeHub v18 — SAFE BOOT / SELF-HEALING BUILD
    - NEVER a black screen: hardcoded fallback renders instantly
    - catalog.json fetched with timeout + catch; failure shows a
      visible error banner and uses embedded FALLBACK_CATALOG.
@@ -279,7 +279,7 @@
 
   // ───────────── SAVE / SHARE (localStorage wrapped) ─────────────
   var U = (function () {
-    var k = 'ah_safeboot_v17';
+    var k = 'ah_safeboot_v18';
     var d = { saved: [] };
     try {
       var raw = localStorage.getItem(k);
