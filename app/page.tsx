@@ -1,10 +1,46 @@
-'use client';
-import {useState} from 'react';import {Search,Play,Plus,Check,ChevronRight,Menu,X,Flame,Clock3,Star, UserCircle} from 'lucide-react';
-const anime=[
- {title:'Demon Slayer',sub:'Kimetsu no Yaiba',tag:'TRENDING #1',img:'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=900&q=85',desc:'Tanjiro और उसके दोस्तों के साथ एक रोमांचक सफर पर निकलें। अपने परिवार को बचाने के लिए वह demon slayer बनने की ट्रेनिंग लेता है।',rating:'9.4',eps:'55 Episodes',genres:'Action • Adventure • Fantasy'},
- {title:'Jujutsu Kaisen',img:'https://images.unsplash.com/photo-1614583224974-4a62d3b9a3ca?w=700&q=80',rating:'9.2',eps:'47 Episodes'}, {title:'One Piece',img:'https://images.unsplash.com/photo-1541560052-77ec1bbc09f7?w=700&q=80',rating:'9.1',eps:'1122 Episodes'}, {title:'Solo Leveling',img:'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=700&q=80',rating:'9.5',eps:'25 Episodes'}, {title:'Attack on Titan',img:'https://images.unsplash.com/photo-1560972550-aba3456b5564?w=700&q=80',rating:'9.6',eps:'89 Episodes'}, {title:'Naruto: Shippuden',img:'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=700&q=80',rating:'8.9',eps:'500 Episodes'}];
-function Card({a,onAdd,marked}:{a:any,onAdd:()=>void,marked:boolean}){return <div className="group min-w-[155px] sm:min-w-[190px] md:min-w-[210px]"><div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-panel"><img src={a.img} className="h-full w-full object-cover transition duration-500 group-hover:scale-105"/><div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-3"><button className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-black"><Play size={15} fill="currentColor"/></button><button onClick={onAdd} className="ml-2 flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-black/50">{marked?<Check size={15}/>:<Plus size={15}/>}</button></div><span className="absolute left-2 top-2 rounded bg-accent px-1.5 py-1 text-[10px] font-bold text-black">HD</span></div><h3 className="mt-3 truncate font-semibold">{a.title}</h3><p className="mt-1 text-xs text-muted"><span className="text-accent">★ {a.rating}</span> · {a.eps||'12 Episodes'}</p></div>}
-export default function Home(){const [query,setQuery]=useState('');const [saved,setSaved]=useState<string[]>([]);const [menu,setMenu]=useState(false);const filtered=anime.slice(1).filter(a=>a.title.toLowerCase().includes(query.toLowerCase())); const add=(t:string)=>setSaved(s=>s.includes(t)?s.filter(x=>x!==t):[...s,t]);return <main className="min-h-screen pb-16"><header className="fixed z-30 flex w-full items-center justify-between border-b border-white/5 bg-ink/80 px-5 py-4 backdrop-blur-xl md:px-12"><div className="flex items-center gap-8"><div className="text-2xl font-black tracking-tight"><span className="text-accent">K</span>itsu<span className="ml-1 text-xs text-accent">HINDI</span></div><nav className="hidden gap-6 text-sm text-gray-300 md:flex"><a className="text-white">Home</a><a>Explore</a><a>Genres</a><a>Watchlist <sup className="text-accent">{saved.length||''}</sup></a></nav></div><div className="flex items-center gap-3"><div className="hidden items-center rounded-full border border-line bg-panel px-3 py-2 md:flex"><Search size={16} className="text-muted"/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search anime..." className="w-44 bg-transparent pl-2 text-sm outline-none placeholder:text-muted"/></div><button className="rounded-full border border-line p-2 md:hidden" onClick={()=>setMenu(!menu)}>{menu?<X size={18}/>:<Menu size={18}/>}</button><button className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm"><UserCircle size={18}/><span className="hidden sm:inline">Sign in</span></button></div></header>
-<section className="relative flex min-h-[600px] items-end overflow-hidden pt-20"><img src={anime[0].img} className="absolute inset-0 h-full w-full object-cover object-center"/><div className="hero-gradient absolute inset-0"/><div className="relative z-10 max-w-xl px-6 pb-20 md:px-12"><p className="mb-4 text-xs font-bold tracking-[.25em] text-accent">{anime[0].tag}</p><h1 className="text-5xl font-black leading-[.95] md:text-7xl">{anime[0].title}<br/><span className="text-2xl font-light text-gray-300">{anime[0].sub}</span></h1><p className="mt-6 max-w-lg text-sm leading-6 text-gray-300">{anime[0].desc}</p><div className="mt-5 flex items-center gap-3 text-sm"><span className="text-accent">★ {anime[0].rating}</span><span className="text-gray-400">• 2024 • {anime[0].eps}</span></div><div className="mt-7 flex gap-3"><button className="flex items-center gap-2 rounded-md bg-accent px-6 py-3 font-bold text-black"><Play size={17} fill="currentColor"/> अभी देखें</button><button onClick={()=>add(anime[0].title)} className="flex items-center gap-2 rounded-md bg-white/15 px-5 py-3 font-semibold backdrop-blur"><Plus size={18}/> Watchlist</button></div></div></section>
-<div className="space-y-12 px-5 md:px-12">{query&&<section><h2 className="mb-5 text-xl font-bold">Search results for “{query}”</h2><div className="flex gap-5 overflow-x-auto scrollbar-hide">{filtered.map(a=><Card key={a.title} a={a} marked={saved.includes(a.title)} onAdd={()=>add(a.title)}/>)}</div></section>}<Section title="Trending Now" icon={<Flame size={20} className="text-accent"/>} list={anime.slice(1,5)} saved={saved} add={add}/><Section title="Popular in Hindi" list={anime.slice(2)} saved={saved} add={add}/><Section title="New Releases" icon={<Clock3 size={18} className="text-accent"/>} list={[anime[3],anime[1],anime[5]]} saved={saved} add={add}/></div><footer className="mt-20 border-t border-line px-6 py-8 text-center text-sm text-muted">© 2025 Kitsu Hindi · Stream responsibly, dream endlessly.</footer></main>}
-function Section({title,icon,list,saved,add}:{title:string,icon?:any,list:any[],saved:string[],add:(s:string)=>void}){return <section><div className="mb-5 flex items-center justify-between"><h2 className="flex items-center gap-2 text-xl font-bold">{icon}{title}</h2><button className="flex items-center gap-1 text-sm text-muted hover:text-white">View all <ChevronRight size={16}/></button></div><div className="flex gap-5 overflow-x-auto scrollbar-hide">{list.map(a=><Card key={a.title} a={a} marked={saved.includes(a.title)} onAdd={()=>add(a.title)}/>)}</div></section>}
+import Browser from '@/components/Browser';
+import { browse } from '@/lib/catalog';
+import type { MediaKind, SortKey } from '@/lib/types';
+
+export const revalidate = 3600;
+
+const KINDS = new Set(['all', 'anime', 'movie', 'tv']);
+const SORTS = new Set(['popularity', 'score', 'year', 'title']);
+
+type Search = Record<string, string | string[] | undefined>;
+
+function one(v: string | string[] | undefined): string {
+  return Array.isArray(v) ? (v[0] ?? '') : (v ?? '');
+}
+
+export default async function HomePage({
+  searchParams
+}: {
+  searchParams: Promise<Search>;
+}) {
+  const sp = await searchParams;
+
+  const q = one(sp.q).slice(0, 120).trim();
+  const rawKind = one(sp.kind) || 'all';
+  const rawSort = one(sp.sort) || 'popularity';
+  const genre = one(sp.genre) || 'all';
+
+  const kind = (KINDS.has(rawKind) ? rawKind : 'all') as MediaKind | 'all';
+  const sort = (SORTS.has(rawSort) ? rawSort : 'popularity') as SortKey;
+
+  // Server-render the first page so the grid and its links exist in the HTML.
+  const initial = await browse({
+    q: q || undefined,
+    kind,
+    genre: genre !== 'all' ? genre : undefined,
+    sort,
+    page: 1
+  });
+
+  return (
+    <Browser
+      initial={initial}
+      initialQuery={{ q, kind, genre, sort }}
+    />
+  );
+}

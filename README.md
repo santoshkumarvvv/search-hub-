@@ -1,18 +1,18 @@
 <div align="center">
 
-<img src="docs/icon.svg" width="96" alt="AnimeHub logo" />
+<img src="public/icon.svg" width="88" alt="MediaHub" />
 
-# AnimeHub
+# MediaHub
 
-**Fast, offline-capable Hindi-dubbed anime catalog.**
-Zero-dependency frontend · Safe-boot architecture · Never a blank screen.
+**A fast, installable catalog for anime, films and series.**
+Next.js 15 · App Router · Server-rendered · Offline-capable
 
-[![Live Demo](https://img.shields.io/badge/demo-live-22c55e?style=flat-square)](https://santoshkumarvvv.github.io/search-hub-/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-38bdf8?style=flat-square)](LICENSE)
-[![CI](https://img.shields.io/badge/CI-configured-1f2937?style=flat-square)](.github/README.md)
-[![PWA](https://img.shields.io/badge/PWA-installable-312e81?style=flat-square)](docs/manifest.webmanifest)
+[![Next.js](https://img.shields.io/badge/Next.js-15-000?style=flat-square)](https://nextjs.org)
+[![Audit](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-22c55e?style=flat-square)](#security)
+[![PWA](https://img.shields.io/badge/PWA-installable-312e81?style=flat-square)](public/manifest.webmanifest)
 
-[**Live Demo**](https://santoshkumarvvv.github.io/search-hub-/) · [Features](#features) · [Architecture](#architecture) · [Local Setup](#local-setup)
+[Features](#features) · [Architecture](#architecture) · [Setup](#local-setup) · [Deploy](#deployment)
 
 </div>
 
@@ -20,102 +20,137 @@ Zero-dependency frontend · Safe-boot architecture · Never a blank screen.
 
 ## Overview
 
-AnimeHub is a browsable anime catalog built around one hard rule: **the user never sees a blank
-screen.** The entire UI boots from an embedded fallback catalog before a single network request
-fires. If the network is down, the CDN is blocked, or JSON parsing fails, the app degrades
-gracefully and tells the user exactly what happened instead of failing silently.
+MediaHub aggregates metadata from **Jikan** (MyAnimeList) and **TMDb** into a single browsable
+catalog. Search, filtering, sorting and deep links are all server-rendered, so every view is
+shareable and indexable.
 
-The production frontend (`docs/`) ships as **vanilla HTML/CSS/JS with no build step and no runtime
-dependencies** — it loads on a 2G connection and works fully offline after first visit.
+Two design rules drive the codebase:
+
+1. **The grid is never empty.** If both upstream providers fail, a seed catalogue is served instead
+   of an error page.
+2. **No third-party UI ever renders.** Trailers open inside a sandboxed frame in our own shell,
+   mounted only after an explicit click.
 
 ## Features
 
 | | |
 |---|---|
-| **Safe-boot rendering** | Embedded fallback catalog renders instantly; remote catalog hydrates in the background |
-| **Offline-first PWA** | Service worker caches the shell + catalog. Installable to home screen |
-| **Instant search** | Debounced client-side filter across title, studio and genre |
-| **Deep linking** | `#anime=<id>` opens a title directly — shareable, back-button aware |
-| **Multi-audio UI** | Hindi / English / Tamil / Telugu / Japanese track selection per title |
-| **Watchlist** | Persisted to `localStorage`, survives reloads, quota-safe |
-| **Keyboard-first** | `/` focus search · `Esc` close panel · full tab-order and focus trap |
-| **Accessible** | ARIA dialog semantics, visible focus rings, `prefers-reduced-motion` honoured |
-| **Hardened** | Strict CSP, sandboxed player iframe, XSS-escaped rendering, no inline event handlers |
+| **Server-rendered catalog** | First page is in the HTML — no loading flash, fully indexable |
+| **Unified search** | One query hits both providers, results are interleaved and de-duplicated |
+| **Filters & sort** | Type (anime / movie / series), genre, and four sort orders |
+| **Deep linking** | `?q=&kind=&genre=&sort=` restores any view; `/title/anime:1535` opens a title |
+| **Infinite scroll** | `IntersectionObserver` with a 600px pre-fetch margin |
+| **Own player shell** | Branded frame, click-to-load, sandboxed, no-cookie host |
+| **Installable PWA** | Cache-first shell, network-first API with offline fallback |
+| **Graceful degradation** | Missing TMDb key → anime only; both providers down → seed catalogue |
+| **Accessible** | Skip link, focus rings, ARIA labels, `prefers-reduced-motion` |
 
 ## Architecture
 
 ```
-search-hub-/
-├── docs/                     ← deployed to GitHub Pages (zero-build)
-│   ├── index.html            ·  app shell + critical inline CSS
-│   ├── script.js             ·  safe-boot renderer, search, router, watchlist
-│   ├── style.css             ·  extended component styles
-│   ├── sw.js                 ·  service worker (cache-first shell, SWR catalog)
-│   ├── catalog.json          ·  50-title dataset
-│   ├── manifest.webmanifest  ·  PWA metadata
-│   └── icon.svg              ·  brand mark
-├── app/                      ← Next.js 15 rewrite (in progress)
-├── prisma/schema.prisma      ← User · Anime · Watchlist · History
-├── lib/prisma.ts             ← lazy DB boundary
-└── .github/                  ← CI pipeline (see .github/README.md)
+├── app/
+│   ├── page.tsx                  ·  server-rendered catalog (parses ?q &kind &genre &sort)
+│   ├── title/[uid]/page.tsx      ·  detail view + metadata / Open Graph
+│   ├── api/catalog/route.ts      ·  browse + search, 1h revalidate
+│   ├── api/title/[uid]/route.ts  ·  single title lookup
+│   ├── error.tsx · not-found.tsx ·  error boundaries
+│   └── globals.css
+├── components/
+│   ├── Browser.tsx               ·  client state, URL sync, infinite scroll
+│   ├── Toolbar.tsx               ·  search, filters, sort
+│   ├── Card.tsx                  ·  poster tile with fallback
+│   └── Player.tsx                ·  sandboxed trailer frame
+├── lib/
+│   ├── catalog.ts                ·  aggregation, de-dupe, interleave, sort
+│   ├── providers/jikan.ts        ·  MyAnimeList adapter
+│   ├── providers/tmdb.ts         ·  TMDb adapter
+│   ├── fallback.ts               ·  offline seed data
+│   └── types.ts                  ·  shared MediaItem shape
+└── public/                       ·  icon, manifest, service worker
 ```
 
-### Boot sequence
+### Request flow
 
 ```
- 1. HTML paints  ──────────────► gradient shell + static markup   (no JS needed)
- 2. script.js    ──────────────► renders embedded FALLBACK_CATALOG (~0ms)
- 3. fetch catalog.json (4s timeout)
-        ├── success ──────────► swap in full dataset, status: "ok"
-        └── fail ─────────────► keep fallback, status: visible error banner
+ browser ──► app/page.tsx ──► lib/catalog.browse()
+                                   ├─► jikan.topAnime()   ─┐
+                                   └─► tmdb.trending()    ─┤
+                                                           ├─► interleave
+                                                           ├─► de-duplicate by uid
+                                                           └─► sort
+                              all providers failed? ──► lib/fallback.FALLBACK
 ```
 
-Every DOM reference is null-guarded and every boot step is wrapped in `try/catch`, so a single
-failure degrades one component instead of white-screening the page.
+Each provider call is wrapped so a single failing upstream degrades that source only — it never
+takes down the request.
+
+### Provider normalisation
+
+Both APIs collapse into one `MediaItem`, keyed by a `kind:id` uid (`anime:5114`, `movie:27205`).
+The UI never branches on which provider a row came from.
 
 ## Security
 
-- **Content-Security-Policy** — locks scripts to `self`, blocks inline execution, restricts frames
-  to the video provider allowlist
-- **Sandboxed iframe** — player runs with an explicit `sandbox` allowlist, `no-referrer`
-- **XSS-safe rendering** — all user-reachable strings pass through `escapeHtml()`; URLs are
-  protocol-validated before injection (blocks `javascript:` / `data:`)
-- **No secrets in client code** — `.env` is git-ignored; `.env.example` documents required keys
-- **Referrer stripped** on all outbound image and frame requests
+`npm audit` reports **0 vulnerabilities**. Verified against a running build:
+
+| Check | Result |
+|---|---|
+| `<script>` payload in `?q=` | escaped in all 4 contexts, 0 executable |
+| `/api/title/xss:1` | `400` |
+| `/api/title/anime:abc` | `400` |
+| `/api/title/anime:1;DROP` | `400` |
+| `?page=99999` / `?page=-5` | clamped to 1–100 |
+| `?sort=../../etc` / `?kind=evil` | rejected, safe default applied |
+| Poster URLs | all `https://`, no `javascript:` or `data:` |
+
+Hardening in place:
+
+- **Route guards** — uid must match `^(anime|movie|tv):\d+$`; sort and kind validated against
+  allow-lists; page clamped
+- **Sandboxed player** — explicit `sandbox` allow-list, `no-referrer`, no-cookie YouTube host,
+  frame mounts only on click
+- **Adult content filtered at the source** — Jikan `sfw=true` plus a rating/genre blocklist;
+  TMDb `include_adult=false` plus a per-result `adult` check
+- **Response headers** — `nosniff`, `SAMEORIGIN`, `no-referrer`, restrictive `Permissions-Policy`
+- **No secrets client-side** — TMDb key is read only in route handlers
 
 ## Local Setup
-
-The deployed site needs **no build** — just serve `docs/`:
 
 ```bash
 git clone https://github.com/santoshkumarvvv/search-hub-.git
 cd search-hub-
-npx serve docs        # → http://localhost:3000
+npm install
+cp .env.example .env.local     # optional — add a TMDb key for films and series
+npm run dev                    # http://localhost:3000
 ```
 
-For the Next.js rewrite:
+The site runs with **no configuration at all**. Without `TMDB_API_KEY` it serves anime from Jikan;
+add the key to unlock movies and series.
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `TMDB_API_KEY` | No | Enables movies and series. Free from [themoviedb.org](https://www.themoviedb.org/settings/api) |
+
+## Deployment
+
+### Vercel
 
 ```bash
-npm install
-cp .env.example .env
-npx prisma generate
-npm run dev
+npm i -g vercel
+vercel --prod
 ```
 
-## Roadmap
+`vercel.json` is committed. Add `TMDB_API_KEY` under **Settings → Environment Variables**.
 
-- [x] Safe-boot renderer with offline fallback
-- [x] PWA + service worker
-- [x] Deep linking and keyboard navigation
-- [x] CSP and iframe hardening
-- [ ] Auth.js provider wiring
-- [ ] Postgres-backed watchlist sync
-- [ ] Server-rendered catalog pages (Next.js)
+### Render
 
-## Legal
+`render.yaml` is committed — point Render at the repo and it builds automatically.
 
-This project is a **UI/UX demonstration**. It hosts no video content. Player embeds must point only
-to licensed providers. Catalog metadata is used for demonstration purposes.
+## Notes on content
+
+MediaHub is a **metadata and discovery** application. It hosts no video. Playback is limited to
+official trailers served by YouTube. Catalogue data belongs to
+[Jikan](https://jikan.moe) and [TMDb](https://www.themoviedb.org); neither endorses this project.
 
 ## License
 

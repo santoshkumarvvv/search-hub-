@@ -1,75 +1,58 @@
-name: Deploy
+name: CI
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Validate
+  build:
+    name: Build & audit
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
+          cache: npm
 
-      - name: Check JS syntax
-        run: |
-          for f in docs/script.js docs/sw.js; do
-            node --check "$f" && echo "ok: $f"
-          done
+      - name: Install
+        run: npm ci
 
-      - name: Validate JSON
-        run: |
-          node -e "
-            const fs=require('fs');
-            for (const f of ['docs/catalog.json','docs/manifest.webmanifest']) {
-              JSON.parse(fs.readFileSync(f,'utf8'));
-              console.log('ok:', f);
-            }
-          "
+      - name: Type check
+        run: npx tsc --noEmit
 
-      - name: Check for committed secrets
+      - name: Build
+        run: npm run build
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      - name: Scan for committed secrets
         run: |
           if grep -rIEn 'gh[pous]_[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----' \
-               --exclude-dir=.git --exclude-dir=node_modules --exclude=package-lock.json . ; then
+               --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next \
+               --exclude=package-lock.json . ; then
             echo "::error::Possible secret committed"
             exit 1
           fi
           echo "no secrets found"
 
-      - name: Check required files
+      - name: Verify required files
         run: |
-          for f in docs/index.html docs/script.js docs/style.css docs/sw.js \
-                   docs/catalog.json docs/manifest.webmanifest docs/icon.svg; do
+          for f in package.json next.config.mjs vercel.json render.yaml \
+                   public/manifest.webmanifest public/sw.js public/icon.svg; do
             test -f "$f" || { echo "::error::missing $f"; exit 1; }
             echo "ok: $f"
           done
-
-  deploy:
-    name: Deploy to Pages
-    needs: validate
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./docs
-      - id: deployment
-        uses: actions/deploy-pages@v4

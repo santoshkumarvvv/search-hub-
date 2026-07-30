@@ -1,15 +1,15 @@
-# ── dependencies ──
+# dependencies
 node_modules/
 .pnp/
 .pnp.js
 
-# ── build output ──
+# build output
 .next/
 out/
 dist/
 build/
 
-# ── environment & secrets ──
+# environment & secrets
 .env
 .env.local
 .env.*.local
@@ -18,25 +18,25 @@ build/
 .netrc
 .git-credentials
 
-# ── logs ──
+# logs
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 
-# ── caches ──
+# caches
 .cache/
 .turbo/
 .eslintcache
 *.tsbuildinfo
+next-env.d.ts
 
-# ── editor / OS ──
+# editor / OS
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
 
-# ── misc ──
+# misc
 coverage/
 .vercel

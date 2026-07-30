@@ -1,0 +1,17 @@
+{
+  "name": "MediaHub — Anime, Movies & Series",
+  "short_name": "MediaHub",
+  "description": "Search thousands of anime, films and series. Filter by genre and watch official trailers.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0d14",
+  "theme_color": "#0b0d14",
+  "lang": "en",
+  "categories": ["entertainment", "video"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
