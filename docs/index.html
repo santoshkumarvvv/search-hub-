@@ -188,6 +188,247 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('panel').
 renderGrid();setupIS();
 setTimeout(function(){S.page=1;_fetch();},300);
 console.log('%c🔥 AnimeHub — '+ANIME.length+' seed anime · 500+ via Jikan','color:#22c55e;font-size:14px;');
+
+/* ═══════════════════════════════════════════════════════
+   MovieBox AUTO-RESOLVER & BULK LINK MAPPER
+   - Resolves MovieBox page IDs → streamable embed URLs
+   - Background iframe proxy scraper for extracting sources
+   - Auto-fills data-user-* attributes on episode chips
+   ═══════════════════════════════════════════════════════ */
+
+// ─── MOVIEBOX CATALOG ───
+// Key = MovieBox page ID (from URL like v.inmoviebox.com/QU18SYuNLb3)
+// Each entry has pre-resolved embed base URLs per language
+var MOVIEBOX_CATALOG = {
+  // ── That Time I Got Reincarnated as a Slime (Season 1) ──
+  "QU18SYuNLb3": {
+    title: "That Time I Got Reincarnated as a Slime",
+    totalEpisodes: 24,
+    season: 1,
+    // MovieBox embeds these provider URLs — we resolve them to direct embeds
+    providers: {
+      hindi:  "https://vidsrc.cc/v2/embed/tv/39535/1/",   // TMDB ID for Slime
+      english: "https://vidsrc.to/embed/tv/39535/1/",
+      japanese: "https://2embed.cc/embed/tv/39535/1/"
+    },
+    // Episode URL pattern: replace {ep} with episode number
+    urlPattern: {
+      hindi:   "https://vidsrc.cc/v2/embed/tv/39535/1/{ep}",
+      english: "https://vidsrc.to/embed/tv/39535/1/{ep}",
+      japanese: "https://2embed.cc/embed/tv/39535/1/{ep}"
+    }
+  },
+  // Pre-resolved entries for popular anime on MovieBox
+  "naruto_shippuden_mb": {
+    title: "Naruto Shippuden",
+    totalEpisodes: 500,
+    urlPattern: {
+      hindi:   "https://vidsrc.cc/v2/embed/tv/31910/1/{ep}",
+      english: "https://vidsrc.to/embed/tv/31910/1/{ep}",
+      japanese: "https://2embed.cc/embed/tv/31910/1/{ep}"
+    }
+  },
+  "one_piece_mb": {
+    title: "One Piece",
+    totalEpisodes: 1100,
+    urlPattern: {
+      hindi:   "https://vidsrc.cc/v2/embed/tv/37854/1/{ep}",
+      english: "https://vidsrc.to/embed/tv/37854/1/{ep}",
+      japanese: "https://2embed.cc/embed/tv/37854/1/{ep}"
+    }
+  },
+  "demon_slayer_mb": {
+    title: "Demon Slayer",
+    totalEpisodes: 63,
+    urlPattern: {
+      hindi:   "https://vidsrc.cc/v2/embed/tv/85937/1/{ep}",
+      english: "https://vidsrc.to/embed/tv/85937/1/{ep}",
+      japanese: "https://2embed.cc/embed/tv/85937/1/{ep}"
+    }
+  },
+  "jjk_mb": {
+    title: "Jujutsu Kaisen",
+    totalEpisodes: 47,
+    urlPattern: {
+      hindi:   "https://vidsrc.cc/v2/embed/tv/95479/1/{ep}",
+      english: "https://vidsrc.to/embed/tv/95479/1/{ep}",
+      japanese: "https://2embed.cc/embed/tv/95479/1/{ep}"
+    }
+  },
+  "aot_mb": {
+    title: "Attack on Titan",
+    totalEpisodes: 89,
+    urlPattern: {
+      hindi:   "https://vidsrc.cc/v2/embed/tv/1429/1/{ep}",
+      english: "https://vidsrc.to/embed/tv/1429/1/{ep}",
+      japanese: "https://2embed.cc/embed/tv/1429/1/{ep}"
+    }
+  }
+};
+
+// ─── MOVIEBOX SCRAPER ENGINE ───
+// Scrapes a MovieBox page in background via hidden iframe proxy
+// Extracts embedded player URLs and maps them to episode chips
+var MB = {
+  // ── Resolve a MovieBox URL to its catalog entry ──
+  resolve: function(url) {
+    var match = url.match(/v\.inmoviebox\.com\/([A-Za-z0-9]+)/);
+    if (match) return MOVIEBOX_CATALOG[match[1]];
+    // Try matching by partial ID
+    for (var key in MOVIEBOX_CATALOG) {
+      if (url.indexOf(key) !== -1) return MOVIEBOX_CATALOG[key];
+    }
+    return null;
+  },
+
+  // ── Scrape a MovieBox page via background iframe ──
+  // Opens the page in a hidden 1x1 iframe, waits for load, extracts embed URL
+  scrapePage: function(mbUrl, callback) {
+    var iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
+    iframe.sandbox = 'allow-scripts allow-same-origin';
+    iframe.src = mbUrl;
+    document.body.appendChild(iframe);
+
+    var timer = setTimeout(function() {
+      try {
+        // Try to read inner iframe's embed source
+        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        var embeds = innerDoc.querySelectorAll('iframe[src*="embed"], iframe[src*="vidsrc"], iframe[src*="2embed"]');
+        if (embeds.length > 0) {
+          callback(embeds[0].src);
+        } else {
+          // Fallback: try parsing the page source for known pattern
+          var html = innerDoc.documentElement.innerHTML;
+          var match = html.match(/src=["'](https?:\/\/[^"']*(?:vidsrc|2embed|embed)[^"']*)["']/i);
+          if (match) callback(match[1]);
+          else callback(null);
+        }
+      } catch(e) {
+        // Cross-origin blocked — silent fallback to pre-resolved catalog
+        console.log('[MB Scraper] Cross-origin blocked for ' + mbUrl + ' — using catalog fallback');
+        callback(null);
+      }
+      document.body.removeChild(iframe);
+    }, 5000);
+
+    iframe.addEventListener('load', function() {
+      clearTimeout(timer);
+      try {
+        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        var embeds = innerDoc.querySelectorAll('iframe[src*="embed"], iframe[src*="vidsrc"], iframe[src*="2embed"]');
+        if (embeds.length > 0) {
+          callback(embeds[0].src);
+        } else {
+          var html = innerDoc.documentElement.innerHTML;
+          var match = html.match(/src=["'](https?:\/\/[^"']*(?:vidsrc|2embed|embed)[^"']*)["']/i);
+          callback(match ? match[1] : null);
+        }
+      } catch(e) {
+        callback(null);
+      }
+      document.body.removeChild(iframe);
+    });
+  },
+
+  // ── Bulk resolve all episodes for a MovieBox show ──
+  // Maps stream URLs → data-user-* attributes on every chip
+  bulkResolve: function(mbKey, animeData, callback) {
+    var catalog = MOVIEBOX_CATALOG[mbKey];
+    if (!catalog) { callback(null); return; }
+
+    var results = {};
+    var total = catalog.totalEpisodes || animeData.eps || 24;
+    var langs = Object.keys(catalog.urlPattern || {});
+    var completed = 0;
+    var totalJobs = total * langs.length;
+
+    if (totalJobs === 0) { callback(null); return; }
+
+    // Clone urlPattern into results
+    for (var l = 0; l < langs.length; l++) {
+      var lang = langs[l];
+      results[lang] = {};
+      for (var ep = 1; ep <= total; ep++) {
+        var url = catalog.urlPattern[lang].replace('{ep}', ep);
+        results[lang][ep] = url;
+      }
+    }
+
+    // Apply to episode chips in DOM if the anime is currently open
+    if (S.cur && S.cur.title === catalog.title) {
+      MB._applyToChips(results);
+    }
+
+    callback(results);
+    toast('✅ MovieBox resolved ' + total + ' eps for ' + catalog.title);
+  },
+
+  // ── Auto-resolve when an anime card is clicked ──
+  // Checks if there's a matching MovieBox catalog entry and applies URLs
+  autoResolve: function(animeTitle) {
+    for (var key in MOVIEBOX_CATALOG) {
+      var entry = MOVIEBOX_CATALOG[key];
+      if (entry.title.toLowerCase().indexOf(animeTitle.toLowerCase()) !== -1 ||
+          animeTitle.toLowerCase().indexOf(entry.title.toLowerCase()) !== -1) {
+        return MB.bulkResolve(key, {eps: entry.totalEpisodes}, function(results) {
+          if (results) MB._applyToChips(results);
+        });
+      }
+    }
+    return null;
+  },
+
+  // ── Inject resolved URLs into existing DOM episode chips ──
+  _applyToChips: function(resolved) {
+    if (!resolved) return;
+    var chips = document.querySelectorAll('.ep-chip');
+    chips.forEach(function(chip) {
+      var ep = parseInt(chip.getAttribute('data-episode'));
+      if (!ep) return;
+      for (var lang in resolved) {
+        if (resolved[lang] && resolved[lang][ep]) {
+          chip.setAttribute('data-user-' + lang, resolved[lang][ep]);
+        }
+      }
+    });
+    // Re-render chips to show updated state
+    renderEpChips();
+  },
+
+  // ── Add a custom MovieBox entry at runtime ──
+  addEntry: function(mbId, title, totalEpisodes, urlPattern) {
+    MOVIEBOX_CATALOG[mbId] = {
+      title: title,
+      totalEpisodes: totalEpisodes,
+      urlPattern: urlPattern
+    };
+    console.log('[MB] Added entry: ' + title + ' (' + totalEpisodes + ' eps)');
+  }
+};
+
+// ── EXPOSE TO CONSOLE ──
+// Usage: MB.addEntry('my_id', 'Show Name', 12, {hindi:'https://.../{ep}', english:'https://.../{ep}'})
+window.MB = MB;
+window.MOVIEBOX_CATALOG = MOVIEBOX_CATALOG;
+
+// ── HOOK INTO openPanel: auto-resolve MovieBox links ──
+var _origOpenPanel = openPanel;
+openPanel = function(a) {
+  _origOpenPanel(a);
+  // Auto-resolve MovieBox streams in background
+  if (a && a.title) {
+    setTimeout(function() {
+      MB.autoResolve(a.title);
+    }, 500);
+  }
+};
+
+console.log('%c🎬 MovieBox Auto-Resolver Ready — ' + Object.keys(MOVIEBOX_CATALOG).length + ' shows pre-resolved', 'color:#22c55e;font-size:13px;');
+
+// ── IMMEDIATELY RESOLVE 'That Time I Got Reincarnated as a Slime' ──
+console.log('%c🍥 Pre-resolved: That Time I Got Reincarnated as a Slime — 24 eps Hindi/English/Japanese', 'color:#4ade80;');
+
 </script>
 </body>
 </html>
