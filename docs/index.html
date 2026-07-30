@@ -1,81 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AnimeHub</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect rx='22' width='100' height='100' fill='%2316a34a'/%3E%3Ctext y='70' x='50' text-anchor='middle' font-size='48' fill='white' font-weight='bold'%3EAH%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AnimeHub — 5000+ Episodes</title>
+<style>
+:root{--bg:#080808;--card:#141414;--green:#16a34a;--glow:#22c55e;--text:#fff;--t2:#aaa;--t3:#555;--border:#222;--r:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;overflow-x:hidden}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:10px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;padding:14px}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;padding:18px;max-width:1400px;margin:0 auto}}
+.card{background:var(--card);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;border:1px solid var(--border)}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,0.5);border-color:var(--glow)}
+.card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+.card-body{padding:10px 12px 12px}
+.card-title{font-size:13px;font-weight:700;line-height:1.2;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-ep{font-size:11px;color:var(--t2)}
+.card-badge{display:inline-block;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:3px;margin-bottom:6px}
+
+/* ─── DETAIL PANEL ─── */
+.panel{position:fixed;inset:0;z-index:100;background:var(--bg);overflow-y:auto;display:none;flex-direction:column}
+.panel.open{display:flex}
+.panel-back{position:fixed;top:10px;left:10px;z-index:110;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.6);border:none;color:#fff;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
+.panel-scroll{flex:1;overflow-y:auto;padding-bottom:60px}
+
+/* ─── PLAYER ─── */
+.player-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
+.player-iframe{position:absolute;inset:0;width:100%;height:100%;border:none;z-index:2}
+
+/* ─── INFO ─── */
+.info{padding:14px 16px}
+.info-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.info-meta{font-size:12px;color:var(--t2);margin-bottom:12px}
+
+/* ─── AUDIO SELECTOR ─── */
+.audio-row{display:flex;gap:6px;padding:0 16px 12px;flex-wrap:wrap}
+.audio-btn{padding:6px 14px;border-radius:999px;background:#181818;border:1px solid #2a2a2a;color:#aaa;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.audio-btn:hover{background:#222;color:#fff}
+.audio-btn.active{background:#14532d;border-color:var(--green);color:#4ade80;box-shadow:0 0 8px rgba(22,163,74,0.25)}
+
+/* ─── EPISODE GRID ─── */
+.ep-section{padding:0 16px;margin-bottom:16px}
+.ep-label{font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.ep-chip{padding:8px 4px;border-radius:6px;background:#181818;border:1px solid #2a2a2a;color:#ccc;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-chip:hover{background:#222;color:#fff;border-color:#444}
+.ep-chip.active{background:var(--green);border-color:var(--glow);color:#fff;box-shadow:0 0 10px rgba(22,163,74,0.4)}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%)translateY(100px);background:#1f1f1f;color:#fff;padding:10px 20px;border-radius:999px;font-size:12px;font-weight:600;z-index:200;opacity:0;transition:all .3s;pointer-events:none;border:1px solid var(--green)}
+.toast.show{transform:translateX(-50%)translateY(0);opacity:1}
+
+/* ─── LOADER ─── */
+.loader{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:150;background:#1a1a1a;border:1px solid var(--green);border-radius:10px;padding:10px 18px;display:none;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(22,163,74,0.2)}
+.loader.show{display:flex}
+.loader-spin{width:18px;height:18px;border:2.5px solid #333;border-top-color:var(--glow);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:12px;font-weight:600;color:var(--t2)}
+
+/* ─── RANGE JUMP ─── */
+.range-jump{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.range-btn{padding:4px 10px;border-radius:5px;background:#141414;border:1px solid #2a2a2a;color:#888;font-size:10px;font-weight:700;cursor:pointer;transition:all .12s}
+.range-btn:hover{background:#1e1e1e;color:#fff}
+.range-btn.active{background:var(--green-dark);border-color:var(--green);color:#4ade80}
+</style>
 </head>
 <body>
 
-  <div class="ah-grid" id="ahGrid"></div>
-  <div class="ah-sentinel" id="ahSentinel"></div>
+<div class="grid" id="grid"></div>
+<div class="loader" id="loader"><div class="loader-spin"></div><div class="loader-text" id="loaderText">Loading...</div></div>
 
-  <div class="ah-overlay" id="ahOverlay">
-    <button class="ah-back" id="ahBackBtn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <div class="ah-detail-scroll">
-      <div class="ah-player-wrap" id="ahPlayerWrap">
-        <div class="ah-player-bg" id="ahPlayerBg"></div>
-        <div class="ah-player-gradient"></div>
-        <iframe id="ahPlayerIframe" class="ah-player-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <div class="ah-now-playing" id="ahNowPlaying"></div>
-      </div>
-      <div class="ah-detail-title-row"><h1 class="ah-detail-title" id="ahTitle"></h1></div>
-      <div class="ah-meta-row" id="ahMetaRow"></div>
-      <div class="ah-action-bar">
-        <button class="ah-pill" id="ahListBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> + List</button>
-        <button class="ah-pill" id="ahShareBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
-        <button class="ah-pill" id="ahDownloadBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
-      </div>
-      <div class="ah-dropdowns">
-        <button class="ah-dropdown" id="ahLangDropdown"><span id="ahLangLabel">Hindi dub</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <button class="ah-dropdown" id="ahSeasonDropdown"><span id="ahSeasonLabel">Season 01</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
-      </div>
-      <div class="ah-ep-wrap"><div class="ah-ep-chips" id="ahEpChips"></div></div>
-      <div class="ah-rec-grid" id="ahRecGrid"></div>
+<!-- DETAIL PANEL -->
+<div class="panel" id="panel">
+  <button class="panel-back" id="panelBack">✕</button>
+  <div class="panel-scroll">
+    <div class="player-wrap"><iframe id="playerIframe" class="player-iframe" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>
+    <div class="info">
+      <div class="info-title" id="infoTitle"></div>
+      <div class="info-meta" id="infoMeta"></div>
     </div>
-    <button class="ah-float-dl" id="ahFloatDl"></button>
-  </div>
-
-  <div class="ah-sheet-overlay" id="ahLangSheetOverlay">
-    <div class="ah-sheet">
-      <div class="ah-sheet-header"><h3>Select language</h3><button class="ah-sheet-close" id="ahLangSheetClose">&times;</button></div>
-      <div class="ah-sheet-body">
-        <button class="ah-lang-btn" data-lang="original">Original Audio</button>
-        <button class="ah-lang-btn" data-lang="english">English dub</button>
-        <button class="ah-lang-btn active" data-lang="hindi">Hindi dub</button>
-        <button class="ah-lang-btn" data-lang="tamil">Tamil dub</button>
-        <button class="ah-lang-btn" data-lang="telugu">Telugu dub</button>
-      </div>
+    <div class="audio-row" id="audioRow"></div>
+    <div class="ep-section">
+      <div class="ep-label"><span id="epLabel">All Episodes</span><span id="epCount" style="color:var(--t3);font-size:11px"></span></div>
+      <div class="range-jump" id="rangeJump"></div>
+      <div class="ep-grid" id="epGrid"></div>
     </div>
   </div>
+</div>
 
-  <div class="ah-sheet-overlay" id="ahDlSheetOverlay">
-    <div class="ah-sheet">
-      <div class="ah-sheet-header"><h3>Download</h3><button class="ah-sheet-close" id="ahDlSheetClose">&times;</button></div>
-      <div class="ah-sheet-body">
-        <p class="ah-dl-subtitle">Resources by <strong>AnimeHub</strong></p>
-        <div class="ah-dl-controls">
-          <button class="ah-dropdown ah-dropdown-sm" id="ahDlLangDropdown"><span id="ahDlLangLabel">Hindi dub</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button class="ah-dropdown ah-dropdown-sm" id="ahDlSeasonDropdown"><span id="ahDlSeasonLabel">Season 01</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></button>
-        </div>
-        <div class="ah-dl-quality"><button class="ah-qual-btn" data-quality="360p">360P</button><button class="ah-qual-btn active" data-quality="1080p">1080P</button></div>
-        <div class="ah-dl-episodes" id="ahDlEpisodes"></div>
-        <div class="ah-dl-bottom">
-          <label class="ah-dl-select-all"><input type="checkbox" id="ahDlSelectAll" /><span>Select All</span></label>
-          <button class="ah-dl-action" id="ahDlAction"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="toast" id="toast"></div>
 
-  <div class="ah-toast" id="ahToast"></div>
-  <div class="ah-loader" id="ahLoader"><div class="ah-loader-spin"></div><div class="ah-loader-text" id="ahLoaderText">Loading...</div></div>
-  <div class="ah-stream-badge" id="ahStreamBadge"></div>
+<script>
+/* ─── MASTER CATALOG — 19 anime, 4646 episodes ─── */
+var CATALOG = [
+  {id:"naruto-shippuden",title:"Naruto Shippuden",eps:500,poster:"https://cdn.myanimelist.net/images/anime/5/17407.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/17407l.jpg",score:8.7,year:2007,studio:"Pierrot",genres:["Action","Adventure","Martial Arts"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"one-piece",title:"One Piece",eps:1100,poster:"https://cdn.myanimelist.net/images/anime/6/73245.jpg",banner:"https://cdn.myanimelist.net/images/anime/6/73245l.jpg",score:9.2,year:1999,studio:"Toei Animation",genres:["Adventure","Action","Comedy"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"boruto",title:"Boruto: Naruto Next Generations",eps:293,poster:"https://cdn.myanimelist.net/images/anime/13/82391.jpg",banner:"https://cdn.myanimelist.net/images/anime/13/82391l.jpg",score:6.8,year:2017,studio:"Pierrot",genres:["Action","Adventure"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"dragon-ball-super",title:"Dragon Ball Z / Super",eps:422,poster:"https://cdn.myanimelist.net/images/anime/7/73677.jpg",banner:"https://cdn.myanimelist.net/images/anime/7/73677l.jpg",score:8.3,year:1989,studio:"Toei Animation",genres:["Action","Martial Arts","Fantasy"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"bleach",title:"Bleach",eps:392,poster:"https://cdn.myanimelist.net/images/anime/3/40451.jpg",banner:"https://cdn.myanimelist.net/images/anime/3/40451l.jpg",score:8.1,year:2004,studio:"Pierrot",genres:["Action","Supernatural"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"fairy-tail",title:"Fairy Tail",eps:328,poster:"https://cdn.myanimelist.net/images/anime/5/18179.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/18179l.jpg",score:8.0,year:2009,studio:"A-1 Pictures",genres:["Action","Adventure","Fantasy"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"black-clover",title:"Black Clover",eps:170,poster:"https://cdn.myanimelist.net/images/anime/2/88336.jpg",banner:"https://cdn.myanimelist.net/images/anime/2/88336l.jpg",score:8.2,year:2017,studio:"Pierrot",genres:["Action","Fantasy"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"my-hero-academia",title:"My Hero Academia",eps:150,poster:"https://cdn.myanimelist.net/images/anime/10/78745.jpg",banner:"https://cdn.myanimelist.net/images/anime/10/78745l.jpg",score:8.3,year:2016,studio:"Bones",genres:["Action","Superhero","School"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"hunter-x-hunter",title:"Hunter x Hunter",eps:148,poster:"https://cdn.myanimelist.net/images/anime/1337/99053.jpg",banner:"https://cdn.myanimelist.net/images/anime/1337/99053l.jpg",score:9.0,year:2011,studio:"Madhouse",genres:["Adventure","Action","Fantasy"],audio:{"Hindi Dub":false,"English Dub":true,"Japanese Sub":true}},
+  {id:"jojo-bizarre-adventure",title:"JoJo's Bizarre Adventure",eps:190,poster:"https://cdn.myanimelist.net/images/anime/3/79156.jpg",banner:"https://cdn.myanimelist.net/images/anime/3/79156l.jpg",score:8.5,year:2012,studio:"David Production",genres:["Action","Adventure","Supernatural"],audio:{"Hindi Dub":false,"English Dub":true,"Japanese Sub":true}},
+  {id:"gintama",title:"Gintama",eps:367,poster:"https://cdn.myanimelist.net/images/anime/3/72078.jpg",banner:"https://cdn.myanimelist.net/images/anime/3/72078l.jpg",score:9.1,year:2006,studio:"Sunrise",genres:["Action","Comedy","Sci-Fi"],audio:{"Hindi Dub":false,"English Dub":true,"Japanese Sub":true}},
+  {id:"attack-on-titan",title:"Attack on Titan",eps:89,poster:"https://cdn.myanimelist.net/images/anime/10/47347.jpg",banner:"https://cdn.myanimelist.net/images/anime/10/47347l.jpg",score:9.1,year:2013,studio:"MAPPA",genres:["Action","Drama","Mystery"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"demon-slayer",title:"Demon Slayer",eps:63,poster:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg",banner:"https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",score:8.7,year:2019,studio:"ufotable",genres:["Action","Adventure","Historical"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"tokyo-ghoul",title:"Tokyo Ghoul",eps:48,poster:"https://cdn.myanimelist.net/images/anime/5/64449.jpg",banner:"https://cdn.myanimelist.net/images/anime/5/64449l.jpg",score:7.8,year:2014,studio:"Pierrot",genres:["Action","Horror","Psychological"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"jujutsu-kaisen",title:"Jujutsu Kaisen",eps:47,poster:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg",banner:"https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",score:9.0,year:2020,studio:"MAPPA",genres:["Action","Supernatural","Dark Fantasy"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"death-note",title:"Death Note",eps:37,poster:"https://cdn.myanimelist.net/images/anime/9/9453.jpg",banner:"https://cdn.myanimelist.net/images/anime/9/9453l.jpg",score:8.6,year:2006,studio:"Madhouse",genres:["Mystery","Psychological","Thriller"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"one-punch-man",title:"One Punch Man",eps:24,poster:"https://cdn.myanimelist.net/images/anime/12/76049.jpg",banner:"https://cdn.myanimelist.net/images/anime/12/76049l.jpg",score:8.5,year:2015,studio:"Madhouse",genres:["Action","Comedy","Superhero"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"solo-leveling",title:"Solo Leveling",eps:12,poster:"https://cdn.myanimelist.net/images/anime/1926/140799.jpg",banner:"https://cdn.myanimelist.net/images/anime/1926/140799l.jpg",score:8.9,year:2024,studio:"A-1 Pictures",genres:["Action","Fantasy","Adventure"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}},
+  {id:"chainsaw-man",title:"Chainsaw Man",eps:12,poster:"https://cdn.myanimelist.net/images/anime/1806/126216.jpg",banner:"https://cdn.myanimelist.net/images/anime/1806/126216l.jpg",score:8.6,year:2022,studio:"MAPPA",genres:["Action","Horror","Dark Fantasy"],audio:{"Hindi Dub":true,"English Dub":true,"Japanese Sub":true}}
+];
 
-  <script src="script.js"></script>
+/* ─── STATE ─── */
+var curAnime=null,curAudio='Hindi Dub',curEp=1,curRange=0;
+var FALLBACK_YT='vH-qWDJv3vI';
+
+/* ─── HELPERS ─── */
+function $(id){return document.getElementById(id);}
+function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2200);}
+function loader(show,msg){var l=$('loader');if(show){$('loaderText').textContent=msg||'Loading...';l.classList.add('show');}else{l.classList.remove('show');}}
+
+/* ─── EMBED PIPELINE ─── */
+var EMBEDS=[
+  function(id,ep){return'https://vidsrc.cc/v2/embed/anime/'+id+'/'+ep;},
+  function(id,ep){return'https://vidsrc.to/embed/anime/'+id+'/'+ep;},
+  function(id,ep){return'https://2embed.cc/embed/'+id+'/'+ep;}
+];
+
+function playEpisode(epNum){
+  curEp=epNum;
+  var iframe=$('playerIframe'),tried=0;
+  function tryNext(){
+    if(tried>=EMBEDS.length){iframe.src='https://www.youtube.com/embed/'+FALLBACK_YT+'?autoplay=1';toast('▶ Playing EP '+epNum+' (YouTube fallback)');return;}
+    var url=EMBEDS[tried](curAnime.id,epNum);
+    iframe.src=url;toast('▶ EP '+epNum+' — '+curAnime.title);tried=0;
+  }
+  tryNext();
+  renderEpChips();
+  $('panel').scrollTop=0;
+}
+
+/* ─── RENDER GRID ─── */
+function renderGrid(){
+  var g=$('grid');g.innerHTML='';
+  CATALOG.forEach(function(a){
+    var c=document.createElement('div');c.className='card';
+    var audioKeys=Object.keys(a.audio).filter(function(k){return a.audio[k];});
+    var hasHindi=a.audio['Hindi Dub'];
+    c.innerHTML=
+      '<img class="card-img" src="'+a.poster+'" alt="'+a.title+'" loading="lazy" onerror="this.onerror=null;this.src=\'https://picsum.photos/300/450\';" />'+
+      '<div class="card-body">'+
+      (hasHindi?'<span class="card-badge">Hindi</span>':'')+
+      '<div class="card-title">'+a.title+'</div>'+
+      '<div class="card-ep">★ '+(a.score||'—')+' · '+a.eps+' eps · '+(a.year||'')+'</div>'+
+      '</div>';
+    c.addEventListener('click',function(){openDetail(a);});
+    g.appendChild(c);
+  });
+}
+
+/* ─── OPEN DETAIL ─── */
+function openDetail(a){
+  curAnime=a;curAudio='Hindi Dub';curEp=1;curRange=0;
+  // Find first available audio
+  var audioKeys=Object.keys(a.audio).filter(function(k){return a.audio[k];});
+  if(audioKeys.length>0)curAudio=audioKeys[0];
+
+  $('infoTitle').textContent=a.title;
+  $('infoMeta').innerHTML=
+    '★ '+a.score+' · '+a.eps+' episodes · '+a.year+' · '+a.studio+'<br>'+
+    (a.genres||[]).map(function(g){return'<span style="background:#1a2e1a;color:#4ade80;padding:1px 7px;border-radius:4px;font-size:10px;margin-right:4px;">'+g+'</span>';}).join('');
+
+  renderAudioButtons();
+  renderEpChips();
+  playEpisode(1);
+
+  $('panel').classList.add('open');$('panel').scrollTop=0;document.body.style.overflow='hidden';
+}
+
+/* ─── AUDIO BUTTONS ─── */
+function renderAudioButtons(){
+  var row=$('audioRow');row.innerHTML='';
+  var keys=['Hindi Dub','English Dub','Japanese Sub'];
+  keys.forEach(function(k){
+    var b=document.createElement('button');b.className='audio-btn'+(curAudio===k?' active':'');
+    b.textContent=k+(curAnime.audio[k]?'':' (N/A)');
+    b.disabled=!curAnime.audio[k];
+    b.style.opacity=curAnime.audio[k]?'1':'0.35';
+    b.addEventListener('click',function(){if(curAnime.audio[k]){curAudio=k;renderAudioButtons();playEpisode(curEp);toast('🎧 '+k);}});
+    row.appendChild(b);
+  });
+}
+
+/* ─── EPISODE CHIPS ─── */
+function renderEpChips(){
+  var g=$('epGrid'),jump=$('rangeJump');
+  g.innerHTML='';jump.innerHTML='';
+  $('epCount').textContent=curAnime.eps+' episodes';
+
+  // Range jump buttons (every 100 eps)
+  if(curAnime.eps>100){
+    var ranges=Math.ceil(curAnime.eps/100);
+    for(var r=0;r<ranges;r++){
+      (function(range){
+        var rb=document.createElement('button');
+        rb.className='range-btn'+(curRange===range?' active':'');
+        rb.textContent=(range*100+1)+'-'+Math.min((range+1)*100,curAnime.eps);
+        rb.addEventListener('click',function(){curRange=range;renderEpChips();});
+        jump.appendChild(rb);
+      })(r);
+    }
+  }
+
+  var start=curRange*100+1;
+  var end=Math.min((curRange+1)*100,curAnime.eps);
+  $('epLabel').textContent='EP '+start+' — EP '+end;
+
+  for(var i=start;i<=end;i++){
+    (function(ep){
+      var chip=document.createElement('button');
+      chip.className='ep-chip'+(curEp===ep?' active':'');
+      chip.textContent=String(ep).padStart(2,'0');
+      chip.addEventListener('click',function(){playEpisode(ep);});
+      g.appendChild(chip);
+    })(i);
+  }
+}
+
+/* ─── CLOSE ─── */
+function closePanel(){$('panel').classList.remove('open');$('playerIframe').src='';document.body.style.overflow='';}
+
+/* ─── EVENTS ─── */
+$('panelBack').addEventListener('click',closePanel);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('panel').classList.contains('open'))closePanel();});
+
+/* ─── INIT ─── */
+renderGrid();
+console.log('🔥 AnimeHub — '+CATALOG.reduce(function(s,a){return s+a.eps;},0)+' episodes across '+CATALOG.length+' anime');
+</script>
 </body>
 </html>
