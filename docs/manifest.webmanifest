@@ -1,0 +1,12 @@
+{
+  "name": "SearchHub",
+  "short_name": "SearchHub",
+  "description": "Download APK, MOD & Games — Fast, free, and always up-to-date.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ]
+}
