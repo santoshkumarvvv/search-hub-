@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mediahub
+    name: search-hub
     runtime: node
     plan: free
     region: singapore
@@ -13,6 +13,3 @@ services:
         value: "20"
       - key: NODE_ENV
         value: production
-      # Optional. Without it the catalog serves anime only.
-      - key: TMDB_API_KEY
-        sync: false

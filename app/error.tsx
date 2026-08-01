@@ -1,34 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
-
-export default function Error({
+export default function ErrorPage({
   error,
   reset
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error('[MediaHub]', error);
-  }, [error]);
-
   return (
-    <main
-      id="grid"
-      className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center gap-4 px-6 text-center"
-    >
-      <h1 className="text-xl font-bold text-white">Something went wrong</h1>
-      <p className="text-sm leading-relaxed text-muted">
-        The catalog could not be loaded. This is usually a temporary upstream issue.
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+      <span className="text-6xl mb-4">⚠️</span>
+      <h1 className="text-2xl font-extrabold text-white">Something went wrong</h1>
+      <p className="mt-2 max-w-sm text-sm text-muted">
+        {error.message || 'An unexpected error occurred. Please try again.'}
       </p>
       <button
         type="button"
         onClick={reset}
-        className="mt-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-ink transition hover:brightness-110"
+        className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-2.5 text-sm font-bold text-ink transition hover:brightness-110"
       >
-        Try again
+        Try Again
       </button>
-    </main>
+    </div>
   );
 }

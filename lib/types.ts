@@ -1,43 +1,38 @@
 /**
- * Shared domain types.
- *
- * Both providers (Jikan for anime, TMDb for film/TV) are normalised into the
- * single `MediaItem` shape below so the UI never has to branch on provider.
+ * APK / MOD download domain types.
  */
 
-export type MediaKind = 'anime' | 'movie' | 'tv';
+export type AppCategory = 'game' | 'app' | 'tool';
 
-export interface MediaItem {
-  /** Provider-scoped id, e.g. "anime:5114" or "movie:27205". Stable + URL safe. */
+export interface AppItem {
   uid: string;
-  /** Raw provider id. */
-  id: number;
-  kind: MediaKind;
+  name: string;
+  version: string;
+  size: string;
+  category: AppCategory;
 
-  title: string;
-  originalTitle?: string;
-  year: number | null;
-  synopsis: string;
+  icon: string;
+  banner?: string;
 
-  poster: string | null;
-  backdrop: string | null;
+  description: string;
+  developer: string;
+  updated: string;
+  downloads: string;
+  rating: number;
+  androidReq: string;
 
-  score: number | null;
+  /** Tags shown on the card, e.g. ["APK", "MOD", "OBB"] */
+  tags: string[];
+  /** Mod feature label, e.g. "Premium Unlocked", "Unlimited Money" */
+  modFeature?: string;
+
+  /** Genre / sub-category, e.g. "Action", "Productivity" */
+  genre: string;
   genres: string[];
-  studio: string | null;
 
-  /** Anime only. */
-  episodes?: number | null;
-  /** Film/TV only — YouTube key for the trailer. */
-  trailerKey?: string | null;
-
-  rating: string | null;
-  /** True when a Hindi audio track is known to exist. */
-  hindi: boolean;
-  languages: string[];
-
+  /** Whether the app is featured / trending */
   trending: boolean;
-  newRelease: boolean;
+  editorChoice: boolean;
 }
 
 export interface Page<T> {
@@ -47,16 +42,11 @@ export interface Page<T> {
   total: number;
 }
 
-export interface ApiError {
-  error: string;
-  detail?: string;
-}
-
-export type SortKey = 'popularity' | 'score' | 'year' | 'title';
+export type SortKey = 'popular' | 'rating' | 'newest' | 'name';
 
 export interface QueryOptions {
   q?: string;
-  kind?: MediaKind | 'all';
+  category?: AppCategory | 'all';
   genre?: string;
   sort?: SortKey;
   page?: number;
