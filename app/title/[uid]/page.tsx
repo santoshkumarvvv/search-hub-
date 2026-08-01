@@ -2,11 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { APPS } from '@/lib/apps';
+import DownloadSection from '@/components/DownloadSection';
 
-export const revalidate = 3600;
+export const dynamicParams = false;
 
 interface Props {
   params: Promise<{ uid: string }>;
+}
+
+export function generateStaticParams() {
+  return APPS.map((a) => ({ uid: a.uid }));
 }
 
 function findApp(uid: string) {
@@ -20,12 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${app.name} v${app.version} — Download APK`,
-    description: app.description.slice(0, 160),
-    openGraph: {
-      title: `${app.name} — Download APK`,
-      description: app.description.slice(0, 160),
-      images: app.banner ? [app.banner] : undefined
-    }
+    description: app.description.slice(0, 160)
   };
 }
 
@@ -82,14 +82,6 @@ export default async function TitlePage({ params }: Props) {
       </header>
 
       <main className="mx-auto max-w-[1000px] px-4 pb-20 pt-5">
-        {/* Hero banner */}
-        {app.banner && (
-          <div className="mb-6 aspect-video w-full overflow-hidden rounded-xl border border-line">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={app.banner} alt="" className="h-full w-full object-cover" />
-          </div>
-        )}
-
         {/* App header card */}
         <div className="flex flex-col sm:flex-row items-start gap-5 rounded-xl border border-line bg-panel p-5">
           {/* Icon */}
@@ -150,32 +142,7 @@ export default async function TitlePage({ params }: Props) {
           </div>
 
           {/* Download button */}
-          <div className="shrink-0 w-full sm:w-auto">
-            <button
-              type="button"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent2 px-8 py-3.5 text-sm font-extrabold text-ink transition hover:brightness-110 hover:shadow-lg hover:shadow-accent/20 active:scale-[0.97]"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Download APK
-            </button>
-            <p className="mt-2 text-center text-[10px] text-muted">
-              v{app.version} · {app.size} · Safe &amp; Verified
-            </p>
-          </div>
+          <DownloadSection app={app} />
         </div>
 
         {/* Description */}
@@ -186,7 +153,7 @@ export default async function TitlePage({ params }: Props) {
           <p className="text-sm leading-relaxed text-slate-300">{app.description}</p>
         </section>
 
-        {/* What's New */}
+        {/* MOD Features */}
         {app.modFeature && (
           <section className="mt-4 rounded-xl border border-accent2/20 bg-accent2/5 p-5">
             <h2 className="text-sm font-extrabold text-accent2 uppercase tracking-wide mb-3">
