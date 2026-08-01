@@ -24,6 +24,169 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Cyberpunk grid background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(88, 166, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88, 166, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Cyberpunk glow effects */
+.cyber-glow {
+  box-shadow: 
+    0 0 5px rgba(88, 166, 255, 0.5),
+    0 0 20px rgba(88, 166, 255, 0.3),
+    0 0 40px rgba(88, 166, 255, 0.1);
+}
+
+.cyber-glow-text {
+  text-shadow: 
+    0 0 10px rgba(88, 166, 255, 0.8),
+    0 0 20px rgba(88, 166, 255, 0.5),
+    0 0 30px rgba(88, 166, 255, 0.3);
+}
+
+.cyber-border {
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  box-shadow: 
+    inset 0 0 20px rgba(88, 166, 255, 0.05),
+    0 0 20px rgba(88, 166, 255, 0.1);
+}
+
+/* Glitch effect for text */
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+    text-shadow: 
+      -2px 0 #ff00ff,
+      2px 0 #00ffff;
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    text-shadow: 
+      2px 0 #ff00ff,
+      -2px 0 #00ffff;
+  }
+  40% {
+    transform: translate(-2px, -2px);
+    text-shadow: 
+      2px 0 #ff00ff,
+      -2px 0 #00ffff;
+  }
+  60% {
+    transform: translate(2px, 2px);
+    text-shadow: 
+      -2px 0 #ff00ff,
+      2px 0 #00ffff;
+  }
+  80% {
+    transform: translate(2px, -2px);
+    text-shadow: 
+      2px 0 #ff00ff,
+      -2px 0 #00ffff;
+  }
+  100% {
+    transform: translate(0);
+    text-shadow: 
+      -2px 0 #ff00ff,
+      2px 0 #00ffff;
+  }
+}
+
+.glitch-text {
+  animation: glitch 0.5s infinite;
+}
+
+/* Cyberpunk scanline effect */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.scanline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(88, 166, 255, 0.1),
+    transparent
+  );
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+}
+
+/* Cyberpunk neon pulse */
+@keyframes neon-pulse {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+.neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Cyberpunk flicker */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
+  51% { opacity: 0.9; }
+  52% { opacity: 1; }
+  53% { opacity: 0.95; }
+}
+
+.cyber-flicker {
+  animation: flicker 0.15s infinite;
+}
+
+/* Typing cursor effect */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '█';
+  animation: cursor-blink 1s step-end infinite;
+  color: #58a6ff;
+}
+
+/* Cyberpunk gradient animation */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
 }
 
 /* Keyboard focus stays visible everywhere. */

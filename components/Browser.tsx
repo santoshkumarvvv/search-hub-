@@ -156,10 +156,30 @@ export default function Browser() {
         ) : (
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-extrabold text-white">
-              {category === 'all' && '🔥 Trending & Popular'}
-              {category === 'game' && '🎮 Games'}
-              {category === 'app' && '📱 Apps'}
-              {category === 'tool' && '🔧 Tools'}
+              {category === 'all' && (
+                <span className="flex items-center gap-2">
+                  <span className="animate-cyber-pulse">🔥</span>
+                  Trending & Popular
+                </span>
+              )}
+              {category === 'game' && (
+                <span className="flex items-center gap-2">
+                  <span>🎮</span>
+                  Games
+                </span>
+              )}
+              {category === 'app' && (
+                <span className="flex items-center gap-2">
+                  <span>📱</span>
+                  Apps
+                </span>
+              )}
+              {category === 'tool' && (
+                <span className="flex items-center gap-2">
+                  <span>🔧</span>
+                  Tools
+                </span>
+              )}
             </h2>
           </div>
         )}
@@ -171,6 +191,9 @@ export default function Browser() {
             <p className="text-xs text-muted mt-1">
               Try a different search term or change the category filter.
             </p>
+            <div className="mt-4 rounded-lg border border-line bg-panel px-4 py-2 text-xs text-muted/60">
+              Powered by Multi-AI Search
+            </div>
           </div>
         )}
 

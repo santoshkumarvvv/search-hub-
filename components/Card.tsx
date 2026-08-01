@@ -34,7 +34,7 @@ export default function Card({ item }: { item: AppItem }) {
   return (
     <Link
       href={`/title/${encodeURIComponent(item.uid)}`}
-      className="group block overflow-hidden rounded-xl border border-line bg-panel transition-all duration-200 hover:-translate-y-1 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      className="group block overflow-hidden rounded-xl border border-line bg-panel transition-all duration-200 hover:-translate-y-1 hover:border-accent/30 hover:shadow-cyber focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
       aria-label={`Download ${item.name}`}
     >
       {/* Icon area */}
@@ -61,17 +61,21 @@ export default function Card({ item }: { item: AppItem }) {
 
         {/* Trending badge */}
         {item.trending && (
-          <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-highlight text-[9px]">
+          <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-highlight text-[9px] shadow-lg shadow-highlight/30 animate-cyber-pulse">
             🔥
           </span>
         )}
 
         {/* Editor's choice ribbon */}
         {item.editorChoice && (
-          <span className="absolute left-0 top-2 bg-accent2 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-ink rounded-r">
+          <span className="absolute left-0 top-2 bg-gradient-to-r from-accent to-accent2 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wider text-ink rounded-r shadow-lg">
             Editor&apos;s Pick
           </span>
         )}
+
+        {/* Cyberpunk corner accents */}
+        <div className="absolute bottom-2 right-2 h-2 w-2 border-b-2 border-r-2 border-accent/30"></div>
+        <div className="absolute top-2 left-2 h-2 w-2 border-t-2 border-l-2 border-accent/30"></div>
       </div>
 
       {/* Info area */}
