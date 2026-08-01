@@ -25,3 +25,12 @@ git push
 | `npm audit --audit-level=high` | Blocks known-vulnerable dependencies |
 | secret scan | Blocks committed tokens, PATs, AWS keys, private keys |
 | file check | Ensures deploy configs and PWA assets are present |
+
+## Activation-ready workflow files
+
+- `.github/update-readme.workflow.yml` — Real-Time Profile Sync (6h cron + push + manual)
+- `.github/ci.workflow.yml` — build & audit pipeline
+
+GitHub rejects pushes of `.github/workflows/*` from automation lacking the
+`workflows` permission, so the content is parked here. To activate: rename
+(or copy) these two files into `.github/workflows/` with `.yml` extensions.
