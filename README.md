@@ -48,6 +48,14 @@ lib/
 - [Tailwind CSS 3](https://tailwindcss.com/)
 - [TypeScript 5](https://www.typescriptlang.org/)
 
+## GitHub Actions Workflows (Ready to Arm)
+
+The following workflows have been prepared and are parked under `.github/` to bypass the automated token's restriction:
+- `ci.workflow.yml` — Automated Type checks, builds, dependency audits, and secret scans.
+- `update-readme.workflow.yml` — Auto-syncs live GitHub profile statistics to the README every 6 hours.
+
+To arm them, simply move or copy these files into `.github/workflows/` (with `.yml` extension) from a local terminal or directly via GitHub's web interface.
+
 ## License
 
 MIT
