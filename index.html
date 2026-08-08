@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYAPKSTORE - Download Premium Mod APKs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #1a8a2e;
+            --dark-green: #146b23;
+            --darker-green: #0f5a1c;
+            --light-green: #2ecc40;
+            --accent-orange: #ff6b00;
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --bg-card-hover: #1c2333;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--darker-green) 0%, var(--primary-green) 50%, var(--dark-green) 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--light-green), #27ae60);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: white;
+        }
+
+        .brand-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .brand-name span {
+            color: var(--light-green);
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-container input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--light-green);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 5px;
+            overflow-x: auto;
+        }
+
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-links li a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-links li a.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 3px solid var(--light-green);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, rgba(26, 138, 46, 0.15) 0%, rgba(13, 17, 23, 0.9) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            color: var(--light-green);
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: var(--light-green);
+            border-radius: 2px;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .app-card:hover {
+            border-color: var(--primary-green);
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(46, 204, 64, 0.1);
+        }
+
+        .app-card-top {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .app-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .app-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .app-category {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .vip-badge {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            width: fit-content;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .app-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .download-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, var(--dark-green), var(--primary-green));
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(46, 204, 64, 0.3);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .header-top {
+                padding: 12px 16px;
+            }
+            .brand-name {
+                font-size: 20px;
+            }
+            .nav-container {
+                padding: 0 16px;
+            }
+            .nav-links li a {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            .hero h1 {
+                font-size: 22px;
+            }
+            main {
+                padding: 20px 16px;
+            }
+            .app-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 25px 20px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 50px;
+        }
+
+        footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--light-green);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <a href="#" class="brand">
+                <div class="brand-icon">M</div>
+                <div class="brand-name">MY<span>APK</span>STORE</div>
+            </a>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search mod apps, games..." onkeyup="filterApps()">
+                <button class="search-btn" onclick="filterApps()">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </button>
+            </div>
+        </div>
+        <nav>
+            <div class="nav-container">
+                <ul class="nav-links">
+                    <li><a href="#" class="active" onclick="filterCategory('all', this)">🏠 Home</a></li>
+                    <li><a href="#" onclick="filterCategory('App', this)">📱 Apps</a></li>
+                    <li><a href="#" onclick="filterCategory('Game', this)">🎮 Games</a></li>
+                    <li><a href="#" onclick="filterCategory('Social', this)">💬 Social</a></li>
+                    <li><a href="#" onclick="filterCategory('Entertainment', this)">🎬 Entertainment</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>🚀 Premium Mod APKs, Free Forever</h1>
+        <p>100% Working, Safe & Tested Android Modded Apps & Games</p>
+    </section>
+
+    <main>
+        <h2 class="section-title" id="sectionTitle">🔥 Trending Mods</h2>
+        <div class="app-grid" id="appGrid"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 MYAPKSTORE. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">DMCA</a>
+            <a href="#">Disclaimer</a>
+        </div>
+    </footer>
+
+    <script>
+        // Apps Data
+        const apps = [
+            { name: "CapCut Pro Mod", category: "Video Editor", type: "App", icon: "🎬", bg: "#000", link: "https://archive.org/download/cap-cut-pro-mod/CapCut_Pro.apk", desc: "No Watermark, 4K Export, All VIP Features Unlocked." },
+            { name: "Spotify Premium", category: "Music", type: "App", icon: "🎵", bg: "#1DB954", link: "https://archive.org/download/spotify-premium-mod/Spotify_VIP.apk", desc: "Unlimited Skips, Very High Quality, No Ads." },
+            { name: "TikTok Mod", category: "Social", type: "Social", icon: "📱", bg: "#ff0050", link: "https://archive.org/download/tiktok-mod-apk/TikTok_Mod.apk", desc: "Download without Watermark, Region Unlocked." },
+            { name: "GTA Vice City Mod", category: "Action Game", type: "Game", icon: "🏎️", bg: "#e91e63", link: "https://archive.org/download/gta-vc-mod/GTA_ViceCity.apk", desc: "Unlimited Money, Full Graphics Mod, All Unlocked." },
+            { name: "Netflix Premium Mod", category: "Entertainment", type: "Entertainment", icon: "🎬", bg: "#e50914", link: "https://archive.org/download/netflix-mod/Netflix_UltraHD.apk", desc: "4K Ultra HD Streaming, No Login Required." },
+            { name: "Minecraft PE Mod", category: "Sandbox Game", type: "Game", icon: "⛏️", bg: "#8B4513", link: "https://archive.org/download/minecraft-pe-mod/Minecraft_PE.apk", desc: "Full Unlocked, Immortality Mod, Free Skins." },
+            { name: "Instagram Pro", category: "Social", type: "Social", icon: "📸", bg: "#833ab4", link: "https://archive.org/download/instagram-pro-mod/Instander.apk", desc: "Download Stories & Photos, Ghost Mode, No Ads." },
+            { name: "Stumble Guys Mod", category: "Party Game", type: "Game", icon: "🏃", bg: "#00bcd4", link: "https://archive.org/download/stumble-guys-mod/Stumble_Guys.apk", desc: "Unlimited Gems, All Emotes and Skins Unlocked." }
+        ];
+
+        let currentFilter = 'all';
+
+        function renderApps(data) {
+            const grid = document.getElementById('appGrid');
+            if (data.length === 0) {
+                grid.innerHTML = '<div class="no-results">😕 No apps found. Try a different search.</div>';
+                return;
+            }
+            grid.innerHTML = data.map(app => `
+                <div class="app-card">
+                    <div>
+                        <div class="app-card-top">
+                            <div class="app-icon" style="background: ${app.bg}">${app.icon}</div>
+                            <div class="app-info">
+                                <div class="app-name">${app.name}</div>
+                                <div class="app-category">${app.category}</div>
+                            </div>
+                        </div>
+                        <div class="vip-badge">⭐ VIP Unlocked</div>
+                        <p class="app-description">${app.desc}</p>
+                    </div>
+                    <a href="${app.link}" class="download-btn" target="_blank" rel="noopener">⬇️ Download Direct APK</a>
+                </div>
+            `).join('');
+        }
+
+        function filterApps() {
+            const q = document.getElementById('searchInput').value.toLowerCase().trim();
+            let filtered = apps;
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(a => a.type === currentFilter);
+            }
+            if (q) {
+                filtered = filtered.filter(a =>
+                    a.name.toLowerCase().includes(q) ||
+                    a.category.toLowerCase().includes(q) ||
+                    a.desc.toLowerCase().includes(q)
+                );
+            }
+            renderApps(filtered);
+        }
+
+        function filterCategory(type, el) {
+            event.preventDefault();
+            currentFilter = type;
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('searchInput').value = '';
+            const titles = {
+                'all': '🔥 Trending Mods',
+                'App': '📱 Premium Apps',
+                'Game': '🎮 Modded Games',
+                'Social': '💬 Social Mods',
+                'Entertainment': '🎬 Entertainment'
+            };
+            document.getElementById('sectionTitle').textContent = titles[type] || 'All Apps';
+            filterApps();
+        }
+
+        renderApps(apps);
+    </script>
+</body>
+</html>
