@@ -1,65 +1,87 @@
-# SearchHub — APK, MOD & Games Download Portal
+<div align="center">
 
-A clean, fast, and responsive APK download website built with **Next.js 15** and **Tailwind CSS**.
+# SearchHub
 
-Inspired by APKMODY — built from scratch with clean code.
+**High-performance catalog & search system**  
+Built for speed, clarity, and scale.
 
-## Features
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-- 🔍 **Search** — real-time search across all apps, games, and tools
-- 🎮 **Categories** — filter by Games, Apps, or Tools
-- 🏷️ **Genre filter** — dynamic genre tags from the catalogue
-- 📱 **App detail pages** — full info, MOD features, download buttons
-- 🌙 **Dark theme** — sleek dark UI optimized for browsing
-- ⚡ **Fast** — server-rendered first paint, instant client navigation
-- 📐 **Responsive** — works on mobile, tablet, and desktop
+</div>
 
-## Getting Started
+---
+
+## Overview
+
+SearchHub is a production-oriented web application for browsing, searching, and retrieving software packages.  
+Engineered from the ground up with modern web standards — server-first rendering, type-safe APIs, and a razor-sharp dark UI.
+
+## Core Capabilities
+
+- **Instant Search** — real-time filtering across the entire catalogue
+- **Smart Categorization** — Games · Apps · Tools with dynamic genre tags
+- **Detail Pages** — rich metadata, feature lists, direct download flows
+- **Dark-first UI** — optimized for long browsing sessions
+- **Server Components** — fast first paint + client-side interactivity where it matters
+- **Fully Responsive** — mobile, tablet, desktop without compromise
+
+## Tech Stack
+
+| Layer          | Technology              |
+|----------------|-------------------------|
+| Framework      | Next.js 15 (App Router) |
+| Language       | TypeScript 5            |
+| Styling        | Tailwind CSS 3          |
+| Rendering      | RSC + Client Components |
+| Deployment     | Vercel / Render ready   |
+
+## Project Structure
+
+```text
+app/
+  page.tsx                  # Catalog browser
+  title/[uid]/page.tsx      # Detail + download view
+  api/catalog/route.ts      # Catalogue API
+  api/title/[uid]/route.ts  # Single item API
+  layout.tsx
+  globals.css
+components/
+  Browser.tsx               # Main interactive browser
+  Toolbar.tsx               # Search + filters
+  Card.tsx                  # Item card
+lib/
+  types.ts                  # Shared types
+  apps.ts                   # Seed data
+```
+
+## Local Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+## Engineering Notes
 
-```
-app/
-  page.tsx              # Home page — search, filter, browse
-  title/[uid]/page.tsx  # App detail + download page
-  api/catalog/route.ts  # Catalog JSON API
-  api/title/[uid]/route.ts  # Single app JSON API
-  layout.tsx            # Root layout + footer
-  globals.css           # Global styles
-components/
-  Browser.tsx           # Main catalog browser (client)
-  Toolbar.tsx           # Search bar + category/sort filters (client)
-  Card.tsx              # App card component (client)
-lib/
-  types.ts              # Shared TypeScript types
-  apps.ts               # Seed catalogue data
-```
-
-## Tech Stack
-
-- [Next.js 15](https://nextjs.org/) (App Router)
-- [Tailwind CSS 3](https://tailwindcss.com/)
-- [TypeScript 5](https://www.typescriptlang.org/)
-
-## GitHub Actions Workflows (Ready to Arm)
-
-The following workflows have been prepared and are parked under `.github/` to bypass the automated token's restriction:
-- `ci.workflow.yml` — Automated Type checks, builds, dependency audits, and secret scans.
-- `update-readme.workflow.yml` — Auto-syncs live GitHub profile statistics to the README every 6 hours.
-
-To arm them, simply move or copy these files into `.github/workflows/` (with `.yml` extension) from a local terminal or directly via GitHub's web interface.
+- Strict TypeScript throughout
+- Clean separation of data, presentation, and API layers
+- Ready for CI (type-check · build · audit)
+- Designed for easy extension of the catalogue source
 
 ## License
 
-MIT
+MIT © Santosh
 
 ---
 
-Built by [Santosh Kumar](https://github.com/santoshkumarvvv)
+<div align="center">
+
+**Built for production.**  
+[github.com/santoshkumarvvv](https://github.com/santoshkumarvvv)
+
+</div>
