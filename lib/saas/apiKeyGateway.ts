@@ -4,14 +4,13 @@ export type PricingTier = 'free' | 'pro' | 'enterprise';
 
 export interface ApiKeyRecord {
   id: string;
-  keyHash: string; // Formatted as: scrypt$v1$<saltHex>$<derivedHex> or legacy sha256 hex
+  keyHash: string; // Formatted as: scrypt$v1$<saltHex>$<derivedHex>
   name: string;
   tier: PricingTier;
   createdAt: string;
   totalUsage: number;
   monthlyQuota: number;
   rateLimitPerMinute: number;
-  migratedFromLegacy?: boolean;
 }
 
 export interface VerificationResult {
@@ -75,8 +74,8 @@ export class ApiKeyGateway {
   }
 
   /**
-   * Verifies incoming raw key against stored hashes using timingSafeEqual,
-   * supporting automatic migration from legacy SHA-256 to scrypt:v1.
+   * Verifies incoming raw key against stored hashes using timingSafeEqual.
+   * Requires scrypt:v1 salted hashes; returns forced regeneration instructions for legacy keys.
    */
   public static verifyAndConsume(rawKey: string): VerificationResult {
     if (!rawKey || typeof rawKey !== 'string' || !rawKey.startsWith('sh_live_')) {
@@ -89,15 +88,13 @@ export class ApiKeyGateway {
     }
 
     let matchedRecord: ApiKeyRecord | null = null;
-    let migrationNote: string | undefined;
 
-    // Check all stored records
+    // Check stored records with scrypt verification
     for (const record of this.keys.values()) {
       if (record.keyHash.startsWith('scrypt$v1$')) {
         const parts = record.keyHash.split('$');
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
-
         const computed = crypto.scryptSync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS);
         const expected = Buffer.from(expectedDerivedHex, 'hex');
 
@@ -106,18 +103,13 @@ export class ApiKeyGateway {
           break;
         }
       } else {
-        // Legacy SHA-256 fallback & seamless migration path
-        const computedSha256 = crypto.createHash('sha256').update(rawKey).digest();
-        const expectedSha256 = Buffer.from(record.keyHash, 'hex');
-
-        if (computedSha256.length === expectedSha256.length && crypto.timingSafeEqual(computedSha256, expectedSha256)) {
-          matchedRecord = record;
-          // Migrate to scrypt immediately
-          record.keyHash = this.hashKey(rawKey);
-          record.migratedFromLegacy = true;
-          migrationNote = 'Key authenticated via legacy SHA-256 and has been automatically upgraded to scrypt:v1. Please rotate your key.';
-          break;
-        }
+        // Force-regenerate note: legacy insecure keys are revoked in v2.4.0
+        return {
+          valid: false,
+          error: 'Legacy insecure API key format detected. Revocation and key regeneration in effect.',
+          help: 'Insecure SHA-256 keys are deprecated. Mint a new scrypt:v1 salted key at POST /api/v1/keys.',
+          statusCode: 401,
+        };
       }
     }
 
@@ -168,7 +160,6 @@ export class ApiKeyGateway {
       valid: true,
       record: matchedRecord,
       remainingQuota: matchedRecord.monthlyQuota - matchedRecord.totalUsage,
-      migrationNote,
     };
   }
 }
