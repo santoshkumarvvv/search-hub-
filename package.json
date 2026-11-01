@@ -11,7 +11,7 @@
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
-    "next": "15.5.22",
+    "next": "15.5.28",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
