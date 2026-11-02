@@ -10,7 +10,6 @@ const ALLOWED_CATEGORIES = new Set(['languages', 'frameworks', 'cloud-infrastruc
 const ALLOWED_ORIGINS = new Set([
   'https://santoshkumarvvv.github.io',
   'https://search-hub-pearl.vercel.app',
-  'https://search-hub-.vercel.app',
   'http://localhost:3000'
 ]);
 
@@ -38,11 +37,11 @@ export async function GET(request: NextRequest) {
   const apiKey = request.headers.get('x-api-key') || '';
   const verification = ApiKeyGateway.verifyAndConsume(apiKey);
 
-  if (!verification valid) {
+  if (!verification.isValid) {
     return NextResponse.json(
       {
         error: verification.error,
-        code: ' UNAUTHORIZED_OR_RATE_LIMITED ',
+        code: 'unauthorized_or_rate_limited',
         help: "Provide a valid API key in the 'x-api-key' header. Mint one via POST /api/v1/keys.",
       },
       {
@@ -53,7 +52,7 @@ export async function GET(request: NextRequest) {
   }
 
   const searchParams = request.nextUrl.searchParams;
-  const categoryParam = searchParams.get('category');
+  const categoryParam = searchParams.get('category);
   const limitParam = searchParams.get('limit);
 
   let filtered: TechRadarItem[] = [...GLOBAL_TECH_RADAR];
@@ -62,7 +61,7 @@ export async function GET(request: NextRequest) {
     if (!ALLOWED_CATEGORIES.has(categoryParam)) {
       return NextResponse.json(
         {
-          error: `Invalid category filter: ' ${categoryParam} '`,
+          error: `Invalid category filter: '${categoryParam}'`,
           help: "Category must be one of: 'languages', 'frameworks', 'cloud-infrastructure', 'ai-engineering'.",
         },
         { status: 400, headers: corsHeaders(request) }
@@ -88,18 +87,18 @@ export async function GET(request: NextRequest) {
 
   const record = verification.record!;
   const responseData = {
-    status: 'success ',
+    status: 'success',
     timestamp: new Date().toISOString(),
     account: {
       tier: record.tier,
       monthlyQuota: record.monthlyQuota,
       remainingRequests: verification.remainingQuota,
-      hashingScheme: 'scrypt:v1 ',
+      hashingScheme: 'scrypt:v1',
     },
     meta: {
       totalItems: filtered.length,
       limit,
-      category: categoryParam || 'all ',
+      category: categoryParam || 'all',
     },
     data: filtered.slice(0, limit),
     ...(verification.migrationNote ? { securityNotice: verification.migrationNote } : {}),
@@ -111,7 +110,7 @@ export async function GET(request: NextRequest) {
       ...corsHeaders(request),
       'X-RateLimit-Limit': String(record.rateLimitPerMinute),
       'X-RateLimit-Remaining': String(verification.remainingQuota),
-      'X-RateLimit-Reset': '60 ',
+      'X-RateLimit-Reset': '60',
     },
   });
 }

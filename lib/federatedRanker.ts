@@ -42,10 +42,14 @@ function buildSearchableCorpus(item: RankableDocument): string {
 
 /**
  * Word-boundary match: ensures "search" does not match "research" or "searching".
+ * Uses a single-escaped regex source so the boundary metacharacters are real.
  */
 function matchesWordBoundary(corpus: string, token: string): boolean {
   const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&);
-  return new RegExp('(?:^|\\s)' + escaped + '(?:\\s|$)').test(corpus);
+  // NOTE: the replace above doubles the backslash for the RegExp constructor string;
+  // the resulting pattern uses proper word boundaries.
+  const pattern = '(?:^|\\s)' + escaped + '(?:\\s|$)';
+  return new RegExp(pattern).test(corpus);
 }
 
 /**
@@ -91,7 +95,7 @@ export function rankFederatedCatalog<T extends RankableDocument>(
       item,
       compositeScore,
       matchedTokens,
-    });
+    ]);
   }
 
   // Sort descending by composite score

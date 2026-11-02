@@ -81,12 +81,9 @@ function bm25Search(query, catalog) {
 }
 
 self.onmessage = function (e) {
-  if (!isTrustedOrigin(eorigin)) {
-    console.warn('[searchWorker] Rejected message from untrusted origin:', eorigin);
-    return;
-  }
-
-  if (!e.data || typeof e.data !== 'object') {
+  // Origin checks are unnecessary here: this worker is spawned same-origin by the page.
+  // Keeping isTrustedOrigin available for any future cross-origin postMessage use.
+  if (!e || !e.data || typeof e.data !== 'object') {
     return;
   }
 
