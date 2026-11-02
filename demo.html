@@ -31,13 +31,13 @@
   <span class="badge">LIVE DEMO</span>
   <h1>SearchEmbed</h1>
   <p class="sub">This entire search runs in <em>your</em> browser. No server, no API call, no data leaving this tab. Paste or type below.</p>
-  <input class="search-box" id="q" placeholder="Search 50 sample documents..." autocomplete="off">
-  <div class="meta" id="meta">Indexing in background worker...</div>
+  <input class="search-box" id="q" placeholder="Search 25 sample documents..." autocomplete="off">
+  <div class="meta" id="meta">Starting up...</div>
   <ul class="results" id="results"></ul>
 </div>
 <script>
-// ── Sample corpus (50 docs across tech topics) ──
-const DOCS = [
+// ── Sample corpus (25 docs across tech topics) ──
+var DOCS = [
   {id:1,title:"Okapi BM25 Ranking Explained",body:"BM25 is a probabilistic retrieval function. It scores documents by term frequency, inverse document frequency, and document length normalization. The parameters k1 and b control saturation and length penalty.",tags:["search","ranking","bm25"]},
   {id:2,title:"Web Workers for Heavy Computation",body:"Web Workers run JavaScript off the main thread. Ideal for indexing, parsing, and ranking large datasets without freezing the UI. Communicate via postMessage.",tags:["javascript","performance","workers"]},
   {id:3,title:"Federated Search Architecture",body:"Federated search queries multiple independent sources simultaneously and merges results using a ranker. Each source returns its own ranked list; the federated ranker combines them.",tags:["architecture","search","distributed"]},
@@ -66,43 +66,42 @@ const DOCS = [
 ];
 
 // ── BM25 engine (mirrors server-side lib/search/bm25.ts) ──
-const k1 = 1.2, b = 0.75;
-let N = DOCS.length;
-let avgdl = DOCS.reduce((s,d) => s + d.body.split(/\s+/).length, 0) / N;
-let df = {}, idf = {}, tf = {};
-DOCS.forEach(doc => {
-  let seen = new Set();
-  doc.body.toLowerCase().split(/\W+/).filter(Boolean).forEach(term => {
+var k1 = 1.2, b = 0.75;
+var N = DOCS.length;
+var avgdl = DOCS.reduce(function(s,d){ return s + d.body.split(/\s+/).length; }, 0) / N;
+var df = {}, idf = {}, tf = {};
+DOCS.forEach(function(doc){
+  var seen = new Set();
+  doc.body.toLowerCase().split(/\W+/).filter(Boolean).forEach(function(term){
     tf[doc.id] = tf[doc.id] || {};
     tf[doc.id][term] = (tf[doc.id][term] || 0) + 1;
     if (!seen.has(term)) { df[term] = (df[term] || 0) + 1; seen.add(term); }
   });
 });
-Object.keys(df).forEach(term => {
+Object.keys(df).forEach(function(term){
   idf[term] = Math.log(1 + (N - df[term] + 0.5) / (df[term] + 0.5));
 });
 
-function search(query) {
-  let terms = query.toLowerCase().split(/\W+/).filter(Boolean);
+function searchMainThread(query) {
+  var terms = query.toLowerCase().split(/\W+/).filter(Boolean);
   if (!terms.length) return [];
-  let scores = {};
-  terms.forEach(term => {
-    DOCS.forEach(doc => {
-      let f = (tf[doc.id] && tf[doc.id][term]) || 0;
+  var scores = {};
+  terms.forEach(function(term){
+    DOCS.forEach(function(doc){
+      var f = (tf[doc.id] && tf[doc.id][term]) || 0;
       if (f === 0 && idf[term] === undefined) return;
-      let dl = doc.body.split(/\s+/).length;
-      let score = idf[term] * (f * (k1 + 1)) / (f + k1 * (1 - b + b * dl / avgdl));
-      // fuzzy boost: Damerau-ish prefix/contains check
+      var dl = doc.body.split(/\s+/).length;
+      var score = idf[term] * (f * (k1 + 1)) / (f + k1 * (1 - b + b * dl / avgdl));
       if (f === 0) {
-        let body = doc.body.toLowerCase();
-        if (body.includes(term)) score = 0.3 * idf[term];
+        var body = doc.body.toLowerCase();
+        if (body.indexOf(term) !== -1) score = 0.3 * idf[term];
         else {
-          // transposition check on words
-          let words = body.split(/\W+/);
-          for (let w of words) {
+          var words = body.split(/\W+/);
+          for (var i = 0; i < words.length; i++) {
+            var w = words[i];
             if (w.length === term.length) {
-              let diff = 0;
-              for (let i = 0; i < w.length; i++) if (w[i] !== term[i]) diff++;
+              var diff = 0;
+              for (var j = 0; j < w.length; j++) if (w[j] !== term[j]) diff++;
               if (diff <= 1) { score = 0.15 * idf[term]; break; }
             }
           }
@@ -111,29 +110,76 @@ function search(query) {
       scores[doc.id] = (scores[doc.id] || 0) + score;
     });
   });
-  return Object.entries(scores).sort((a,b) => b[1]-a[1]).slice(0,8)
-    .map(([id,score]) => ({...DOCS.find(d=>d.id==id), score: score.toFixed(2)}));
+  return Object.entries(scores).sort(function(a,b){ return b[1]-a[1]; }).slice(0,8)
+    .map(function(e){ var id = e[0], score = e[1]; return Object.assign({score: score.toFixed(2)}, DOCS.find(function(d){ return d.id == id; })); });
+}
+
+// ── Worker bridge with crash-proof fallback ──
+var worker = null;
+var useWorker = false;
+var queryId = 0;
+var pending = {};
+
+function fallbackSearch(query) {
+  var t0 = performance.now();
+  var hits = searchMainThread(query);
+  var ms = (performance.now() - t0).toFixed(2);
+  meta.textContent = hits.length + ' results in ' + ms + ' ms · main-thread fallback (worker unavailable)';
+  render(hits);
+}
+
+try {
+  worker = new Worker('public/workers/searchWorker.js');
+  worker.onmessage = function(e) {
+    var d = e.data;
+    if (!d || typeof d !== 'object') return;
+    if (d.type === 'INDEXED') {
+      meta.textContent = d.count + ' documents indexed in worker · BM25 k1=' + k1 + ' b=' + b + ' · zero network calls';
+    } else if (d.type === 'RESULTS') {
+      var p = pending[d.queryId];
+      if (!p) return;
+      delete pending[d.queryId];
+      meta.textContent = d.results.length + ' results in ' + d.durationMs + ' ms · computed in background worker';
+      render(d.results.map(function(r){ return Object.assign({score: r.score}, r.item); }));
+    }
+  };
+  worker.onerror = function() {
+    useWorker = false;
+    worker = null;
+    meta.textContent = 'Worker failed to load — running on main thread (demo still works)';
+  };
+  worker.postMessage({ type: 'INDEX_CATALOG', payload: DOCS });
+  useWorker = true;
+} catch (err) {
+  useWorker = false;
+  worker = null;
 }
 
 // ── UI ──
-const q = document.getElementById('q'), meta = document.getElementById('meta'), results = document.getElementById('results);
+var q = document.getElementById('q'), meta = document.getElementById('meta'), results = document.getElementById('results);
 function render(hits) {
   if (!hits.length) { results.innerHTML = '<li class="empty">No matches. Try a different term.</li>'; return; }
-  results.innerHTML = hits.map(h => `
-    <li class="result"><span class="score">${h.score}</span>
-      <div class="title">${h.title}</div>
-      <div class="body">${h.body.slice(0,160)}...</div>
-      <div style="margin-top:8px">${h.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-    </li>`).join('');
+  results.innerHTML = hits.map(function(h){
+    return '<li class="result"><span class="score">' + h.score + '</span><div class="title">' + h.title + '</div><div class="body">' + h.body.slice(0,160) + '...</div><div style="margin-top:8px">' + h.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + '</div></li>';
+  }).join('');
 }
-q.addEventListener('input', () => {
-  let t0 = performance.now();
-  let hits = search(q.value);
-  let ms = (performance.now()-t0).toFixed(2);
-  meta.textContent = hits.length + ' results in ' + ms + ' ms · all computed locally in this tab';
-  render(hits);
+q.addEventListener('input', function(){
+  var val = q.value;
+  if (useWorker && worker) {
+    var id = ++queryId;
+    pending[id] = true;
+    try {
+      worker.postMessage({ type: 'SEARCH', payload: { query: val }, queryId: id });
+    } catch (err) {
+      delete pending[id];
+      useWorker = false;
+      fallbackSearch(val);
+    }
+  } else {
+    fallbackSearch(val);
+  }
 });
-meta.textContent = DOCS.length + ' documents indexed · BM25 k1=' + k1 + ' b=' + b + ' · zero network calls';
+meta.textContent = DOCS.length + ' documents ready · starting worker...';
 </script>
 </body>
 </html>
