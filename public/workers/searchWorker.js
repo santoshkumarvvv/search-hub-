@@ -1,27 +1,25 @@
 /**
  * Asynchronous Search Worker
  * Executes BM25 scoring in an isolated thread to maintain 120fps UI responsiveness.
- * Hardened with trusted origin verification (exact hostname match, no substring bypass)
+ * Hardened with trusted origin verification (exact hostname allowlist, no substring/suffix bypass)
  * and input schema validation.
  */
 let indexedCatalog = [];
 const k1 = 1.2;
 const b = 0.75;
 
-// Trusted origin validation — exact hostname comparison, never substring includes/endsWith
+// Strict allowlist — exact hostname match only. No includes(), no endsWith().
+const TRUSTED_HOSTS = new Set([
+  'localhost', '127.0.0.1', '::1',
+  'santoshkumarvvv.github.io', 'search-hub-pearl.vercel.app', 'search-hub-.vercel.app'
+]);
+
 function isTrustedOrigin(origin) {
   if (!origin) return true; // Direct same-origin worker thread
   try {
-    const url = new URL(origin);
-    const host = url.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') return true;
-    if (typeof self !== 'undefined' && self.location && self.location.hostname === host) return true;
-    // Exact TLD match only — blocks evil-vercel.app style bypass
-    if (host === 'vercel.app' || host.endsWith('.vercel.app')) return true;
-    if (host === 'run.app' || host.endsWith('.run.app')) return true;
-    if (host === 'onrender.com' || host.endsWith('.onrender.com')) return true;
-    if (host === 'github.io' || host.endsWith('.github.io')) return true;
-    return false;
+    const host = new URL(origin).hostname;
+    return TRUSTED_HOSTS.has(host) ||
+      (typeof self !== 'undefined' && self.location && self.location.hostname === host);
   } catch (_) {
     return false;
   }
@@ -39,7 +37,7 @@ function bm25Search(query, catalog) {
   const scores = {};
 
   catalog.forEach((item, idx) => {
-    const text = ((item.title || '') + ' ' + (item.category || '') + ' ' + (item.tags || []).join(' ')).toLowerCase();
+    const text = ((item.title || '') + ' ' + (item.category || '') + ' ' + (d.tags || []).join(' ')).toLowerCase();
     const words = text.split(/\W+/).filter(Boolean);
     const seen = new Set();
     words.forEach(w => {
@@ -57,7 +55,6 @@ function bm25Search(query, catalog) {
       let f = 0;
       words.forEach(w => { if (w === term) f++; });
       if (f === 0) {
-        // fuzzy: contains or single-edit transposition
         if (text.includes(term)) f = 0.3;
         else {
           for (const w of words) {
@@ -84,13 +81,11 @@ function bm25Search(query, catalog) {
 }
 
 self.onmessage = function (e) {
-  // Origin verification
   if (!isTrustedOrigin(eorigin)) {
     console.warn('[searchWorker] Rejected message from untrusted origin:', eorigin);
     return;
   }
 
-  // Schema validation
   if (!e.data || typeof e.data !== 'object') {
     return;
   }
