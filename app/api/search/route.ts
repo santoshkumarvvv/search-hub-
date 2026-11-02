@@ -107,26 +107,32 @@ for (const app of APPS) {
 const searchEngine = new BM25Engine<DocEntry>(1.2, 0.75);
 searchEngine.addDocuments(DOCUMENTATION_INDEX);
 
+/** Exact hostname allowlist — never use includes/endsWith on the raw Origin string (CWE-20). */
+const ALLOWED_HOSTNAMES = new Set([
+  'santoshkumarvvv.github.io',
+  'localhost',
+  '127.0.0.1',
+]);
+
 function getCorsHeaders(request: NextRequest): Record<string, string> {
   const origin = request.headers.get('origin') || '';
   let allowed = false;
-  try {
-    if (origin) {
-      const hostname = new URL(origin).hostname;
-      allowed =
-        hostname === 'santoshkumarvvv.github.io' ||
-        hostname === 'localhost' ||
-        hostname.endsWith('.localhost);
+
+  if (origin) {
+    try {
+      const { hostname } = new URL(origin);
+      // Exact match only — no substring / endsWith checks
+      allowed = ALLOWED_HOSTNAMES.has(hostname);
+    } catch {
+      allowed = false;
     }
-  } catch {
-    allowed = false;
   }
 
   return {
-    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io,
-    'Access-Control-Allow-Methods': 'GET, OPTIONS,
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key,
-    'Access-Control-Max-Age': '86400,
+    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
+    'Access-Control-Max-Age': '86400',
   };
 }
 
@@ -143,7 +149,7 @@ export async function GET(request: NextRequest) {
   // API key verification (tiered quotas: free 1k, pro 50k, enterprise 500k monthly)
   const apiKey = request.headers.get('x-api-key') || '';
   const keyCheck = await ApiKeyGateway.verifyAndConsume(apiKey);
-  if (!keyCheck valid) {
+  if (!keyCheck.valid) {
     return NextResponse.json(
       { error: keyCheck.error, help: keyCheck.help },
       { status: keyCheck.statusCode || 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -151,8 +157,9 @@ export async function GET(request: NextRequest) {
   }
 
   // Client IP for secondary rate limiting
-  const forwarded = request.headers.get('x-forwarded-for);
-  const ip = (forwarded ? forwarded.split(',')[0].trim() : '') ||
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip =
+    (forwarded ? forwarded.split(',')[0].trim() : '') ||
     request.headers.get('x-real-ip') ||
     '127.0.0.1';
 
@@ -174,14 +181,14 @@ export async function GET(request: NextRequest) {
     'X-RateLimit-Remaining': String(remaining),
     'X-RateLimit-Reset': String(resetInSec),
     'X-Api-Quota-Remaining': String(keyCheck.remainingQuota ?? 0),
-    'Content-Type': 'application/json,
+    'Content-Type': 'application/json',
   };
 
   if (rateRecord.count > MAX_REQUESTS_PER_WINDOW) {
     return NextResponse.json(
       {
-        error: 'Too Many Requests,
-        message: `Rate limit exceeded. Maximum ${MAX_REQUESTS_PER_WINDOW} requests per minute allowed.,
+        error: 'Too Many Requests',
+        message: `Rate limit exceeded. Maximum ${MAX_REQUESTS_PER_WINDOW} requests per minute allowed.`,
         retryAfter: resetInSec,
       },
       {
