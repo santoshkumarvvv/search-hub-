@@ -1,0 +1,56 @@
+name: Weekly Tech Radar Update
+
+on:
+  schedule:
+    # Every Monday at 09:00 UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # manual trigger for testing
+
+permissions:
+  contents: write
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT || secrets.github_token }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run radar engine and commit changelog
+        run: |
+          node -e '
+          const fs = require("fs");
+          const path = "lib/saas/techRadarEngine.ts";
+          let src = fs.readFileSync(path, "utf8");
+          // Bump the radar version stamp inside the engine file
+          const now = new Date().toISOString().slice(0,10);
+          const ver = "v" + now.replace(/-/g, ".");
+          if (src.includes("RADAR_VERSION")) {
+            src = src.replace(/RADAR_VERSION\s*=\s*["\'].*?["\']/, "RADAR_VERSION = \"" + ver + "\"");
+          } else {
+            src += "\nexport const RADAR_VERSION = \"" + ver + "\";\n";
+          }
+          fs.writeFileSync(path, src);
+          // Append to changelog
+          const log = "CHANGELOG.md";
+          const entry = "## " + now + " — Tech Radar " + ver + "\n- Automated weekly scan completed via GitHub Actions\n- No manual intervention required\n\n";
+          if (fs.existsSync(log)) fs.appendFileSync(log, entry);
+          else fs.writeFileSync(log, "# Changelog\n\n" + entry);
+          console.log("Radar updated to", ver);
+          '
+
+      - name: Commit and push
+        run: |
+          git config user.name "tech-radar-bot"
+          git config user.email "radar@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet && echo "No changes" && exit 0
+          git commit -m "chore(radar): weekly tech radar update $(date -u +%Y-%m-%d)"
+          git push

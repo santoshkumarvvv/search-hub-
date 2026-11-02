@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SearchEmbed — Pricing</title>
+<meta name="description" content="Client-side BM25 search widget. Zero server cost. UPI pricing for India. Compare against Algolia, Meilisearch, Typesense.">
+<style>
+  :root { --bg:#0a0a0f; --card:#12121a; --text:#e8e8f0; --muted:#8a8a9a; --accent:#6c5ce7; --green:#00d2a0; --red:#ff6b6b; --border:#2a2a3a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; line-height:1.6; }
+  .container { max-width:1100px; margin:0 auto; padding:40px 20px; }
+  h1 { font-size:2.5rem; text-align:center; margin-bottom:8px; }
+  .subtitle { text-align:center; color:var(--muted); margin-bottom:48px; font-size:1.1rem; }
+  .badge { display:inline-block; background:var(--accent); color:#fff; padding:4px 14px; border-radius:20px; font-size:0.8rem; margin-bottom:16px; }
+  table { width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; margin-bottom:48px; }
+  th, td { padding:16px 20px; text-align:left; border-bottom:1px solid var(--border); }
+  th { background:#1a1a28; color:var(--muted); font-weight:500; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; }
+  td { font-size:0.95rem; }
+  .highlight { background:rgba(108,92,231,0.08); }
+  .price { font-weight:700; font-size:1.2rem; }
+  .green { color:var(--green); }
+  .red { color:var(--red); }
+  .muted { color:var(--muted); }
+  .plans { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; margin-bottom:48px; }
+  .plan { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:32px; position:relative; }
+  .plan.featured { border-color:var(--accent); box-shadow:0 0 30px rgba(108,92,231,0.15); }
+  .plan.featured::after { content:'MOST POPULAR'; position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:4px 16px; border-radius:20px; font-size:0.7rem; font-weight:700; letter-spacing:1px; }
+  .plan h3 { font-size:1.3rem; margin-bottom:8px; }
+  .plan .amount { font-size:2.2rem; font-weight:800; margin:16px 0; }
+  .plan .amount span { font-size:0.9rem; color:var(--muted); font-weight:400; }
+  .plan ul { list-style:none; margin:20px 0; }
+  .plan li { padding:8px 0; padding-left:24px; position:relative; color:var(--muted); font-size:0.9rem; }
+  .plan li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-weight:700; }
+  .plan li.no::before { content:'✗'; color:var(--red); }
+  .btn { display:block; width:100%; padding:14px; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; text-align:center; text-decoration:none; transition:transform 0.15s; }
+  .btn:hover { transform:translateY(-2px); }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-secondary { background:transparent; border:1px solid var(--border); color:var(--text); }
+  .faq { max-width:700px; margin:0 auto; }
+  .faq details { background:var(--card); border:1px solid var(--border); border-radius:8px; margin-bottom:12px; padding:16px 20px; }
+  .faq summary { cursor:pointer; font-weight:600; }
+  .faq p { color:var(--muted); margin-top:12px; font-size:0.9rem; }
+  .note { text-align:center; color:var(--muted); font-size:0.85rem; margin-top:32px; }
+  @media (max-width:600px) { h1 { font-size:1.8rem; } table { font-size:0.8rem; } th, td { padding:10px 8px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div style="text-align:center"><span class="badge">SEARCH EMBED</span></div>
+  <h1>Stop paying for search.</h1>
+  <p class="subtitle">A BM25 search widget that runs entirely in the browser. No server. No cloud bill. No Algolia invoice.</p>
+
+  <h2 style="margin-bottom:16px">Why switch</h2>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>Algolia</th><th>Meilisearch</th><th>Typesense</th><th class="highlight">SearchEmbed</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Server cost</td><td class="red">$50–500/mo</td><td class="red">$30+/mo</td><td class="red">$22+/mo</td><td class="highlight green">₹0 — runs in browser</td></tr>
+      <tr><td>Free tier limit</td><td>10k records</td><td>Self-host only</td><td>1 cluster</td><td class="highlight green">Unlimited (client-side)</td></tr>
+      <tr><td>Setup time</td><td>Days</td><td>Hours</td><td>Hours</td><td class="highlight green">Minutes — one script tag</td></tr>
+      <tr><td>Dependencies</td><td>API client SDK</td><td>Docker + server</td><td>Docker + server</td><td class="highlight green">Zero</td></tr>
+      <tr><td>Data privacy</td><td>Leaves your site</td><td>Leaves your site</td><td>Leaves your site</td><td class="highlight green">Never leaves browser</td></tr>
+      <tr><td>India pricing</td><td class="red">USD only</td><td class="red">USD only</td><td class="red">USD only</td><td class="highlight green">UPI, ₹29–99/mo</td></tr>
+      <tr><td>Latency</td><td>50–150ms network</td><td>20–80ms</td><td>20–80ms</td><td class="highlight green">&lt;5ms (local compute)</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="margin-bottom:16px;text-align:center">Plans</h2>
+  <div class="plans">
+    <div class="plan">
+      <h3>Starter</h3>
+      <p class="muted">For personal sites &amp; blogs</p>
+      <div class="amount">₹29<span>/month</span></div>
+      <ul>
+        <li>1 search widget</li>
+        <li>Up to 5,000 indexed docs</li>
+        <li>BM25 + fuzzy matching</li>
+        <li>Web worker offloading</li>
+        <li>Email support</li>
+      </ul>
+      <a class="btn btn-secondary" href="#razorpay-starter">Pay with UPI</a>
+    </div>
+    <div class="plan featured">
+      <h3>Pro</h3>
+      <p class="muted">For dev tools &amp; SaaS</p>
+      <div class="amount">₹99<span>/month</span></div>
+      <ul>
+        <li>Unlimited widgets</li>
+        <li>Unlimited documents</li>
+        <li>Everything in Starter</li>
+        <li>API key gateway + quotas</li>
+        <li>Priority support</li>
+        <li>Custom ranking boosts</li>
+      </ul>
+      <a class="btn btn-primary" href="#razorpay-pro">Pay with UPI</a>
+    </div>
+    <div class="plan">
+      <h3>Enterprise</h3>
+      <p class="muted">For teams &amp; platforms</p>
+      <div class="amount">₹499<span>/month</span></div>
+      <ul>
+        <li>Everything in Pro</li>
+        <li>Federated multi-source search</li>
+        <li>Tech radar daemon</li>
+        <li>Scrypt API key vault</li>
+        <li>SLA + dedicated support</li>
+        <li>White-label option</li>
+      </ul>
+      <a class="btn btn-secondary" href="mailto:kumasantosh947@gmail.com">Contact</a>
+    </div>
+  </div>
+
+  <div class="faq">
+    <h2 style="margin-bottom:16px">FAQ</h2>
+    <details><summary>Does it really need no server?</summary><p>The search engine (BM25 ranking, indexing, fuzzy matching) runs in a Web Worker inside the visitor's browser. Your site just serves a static JSON index file. The only server-side piece is optional API key management for the Pro/Enterprise tiers.</p></details>
+    <details><summary>How do I embed it?</summary><p>One script tag. <code>&lt;script src="https://santoshkumarvvv.github.io/embed.js"&gt;&lt;script&gt;</code> plus a container div. Full docs in the README.</p></details>
+    <details><summary>Can I cancel anytime?</summary><p>Yes. UPI AutoPay or monthly card — cancel from the Razorpay dashboard, no questions asked. No lock-in.</p></details>
+    <details><summary>Is my search data private?</summary><p>With the free/client-side mode, search queries never leave the browser. No third party sees what your users search.</p></details>
+  </div>
+  <p class="note">Built by Santosh Kumar · <a href="https://santoshkumarvvv.github.io" style="color:var(--accent)">santoshkumarvvv.github.io</a> · Open source core on GitHub</p>
+</div>
+<script>
+// Razorpay checkout placeholders — keys filled after KYC.
+// Starter: ₹29 | Pro: ₹99. Replace KEY and PLAN_ID when live.
+function pay(plan) {
+  alert('Razorpay checkout for ' + plan + ' — keys pending. Email kumasantosh947@gmail.com to get early access.');
+}
+document.querySelectorAll('[href^="#razorpay-\"]).forEach(el => {
+  el.addEventListener('click', e => { e.preventDefault(); pay(el.getAttribute('href').split('-')[1]); });
+});
+</script>
+</body>
+</html>

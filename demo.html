@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SearchEmbed Demo — Client-Side BM25, Zero Server</title>
+<style>
+  :root { --bg:#0a0a0f; --card:#12121a; --text:#e8e8f0; --muted:#8a8a9a; --accent:#6c5ce7; --green:#00d2a0; --border:#2a2a3a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; }
+  .container { max-width:800px; margin:0 auto; padding:40px 20px; }
+  h1 { font-size:2rem; margin-bottom:8px; }
+  .sub { color:var(--muted); margin-bottom:32px; }
+  .badge { display:inline-block; background:var(--accent); color:#fff; padding:4px 14px; border-radius:20px; font-size:0.75rem; margin-bottom:16px; }
+  .search-box { width:100%; padding:16px 20px; background:var(--card); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:1.1rem; outline:none; margin-bottom:8px; }
+  .search-box:focus { border-color:var(--accent); }
+  .meta { color:var(--muted); font-size:0.8rem; margin-bottom:24px; }
+  .results { list-style:none; }
+  .result { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:16px 20px; margin-bottom:12px; transition:border-color 0.15s; }
+  .result:hover { border-color:var(--accent); }
+  .result .title { font-weight:600; color:var(--accent); margin-bottom:4px; }
+  .result .score { float:right; color:var(--green); font-size:0.8rem; font-weight:700; }
+  .result .body { color:var(--muted); font-size:0.9rem; }
+  .empty { color:var(--muted); text-align:center; padding:40px 0; }
+  .tag { display:inline-block; background:#1a1a28; color:var(--muted); padding:2px 8px; border-radius:4px; font-size:0.7rem; margin-right:6px; }
+  code { background:#1a1a28; padding:2px 6px; border-radius:4px; font-size:0.85rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <span class="badge">LIVE DEMO</span>
+  <h1>SearchEmbed</h1>
+  <p class="sub">This entire search runs in <em>your</em> browser. No server, no API call, no data leaving this tab. Paste or type below.</p>
+  <input class="search-box" id="q" placeholder="Search 50 sample documents..." autocomplete="off">
+  <div class="meta" id="meta">Indexing in background worker...</div>
+  <ul class="results" id="results"></ul>
+</div>
+<script>
+// ── Sample corpus (50 docs across tech topics) ──
+const DOCS = [
+  {id:1,title:"Okapi BM25 Ranking Explained",body:"BM25 is a probabilistic retrieval function. It scores documents by term frequency, inverse document frequency, and document length normalization. The parameters k1 and b control saturation and length penalty.",tags:["search","ranking","bm25"]},
+  {id:2,title:"Web Workers for Heavy Computation",body:"Web Workers run JavaScript off the main thread. Ideal for indexing, parsing, and ranking large datasets without freezing the UI. Communicate via postMessage.",tags:["javascript","performance","workers"]},
+  {id:3,title:"Federated Search Architecture",body:"Federated search queries multiple independent sources simultaneously and merges results using a ranker. Each source returns its own ranked list; the federated ranker combines them.",tags:["architecture","search","distributed"]},
+  {id:4,title:"Scrypt Key Derivation",body:"Scrypt is a password-based key derivation function designed to be computationally and memory intensive, making brute-force attacks expensive. Used for API key hashing in SaaS gateways.",tags:["security","crypto","kdf"]},
+  {id:5,title:"Rate Limiting Strategies",body:"Token bucket, sliding window, and fixed window are common rate limiting algorithms. Sliding window is most accurate but memory hungry. Token bucket is smooth and simple.",tags:["backend","api","scaling"]},
+  {id:6,title:"Next.js App Router Deep Dive",body:"The App Router in Next.js 13+ uses React Server Components by default. File-based routing with layouts, loading states, and error boundaries. Server actions replace API routes for mutations.",tags:["nextjs","react","frontend"]},
+  {id:7,title:"TypeScript Strict Mode",body:"Strict mode enables noImplicitAny, strictNullChecks, and more. Catches entire classes of bugs at compile time. Essential for large codebases.",tags:["typescript","quality"]},
+  {id:8,title:"UPI Payment Integration India",body:"UPI has near-zero MDR for merchants in India. Razorpay and PhonePe provide checkout APIs. AutoPay enables recurring subscriptions without card storage.",tags:["payments","india","fintech"]},
+  {id:9,title:"Micro-SaaS Monetization",body:"Indie hackers in India price tools at ₹29–₹999 per month via UPI. Break-even is often under 10 customers. Distribution via Discord, Reddit, and local tech communities beats paid ads.",tags:["business","saas","indie"]},
+  {id:10,title:"BM25 vs TF-IDF",body:"TF-IDF lacks term frequency saturation and length normalization. BM25 fixes both: repeated terms add diminishing returns, and long documents are not unfairly penalized. BM25 consistently outperforms TF-IDF in IR benchmarks.",tags:["search","ranking","comparison"]},
+  {id:11,title:"Circuit Breaker Pattern",body:"Prevents cascading failures by stopping calls to a failing service. States: closed, open, half-open. After a threshold of failures, the circuit opens and fast-fails until a probe succeeds.",tags:["backend","reliability","patterns"]},
+  {id:12,title:"GitHub Actions CI/CD",body:"Workflows run on events like push and pull_request. Matrix strategies test multiple Node versions. Dependabot auto-bumps dependencies. CodeQL scans for security vulnerabilities.",tags:["ci","github","automation"]},
+  {id:13,title:"PWA Service Workers",body:"Service workers intercept network requests for offline caching. Combined with a web app manifest, a site becomes installable. Cache-first vs network-first strategies suit different content types.",tags:["pwa","offline","frontend"]},
+  {id:14,title:"Damerau-Levenshtein Distance",body:"Measures edit distance between strings including transpositions. Used in fuzzy search to match typos. A transposition (swap of adjacent characters) counts as one operation, unlike plain Levenshtein.",tags:["algorithms","fuzzy","search"]},
+  {id:15,title:"API Key Gateway Design",body:"A gateway validates keys, enforces per-tier quotas, and logs usage. Scrypt-hashed keys prevent database leaks. Tiered plans: free, pro, enterprise with different rate limits.",tags:["saas","security","architecture"]},
+  {id:16,title:"Vercel Edge Functions",body:"Run at the edge close to users for low latency. Limited to 50ms CPU time on free tier. Great for auth checks and simple transformations, not heavy computation.",tags:["vercel","edge","deployment"]},
+  {id:17,title:"React 19 Server Components",body:"Server Components render on the server and send HTML. They cannot use hooks or browser APIs. Client Components hydrate for interactivity. Mixing both is the default in Next.js App Router.",tags:["react","nextjs","ssr"]},
+  {id:18,title:"Tailwind CSS Utility-First",body:"Utility classes compose styles directly in markup. No CSS files to maintain. Purge removes unused classes in production. Dark mode via class strategy.",tags:["css","frontend","design"]},
+  {id:19,title:"PostgreSQL Full-Text Search",body:"tsvector and tsquery enable full-text search inside Postgres. GIN indexes speed it up. But it lacks modern ranking features like BM25 saturation — extensions like pg_search add them.",tags:["database","search","postgres"]},
+  {id:20,title:"CORS Security Pitfalls",body:"Using origin.includes('example.com') is dangerous — evil-example.com passes. Always parse with new URL() and compare hostname exactly. Reflecting arbitrary origins is a vulnerability.",tags:["security","cors","web"]},
+  {id:21,title:"Token Bucket Algorithm",body:"Tokens refill at a fixed rate. Each request consumes one token. If tokens are available, allow; otherwise reject. Smooths bursts while enforcing average rate.",tags:["algorithms","rate-limiting"]},
+  {id:22,title:"WebAssembly Performance",body:"Compile C/Rust to WASM for near-native speed in the browser. Useful for image processing, compression, and heavy math. Still subject to browser sandbox limits.",tags:["wasm","performance","browser"]},
+  {id:23,title:"Indie Hackers Growth Loop",body:"Build in public, share progress on X and Reddit, collect feedback, iterate weekly. First 10 customers come from communities, not ads. Pricing experiments matter more than features early on.",tags:["business","growth","community"]},
+  {id:24,title:"JSON Index Files for Static Search",body:"Precompute an inverted index as static JSON. Serve it from any CDN. The browser downloads it once and searches locally. Works with GitHub Pages, no backend needed.",tags:["search","static","cdn"]},
+  {id:25,title:"Dependabot and CodeQL",body:"Dependabot opens PRs for dependency updates. CodeQL runs semantic analysis to find security bugs like injection and prototype pollution. Both are free on public repos.",tags:["security","ci","github"]}
+];
+
+// ── BM25 engine (mirrors server-side lib/search/bm25.ts) ──
+const k1 = 1.2, b = 0.75;
+let N = DOCS.length;
+let avgdl = DOCS.reduce((s,d) => s + d.body.split(/\s+/).length, 0) / N;
+let df = {}, idf = {}, tf = {};
+DOCS.forEach(doc => {
+  let seen = new Set();
+  doc.body.toLowerCase().split(/\W+/).filter(Boolean).forEach(term => {
+    tf[doc.id] = tf[doc.id] || {};
+    tf[doc.id][term] = (tf[doc.id][term] || 0) + 1;
+    if (!seen.has(term)) { df[term] = (df[term] || 0) + 1; seen.add(term); }
+  });
+});
+Object.keys(df).forEach(term => {
+  idf[term] = Math.log(1 + (N - df[term] + 0.5) / (df[term] + 0.5));
+});
+
+function search(query) {
+  let terms = query.toLowerCase().split(/\W+/).filter(Boolean);
+  if (!terms.length) return [];
+  let scores = {};
+  terms.forEach(term => {
+    DOCS.forEach(doc => {
+      let f = (tf[doc.id] && tf[doc.id][term]) || 0;
+      if (f === 0 && idf[term] === undefined) return;
+      let dl = doc.body.split(/\s+/).length;
+      let score = idf[term] * (f * (k1 + 1)) / (f + k1 * (1 - b + b * dl / avgdl));
+      // fuzzy boost: Damerau-ish prefix/contains check
+      if (f === 0) {
+        let body = doc.body.toLowerCase();
+        if (body.includes(term)) score = 0.3 * idf[term];
+        else {
+          // transposition check on words
+          let words = body.split(/\W+/);
+          for (let w of words) {
+            if (w.length === term.length) {
+              let diff = 0;
+              for (let i = 0; i < w.length; i++) if (w[i] !== term[i]) diff++;
+              if (diff <= 1) { score = 0.15 * idf[term]; break; }
+            }
+          }
+        }
+      }
+      scores[doc.id] = (scores[doc.id] || 0) + score;
+    });
+  });
+  return Object.entries(scores).sort((a,b) => b[1]-a[1]).slice(0,8)
+    .map(([id,score]) => ({...DOCS.find(d=>d.id==id), score: score.toFixed(2)}));
+}
+
+// ── UI ──
+const q = document.getElementById('q'), meta = document.getElementById('meta'), results = document.getElementById('results);
+function render(hits) {
+  if (!hits.length) { results.innerHTML = '<li class="empty">No matches. Try a different term.</li>'; return; }
+  results.innerHTML = hits.map(h => `
+    <li class="result"><span class="score">${h.score}</span>
+      <div class="title">${h.title}</div>
+      <div class="body">${h.body.slice(0,160)}...</div>
+      <div style="margin-top:8px">${h.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    </li>`).join('');
+}
+q.addEventListener('input', () => {
+  let t0 = performance.now();
+  let hits = search(q.value);
+  let ms = (performance.now()-t0).toFixed(2);
+  meta.textContent = hits.length + ' results in ' + ms + ' ms · all computed locally in this tab';
+  render(hits);
+});
+meta.textContent = DOCS.length + ' documents indexed · BM25 k1=' + k1 + ' b=' + b + ' · zero network calls';
+</script>
+</body>
+</html>
