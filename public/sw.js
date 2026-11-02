@@ -73,7 +73,7 @@ self.addEventListener('fetch', function (e) {
           return res;
         })
         .catch(function () {
-          if (req.mode === 'navigate') return caches.match('/);
+          if (req.mode === 'navigate') return caches.match('/' );
           return new Response('', { status: 504, statusText: 'Offline' });
         });
     })
