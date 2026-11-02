@@ -30,9 +30,9 @@ jobs:
               "status": "synchronized",
               "lastCycle": datetime.datetime.utcnow().isoformat() + "Z",
               "engine": "Santosh Tech Radar Daemon v2.5",
-              "trackedRepositories": 14200,
-              "marketVelocityMean": 94.7,
-              "note": "Synthetic baseline telemetry for radar engine bootstrapping. Replace with live GitHub API aggregation in production."
+              "trackedRepositories": None,
+              "marketVelocityMean": None,
+              "note": "Placeholder telemetry. Live GitHub API aggregation not yet implemented."
           }
           with open("data/radar-telemetry.json", "w") as f:
               json.dump(payload, f, indent=2)
@@ -49,8 +49,8 @@ jobs:
           body: |
             Automated tech radar telemetry update from the Autonomous Tech Radar Daemon.
             - Engine: Santosh Tech Radar Daemon v2.5
-            - Tracked repositories: 14,200
-            - Market velocity mean: 94.7
-            - Note: synthetic baseline; live API aggregation pending.
+            - Tracked repositories: not yet aggregated (placeholder)
+            - Market velocity mean: not yet computed (placeholder)
+            - Note: synthetic numbers removed; live API aggregation pending.
           branch: telemetry/radar-cycle
           delete-branch: true
