@@ -41,6 +41,14 @@ function buildSearchableCorpus(item: RankableDocument): string {
 }
 
 /**
+ * Word-boundary match: ensures "search" does not match "research" or "searching".
+ */
+function matchesWordBoundary(corpus: string, token: string): boolean {
+  const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&);
+  return new RegExp('(?:^|\\s)' + escaped + '(?:\\s|$)').test(corpus);
+}
+
+/**
  * Ranks an array of federated catalog documents against a search query.
  *
  * Scored as:
@@ -52,7 +60,7 @@ function buildSearchableCorpus(item: RankableDocument): string {
  * @returns Sorted array of RankedHit objects in descending compositeScore order.
  */
 export function rankFederatedCatalog<T extends RankableDocument>(
-  catalog: ReadonlyArray<T>,
+  catalog: ReadOnlyArray<T>,
   rawQuery: string,
   lexicalBias: number = 0.78
 ): RankedHit<T>[] {
@@ -67,7 +75,7 @@ export function rankFederatedCatalog<T extends RankableDocument>(
 
     if (tokens.length > 0) {
       const corpus = buildSearchableCorpus(item);
-      matchedTokens = tokens.filter((token) => corpus.includes(token)).length;
+      matchedTokens = tokens.filter((token) => matchesWordBoundary(corpus, token)).length;
 
       // When query is non-empty, prune items that match zero tokens
       if (matchedTokens === 0) {
@@ -79,7 +87,7 @@ export function rankFederatedCatalog<T extends RankableDocument>(
     const rawScore = item.lexicalScore * clampedLexicalBias + item.recencyWeight * recencyBias + tokenBoost;
     const compositeScore = Number(Math.min(0.999, rawScore).toFixed(4));
 
-    rankedResults.push({
+    rankedResults.push([
       item,
       compositeScore,
       matchedTokens,

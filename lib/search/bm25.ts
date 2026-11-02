@@ -3,7 +3,7 @@
  * Production Okapi BM25 Full-Text Inverted-Index Engine
  *
  * Implements Robertson-Spärck Jones probabilistic term weighting with
- * Damerau-Levenshtein distance calculation for typo tolerance.
+ * Levenshtein distance calculation for typo tolerance.
  */
 
 export interface IndexDocument {
@@ -49,6 +49,7 @@ export class BM25Engine<T extends IndexDocument = IndexDocument> {
 
   /**
    * Computes classic Levenshtein distance between two strings using dynamic programming.
+   * Note: this is plain Levenshtein (no transposition handling), not Damerau-Levenshtein.
    */
   public static levenshtein(source: string, target: string): number {
     const srcLen = source.length;
@@ -69,8 +70,8 @@ export class BM25Engine<T extends IndexDocument = IndexDocument> {
         } else {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1, // substitution
-            matrix[i][j - 1] + 1,     // insertion
-            matrix[i - 1][j] + 1      // deletion
+            matrix[i - 1][j] + 1,     // deletion
+            matrix[i][j - 1] + 1      // insertion
           );
         }
       }
@@ -174,7 +175,7 @@ export class BM25Engine<T extends IndexDocument = IndexDocument> {
     for (const [docId, score] of docScores.entries()) {
       const doc = this.documents.get(docId);
       if (doc) {
-        results.push({
+        results.push([
           document: doc,
           score: Number(score.toFixed(4)),
           matchedTerms: Array.from(matchedTermsMap.get(docId) || []),

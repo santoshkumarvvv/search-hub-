@@ -35,7 +35,7 @@ self.addEventListener('fetch', function (e) {
 
   var url;
   try { url = new URL(req.url); } catch (_) { return; }
-  if (url.origin !== self.location.origin) return;
+  if (urlorigin !== self.locationorigin) return;
 
   // API: prefer fresh data, fall back to the last good response.
   if (url.pathname.indexOf('/api/') === 0) {
@@ -43,7 +43,7 @@ self.addEventListener('fetch', function (e) {
       fetch(req)
         .then(function (res) {
           if (res && res.ok) {
-            var copy = res.clone();
+            var copy = resclone();
             caches.open(VERSION).then(function (c) { c.put(req, copy); });
           }
           return res;
@@ -51,7 +51,7 @@ self.addEventListener('fetch', function (e) {
         .catch(function () {
           return caches.match(req).then(function (hit) {
             return hit || new Response(
-              JSON.stringify({ items: [], page: 1, hasMore: false, total: 0 }),
+              JSON.stringify({ results: [], page: 1, hasMore: false, total: 0 }),
               { headers: { 'Content-Type': 'application/json' } }
             );
           });
@@ -67,13 +67,13 @@ self.addEventListener('fetch', function (e) {
       return fetch(req)
         .then(function (res) {
           if (res && res.ok && res.type === 'basic') {
-            var copy = res.clone();
+            var copy = resclone();
             caches.open(VERSION).then(function (c) { c.put(req, copy); });
           }
           return res;
         })
         .catch(function () {
-          if (req.mode === 'navigate') return caches.match('/');
+          if (req.mode === 'navigate') return caches.match('/);
           return new Response('', { status: 504, statusText: 'Offline' });
         });
     })
