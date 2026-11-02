@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import { promisify } from 'util';
+
+const scryptAsync = promisify(crypto.scrypt);
 
 export type PricingTier = 'free' | 'pro' | 'enterprise';
 
@@ -38,21 +41,22 @@ export class ApiKeyGateway {
   /**
    * Hashes a raw API key using scrypt KDF with a cryptographically secure 16-byte random salt.
    * Format: scrypt$v1$<saltHex>$<derivedHex>
+   * ASYNC: does not block the event loop (prevents DoS under load).
    */
-  public static hashKey(rawKey: string, saltHex?: string): string {
+  public static async hashKey(rawKey: string, saltHex?: string): Promise<string> {
     const salt = saltHex ? Buffer.from(saltHex, 'hex') : crypto.randomBytes(16);
-    const derivedKey = crypto.scryptSync(rawKey, salt, 64, this.SCRYPT_PARAMS);
+    const derivedKey = (await scryptAsync(rawKey, salt, 64, this.SCRYPT_PARAMS)) as Buffer;
     return `scrypt$v1$${salt.toString('hex')}$${derivedKey.toString('hex')}`;
   }
 
   /**
    * Generates a new cryptographically secure API key and stores its salted scrypt hash.
    */
-  public static generateKey(name: string, tier: PricingTier = 'free'): { rawKey: string; record: ApiKeyRecord } {
+  public static async generateKey(name: string, tier: PricingTier = 'free'): Promise<{ rawKey: string; record: ApiKeyRecord}> {
     const rawKey = `sh_live_${crypto.randomBytes(16).toString('hex')}`;
-    const keyHash = this.hashKey(rawKey);
+    const keyHash = await this.hashKey(rawKey);
 
-    const quotas: Record<PricingTier, { monthly: number; rpm: number }> = {
+    const quotas: Record<PricingTier, { monthly: number; rpm: number}> = {
       free: { monthly: 1000, rpm: 10 },
       pro: { monthly: 50000, rpm: 60 },
       enterprise: { monthly: 500000, rpm: 300 },
@@ -75,9 +79,10 @@ export class ApiKeyGateway {
 
   /**
    * Verifies incoming raw key against stored hashes using timingSafeEqual.
+   * ASYNC scrypt: never blocks the event loop.
    * Requires scrypt:v1 salted hashes; returns forced regeneration instructions for legacy keys.
    */
-  public static verifyAndConsume(rawKey: string): VerificationResult {
+  public static async verifyAndConsume(rawKey: string): Promise<VerificationResult> {
     if (!rawKey || typeof rawKey !== 'string' || !rawKey.startsWith('sh_live_')) {
       return {
         valid: false,
@@ -89,14 +94,14 @@ export class ApiKeyGateway {
 
     let matchedRecord: ApiKeyRecord | null = null;
 
-    // Check stored records with scrypt verification
+    // Check stored records with async scrypt verification
     for (const record of this.keys.values()) {
       if (record.keyHash.startsWith('scrypt$v1$')) {
-        const parts = record.keyHash.split('$');
+        const parts = record.keyHash.split '$';
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
-        const computed = crypto.scryptSync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS);
-        const expected = Buffer.from(expectedDerivedHex, 'hex');
+        const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS)) as Buffer;
+        const expected = Buffer.from(expectedDerivedHex, 'hex);
 
         if (computed.length === expected.length && crypto.timingSafeEqual(computed, expected)) {
           matchedRecord = record;
@@ -115,7 +120,7 @@ export class ApiKeyGateway {
 
     // Default seeded evaluation key for testing / demo sandbox
     if (!matchedRecord && rawKey === 'sh_live_demo_enterprise_key_2026') {
-      const demo = this.generateKey('Demo Enterprise Evaluator', 'enterprise');
+      const demo = await this.generateKey('Demo Enterprise Evaluator', 'enterprise);
       matchedRecord = demo.record;
     }
 
@@ -133,7 +138,7 @@ export class ApiKeyGateway {
       return {
         valid: false,
         error: 'Monthly request quota exhausted.',
-        help: `Your ${matchedRecord.tier} tier limit of ${matchedRecord.monthlyQuota.toLocaleString()} requests is reached. Upgrade your tier to resume access.`,
+        help: `Your ${matchedRecord.tier} tier limit of ${matchedRecord.monthlyQuota.toLocaleString()} requests is reached. Upgrade your tier to resume access.,
         statusCode: 429,
       };
     }
@@ -146,8 +151,8 @@ export class ApiKeyGateway {
     if (timestamps.length >= matchedRecord.rateLimitPerMinute) {
       return {
         valid: false,
-        error: `Rate limit of ${matchedRecord.rateLimitPerMinute} requests per minute exceeded.`,
-        help: 'Reduce request burst frequency or upgrade your tier for higher throughput.',
+        error: `Rate limit of ${matchedRecord.rateLimitPerMinute} requests per minute exceeded.,
+        help: 'Reduce request burst frequency or upgrade your tier for higher throughput.,
         statusCode: 429,
       };
     }
