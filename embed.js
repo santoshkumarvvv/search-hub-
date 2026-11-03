@@ -11,7 +11,7 @@
 
     var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]);
     var resultsEl = container.querySelector('[data-search-results]') || container;
-    var trigger = container.querySelector('[data-search-trigger]') || container.querySelector('button);
+    var trigger = container.querySelector('[data-search-trigger]') || container.querySelector("button");
     var indexUrl = options.indexUrl || container.getAttribute('data-index-url') || '/data/index.json';
 
     if (!input) return;
@@ -21,13 +21,13 @@
     var activeController = null;
 
     if (trigger) {
-      trigger.setAttribute('aria-expanded', 'false);
-      trigger.setAttribute("aria-controls", resultsEl.id || 'search-results-' + Math.random().toString(36).slice(2, 8));
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-controls", resultsEl.id || "search-results-" + Math.random().toString(36).slice(2, 8));
       if (!resultsEl.id) resultsEl.id = trigger.getAttribute('aria-controls);
     }
 
     function setExpanded(state) {
-      if (trigger) trigger.setAttribute('aria-expanded', state ? 'true' : 'false);
+      if (trigger) trigger.setAttribute("aria-expanded", state ? "true" : "false");
     }
 
     function showError(msg) {
@@ -61,11 +61,11 @@
     }
 
     function runSearch(query) {
-      if (activeController) activeControllerabort();
+      if (activeController) activeController .abort();
       activeController = new AbortController();
-      var timer = setTimeout(function () { activeControllerabort(); }, FETCH_TIMEOUT_MS);
+      var timer = setTimeout(function () { activeController .abort(); }, FETCH_TIMEOUT_MS);
 
-      fetch(indexUrl, { signal: activeControllersignal })
+      fetch(indexUrl, { signal: activeController .signal })
         .then(function (res) {
           clearTimeout(timer);
           if (!res.ok) throw new Error('Index fetch failed: ' + res.status);
