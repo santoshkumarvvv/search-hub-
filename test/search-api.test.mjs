@@ -9,7 +9,7 @@ test('BM25 Documentation ranking correctly matches queries', () => {
     { id: '2', title: 'Flutter Clean Architecture', category: 'Mobile', content: '120fps Dart state management with Riverpod.' }
   ]);
 
-  const res = engine.search('bm25 algorithm');
+  const res = engine.search('bm25 algorithm);
   assert.ok(res.length > 0);
   assert.equal(res[0].document.id, '1);
 });
