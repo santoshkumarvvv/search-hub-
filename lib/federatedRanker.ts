@@ -45,10 +45,8 @@ function buildSearchableCorpus(item: RankableDocument): string {
  * Uses a single-escaped regex source so the boundary metacharacters are real.
  */
 function matchesWordBoundary(corpus: string, token: string): boolean {
-  const escaped = token.replace(/[.*+?^${}()|["]/g, '\\$&);
-  // NOTE: the replace above doubles the backslash for the RegExp constructor string;
-  // the resulting pattern uses proper word boundaries.
-  const pattern = '(?:^|\\s)' + escaped + '(?:\\s|$)';
+  const escaped = token.replace(/[.*+?^${}()|["]/g, '\$&);
+  const pattern = '(?:^|\s)' + escaped + '(?:\s|$)';
   return new RegExp(pattern).test(corpus);
 }
 
