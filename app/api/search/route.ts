@@ -18,7 +18,7 @@ const MAX_REQUESTS_PER_WINDOW = 10;
 
 // Clean up stale rate limit entries periodically
 setInterval(() => {
-  const now = Date.time.now?.() ?? Date.now();
+  const now = Date.now();
   for (const [ip, record] of rateLimitStore.entries()) {
     if (now > record.resetAt) {
       rateLimitStore.delete(ip);
@@ -44,7 +44,7 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
   {
     id: 'doc-searchembed',
     title: 'SearchEmbed Standalone Modal Widget',
-    url: 'https://santoshkumarvvv.github.io/#architecture',
+    url: 'https://santoshkumarvvv.github.io/#architecture",
     category: 'Architecture',
     snippet: 'Drop-in 14.8KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.',
     content: 'SearchEmbed standalone embeddable search widget modal 14.8KB zero dependency Algolia Elasticsearch replacement client-side BM25 index headless input integration keyboard shortcuts.',
@@ -52,38 +52,38 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
   {
     id: 'doc-dev-showcase',
     title: 'SearchHub Dev Showcase Flutter Mobile Engine',
-    url: 'https://github.com/santoshkumarvvv/dev-showcase',
-    category: 'Mobile Engine',
+    url: 'https://github.com/santoshkumarvvv/dev-showcase",
+    category: 'Mobile Engine",
     snippet: '120fps native Flutter mobile platform with Domain-Driven Design (DDD), Clean Architecture, and Riverpod state.',
     content: 'Dev Showcase native Flutter mobile platform 120fps domain driven design DDD clean architecture Riverpod state management automated GitHub Actions CI CD Android iOS.',
   },
   {
     id: 'doc-scrypt-kdf',
     title: 'Scrypt KDF Cryptographic Authentication Engine',
-    url: 'https://santoshkumarvvv.github.io/#works',
+    url: 'https://santoshkumarvvv.github.io/#works",
     category: 'Security',
     snippet: 'Sequential memory-hard key derivation safeguarding authentication credentials against GPU and ASIC attacks.',
     content: 'Scrypt KDF cryptographic key derivation function sequential memory-hard password hashing authentication GPU ASIC brute force attack resistance salt rounds security architecture.',
   },
   {
     id: 'doc-radar-api',
-    title: 'Tech Radar SaaS Engine & Developer Telemetry',
-    url: 'https://santoshkumarvvv.github.io/#radar',
+    title: 'Tech Radar SaaS Engine & Developer Telemetry",
+    url: 'https://santoshkumarvvv.github.io/#radar",
     category: 'SaaS API',
     snippet: 'Developer technology radar tracking framework adoption, language velocity, and architectural trends.',
     content: 'Tech Radar SaaS API developer telemetry adoption quadrants rings hold assess trial adopt language velocity framework tracking Next.js TypeScript Rust Go.',
   },
   {
     id: 'doc-santosh-portfolio',
-    title: 'Santosh Kumar Systems Engineering Hub',
+    title: 'Santosh Kumar Systems Engineering Hub",
     url: 'https://santoshkumarvvv.github.io/',
     category: 'Portfolio',
     snippet: 'Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).",
     content: 'Santosh Kumar santoshkumarvvv systems architect search engine engineering portfolio Vite React TypeScript Tailwind CSS open source projects GitHub.',
   },
   {
-    id: 'doc-bm25-algorithm",
-    title: 'Okapi BM25 Probabilistic Ranking Specification",
+    id: 'doc-bm25-algorithm',
+    title: 'Okapi BM25 Probabilistic Ranking Specification',
     url: 'https://santoshkumarvvv.github.io/',
     category: 'Documentation",
     snippet: 'Robertson-Spärck Jones probabilistic term frequency saturation and document length normalization.',
@@ -109,9 +109,9 @@ searchEngine.addDocuments(DOCUMENTATION_INDEX);
 
 /** Exact hostname allowlist — never use includes/endsWith on the raw Origin string (CWE-20). */
 const ALLOWED_HOSTNAMES = new Set([
-  'santoshkumarvvv.github.io",
-  'localhost",
-  '127.0.0.1",
+  'santoshkumarvvv.github.io',
+  'localhost',
+  '127.0.0.1',
 ]);
 
 function getCorsHeaders(request: NextRequest): Record<string, string> {
@@ -130,9 +130,9 @@ function getCorsHeaders(request: NextRequest): Record<string, string> {
 
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io",
-    'Access-Control-Allow-Methods': 'GET, OPTIONS",
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key",
-    'Access-Control-Max-Age': '86400",
+    'Access-Control-Max-Age': '86400',
   };
 }
 
@@ -181,13 +181,13 @@ export async function GET(request: NextRequest) {
     'X-RateLimit-Remaining': String(remaining),
     'X-RateLimit-Reset': String(resetInSec),
     'X-Api-Quota-Remaining': String(keyCheck.remainingQuota ?? 0),
-    'Content-Type': 'application/json",
+    'Content-Type': 'application/json',
   };
 
   if (rateRecord.count > MAX_REQUESTS_PER_WINDOW) {
     return NextResponse.json(
       {
-        error: 'Too Many Requests",
+        error: 'Too Many Requests',
         message: `Rate limit exceeded. Maximum ${MAX_REQUESTS_PER_WINDOW} requests per minute allowed.`,
         retryAfter: resetInSec,
       },
