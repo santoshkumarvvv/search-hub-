@@ -44,23 +44,23 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
   {
     id: 'doc-searchembed',
     title: 'SearchEmbed Standalone Modal Widget',
-    url: 'https://santoshkumarvvv.github.io/#architecture',
+    url: 'https://santoshkumarvvv.github.io/#architecture",
     category: 'Architecture',
     snippet: 'Drop-in 14.8KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.',
     content: 'SearchEmbed standalone embeddable search widget modal 14.8KB zero dependency Algolia Elasticsearch replacement client-side BM25 index headless input integration keyboard shortcuts.',
   },
   {
     id: 'doc-dev-showcase',
-    title: 'Dev Showcase Flutter Mobile Engine',
-    url: 'https://github.com/santoshkumarvvv/dev-showcase',
-    category: 'Mobile Engine',
+    title: 'SearchHub Dev Showcase Flutter Mobile Engine',
+    url: 'https://github.com/santoshkumarvvv/dev-showcase",
+    category: 'Mobile Engine",
     snippet: '120fps native Flutter mobile platform with Domain-Driven Design (DDD), Clean Architecture, and Riverpod state.',
     content: 'Dev Showcase native Flutter mobile platform 120fps domain driven design DDD clean architecture Riverpod state management automated GitHub Actions CI CD Android iOS.',
   },
   {
     id: 'doc-scrypt-kdf',
     title: 'Scrypt KDF Cryptographic Authentication Engine',
-    url: 'https://santoshkumarvvv.github.io/#works',
+    url: 'https://santoshkumarvvv.github.io/#works",
     category: 'Security',
     snippet: 'Sequential memory-hard key derivation safeguarding authentication credentials against GPU and ASIC attacks.',
     content: 'Scrypt KDF cryptographic key derivation function sequential memory-hard password hashing authentication GPU ASIC brute force attack resistance salt rounds security architecture.',
@@ -75,10 +75,10 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
   },
   {
     id: 'doc-santosh-portfolio',
-    title: 'Santosh Kumar Systems Engineering Hub',
+    title: 'Santosh Kumar Systems Engineering Hub",
     url: 'https://santoshkumarvvv.github.io/',
     category: 'Portfolio',
-    snippet: 'Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).',
+    snippet: 'Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).",
     content: 'Santosh Kumar santoshkumarvvv systems architect search engine engineering portfolio Vite React TypeScript Tailwind CSS open source projects GitHub.',
   },
   {
@@ -98,7 +98,7 @@ for (const app of APPS) {
     title: `${app.name} (${app.category})`,
     url: `https://santoshkumarvvv.github.io/?app=${encodeURIComponent(app.uid)}`,
     category: app.category,
-    snippet: app.description.slice(0, 140) + '...',
+    snippet: app.description.slice(0, 140) + '...",
     content: `${app.name} ${app.category} ${app.genre || ''} ${app.developer} ${app.description} ${app.tags.join(' ')}`,
   });
 }
@@ -129,7 +129,7 @@ function getCorsHeaders(request: NextRequest): Record<string, string> {
   }
 
   return {
-    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io',
+    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io",
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
     'Access-Control-Max-Age': '86400',
