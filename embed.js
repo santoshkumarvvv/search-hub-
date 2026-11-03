@@ -11,7 +11,7 @@
 
     var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]);
     var resultsEl = container.querySelector('[data-search-results]') || container;
-    var trigger = container.querySelector('[data-search-trigger]') || container.querySelector('button');
+    var trigger = container.querySelector('[data-search-trigger]') || container.querySelector('button);
     var indexUrl = options.indexUrl || container.getAttribute('data-index-url') || '/data/index.json';
 
     if (!input) return;
@@ -21,7 +21,7 @@
     var activeController = null;
 
     if (trigger) {
-      trigger.setAttribute('aria-expanded', 'false');
+      trigger.setAttribute('aria-expanded', 'false);
       trigger.setAttribute("aria-controls", resultsEl.id || 'search-results-' + Math.random().toString(36).slice(2, 8));
       if (!resultsEl.id) resultsEl.id = trigger.getAttribute('aria-controls);
     }
