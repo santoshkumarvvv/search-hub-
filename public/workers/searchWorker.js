@@ -37,7 +37,7 @@ function bm25Search(query, catalog) {
   const scores = {};
 
   catalog.forEach((item, idx) => {
-    const text = ((item.title || '') + ' ' + (item.category || '') + ' ' + (d.tags || []).join(' ')).toLowerCase();
+    const text = ((item.title || '') + ' ' + (item.category || '') + ' ' + (item.tags || []).join(' ')).toLowerCase();
     const words = text.split(/\W+/).filter(Boolean);
     const seen = new Set();
     words.forEach(w => {
