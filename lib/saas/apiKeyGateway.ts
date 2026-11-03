@@ -97,7 +97,7 @@ export class ApiKeyGateway {
     // Check stored records with async scrypt verification
     for (const record of this.keys.values()) {
       if (record.keyHash.startsWith('scrypt$v1$')) {
-        const parts = record.keyHash.split('$' '');
+        const parts = record.keyHash.split('$);
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
         const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS)) as Buffer;
