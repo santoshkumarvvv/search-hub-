@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --experimental-strip-types --test test/*.test.mjs"
   },
   "dependencies": {
     "next": "15.5.28",
