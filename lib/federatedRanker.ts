@@ -91,11 +91,11 @@ export function rankFederatedCatalog<T extends RankableDocument>(
     const rawScore = item.lexicalScore * clampedLexicalBias + item.recencyWeight * recencyBias + tokenBoost;
     const compositeScore = Number(Math.min(0.999, rawScore).toFixed(4));
 
-    rankedResults.push([
+    rankedResults.push({
       item,
       compositeScore,
       matchedTokens,
-    ]);
+    });
   }
 
   // Sort descending by composite score
