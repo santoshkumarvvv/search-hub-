@@ -25,7 +25,7 @@ test('canRun enforces daily cap of 3', () => {
   };
   const r = canRun(job, Date.now());
   assert.equal(r.allowed, false);
-  assert.equal(r.reason, 'daily cap reached'');
+  assert.equal(r.reason, "daily cap reached");
 });
 
 test('polarity lexicon assigns negative weight to vulnerability terms', () => {
@@ -64,7 +64,7 @@ test('detectTimeAnomaly flags hour outside two standard deviations', () => {
   for (let i = 0; i < 10; i++) history.push({ ranAt: i * 3600000, hourOfDay: 8, resultCount: 3, topScore: 1.5, valueField: null });
   const a = detectTimeAnomaly(history, 23);
   assert.ok(a !== null);
-  assert.equal(a.type, 'time'');
+  assert.equal(a.type, 'time');
 });
 
 test('detectValueAnomaly flags fifteen percent deviation', () => {
@@ -72,7 +72,7 @@ test('detectValueAnomaly flags fifteen percent deviation', () => {
   for (let i = 0; i < 5; i++) history.push({ ranAt: i, hourOfDay: 8, resultCount: 3, topScore: 1.5, valueField: 100 });
   const a = detectValueAnomaly(history, 200, 15);
   assert.ok(a !== null);
-  assert.equal(a.type, 'value'');
+  assert.equal(a.type, 'value');
 });
 
 test('detectFrequencyAnomaly flags zero results after consistent non-zero', () => {
@@ -82,8 +82,8 @@ test('detectFrequencyAnomaly flags zero results after consistent non-zero', () =
   history.push({ ranAt: 8, hourOfDay: 8, resultCount: 0, topScore: 0, valueField: null });
   const a = detectFrequencyAnomaly(history);
   assert.ok(a !== null);
-  assert.equal(a.type, 'frequency'');
-  assert.equal(a.severity, 'high'');
+  assert.equal(a.type, 'frequency');
+  assert.equal(a.severity, 'high');
 });
 
 test('detectAllAnomalies aggregates all three types', () => {
