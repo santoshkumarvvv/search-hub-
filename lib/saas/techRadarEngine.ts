@@ -10,6 +10,8 @@ export interface TechRadarItem {
   marketOutlook: 'surging' | 'stable' | 'maturing' | 'deprecated';
 }
 
+export const RADAR_VERSION = "v2026.11.03";
+
 export const GLOBAL_TECH_RADAR: TechRadarItem[] = [
   {
     id: 'typescript',
