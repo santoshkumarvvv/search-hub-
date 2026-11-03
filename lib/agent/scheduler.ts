@@ -57,30 +57,45 @@ function weekKey(ts: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export function canRun(job: Job, now: number): { allowed: boolean; reason?: string } {
+/**
+ * Pure gate check — does NOT mutate the job.
+ * Returns a `patch` the caller should apply via markRun / agentStore.setJob
+ * so the same Job object is never half-updated across instances.
+ */
+export function canRun(job: Job, now: number): {
+  allowed: boolean;
+  reason?: string;
+  patch?: Partial<Job>;
+} {
   const dk = todayKey(now);
   const wk = weekKey(now);
+  const patch: Partial<Job> = {};
   if (job.dayKey !== dk) {
-    job.runCountToday = 0;
-    job.dayKey = dk;
+    patch.runCountToday = 0;
+    patch.dayKey = dk;
   }
   if (job.weekKey !== wk) {
-    job.runCountWeek = 0;
-    job.weekKey = wk;
+    patch.runCountWeek = 0;
+    patch.weekKey = wk;
   }
-  if (job.runCountToday >= DAILY_CAP) return { allowed: false, reason: 'daily cap reached' };
-  if (job.runCountWeek >= WEEKLY_CAP) return { allowed: false, reason: 'weekly cap reached' };
+  const today = patch.runCountToday ?? job.runCountToday;
+  const week = patch.runCountWeek ?? job.runCountWeek;
+  if (today >= DAILY_CAP) return { allowed: false, reason: 'daily cap reached' };
+  if (week >= WEEKLY_CAP) return { allowed: false, reason: 'weekly cap reached' };
   if (now < job.nextRunAt) return { allowed: false, reason: 'not due' };
-  return { allowed: true };
+  return { allowed: true, patch: Object.keys(patch).length ? patch : undefined };
 }
 
-export function markRun(job: Job, now: number, status: LastStatus, error: string | null): void {
-  job.lastRunAt = now;
-  job.lastStatus = status;
-  job.lastError = error;
-  job.runCountToday += 1;
-  job.runCountWeek += 1;
-  job.nextRunAt = now + 15 * 60 * 1000;
+export function markRun(job: Job, now: number, status: LastStatus, error: string | null): Job {
+  return {
+    ...job,
+    lastRunAt: now,
+    lastStatus: status,
+    lastError: error,
+    runCountToday: job.runCountToday + 1,
+    runCountWeek: job.runCountWeek + 1,
+    nextRunAt: now + 15 * 60 * 1000,
+  };
 }
 
 const BLOCKED = /https?:\/\/|\b(rm|cat|ls|curl|wget|chmod|chown|sudo|bash|sh|python|node|perl|ruby|php|nc|netcat|ssh|ftp|telnet)\b|\.\.?\/|\|\||&&|;|`/i;
