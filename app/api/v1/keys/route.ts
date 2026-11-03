@@ -6,11 +6,42 @@ export const runtime = 'nodejs';
 const VALID_TIERS: Set<PricingTier> = new Set(['free', 'pro', 'enterprise']);
 const NAME_REGEX = /^[a-zA-Z0-9_\-\s]{2,50}$/;
 
+// In-memory IP throttle for key minting (resets on cold start — Vercel KV recommended for production)
+const mintAttempts = new Map<string, { count: number; resetAt: number }>();
+const MINT_LIMIT = 5;
+const MINT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function checkMintThrottle(ip: string): boolean {
+  const now = Date.now();
+  const entry = mintAttempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    mintAttempts.set(ip, { count: 1, resetAt: now + MINT_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= MINT_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
 export async function POST(request: NextRequest) {
   if (request.method !== 'POST') {
     return NextResponse.json(
       { error: 'Method Not Allowed', help: 'The /api/v1/keys endpoint requires HTTP POST.' },
       { status: 405, headers: { Allow: 'POST' } }
+    );
+  }
+
+  // IP-based mint throttle — prevents unlimited key generation
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+             request.headers.get('x-real-ip') ||
+             'unknown';
+  if (!checkMintThrottle(ip)) {
+    return NextResponse.json(
+      {
+        error: 'Too many key mint requests from this IP.',
+        help: 'Maximum 5 API keys per IP per hour. Try again later or contact support.',
+      },
+      { status: 429 }
     );
   }
 

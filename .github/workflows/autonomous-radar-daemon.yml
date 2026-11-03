@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   telemetry-cycle:
@@ -28,9 +29,10 @@ jobs:
           payload = {
               "status": "synchronized",
               "lastCycle": datetime.datetime.utcnow().isoformat() + "Z",
-              "engine": "Santosh Tech Radar Daemon v2.4",
-              "trackedRepositories": 14200,
-              "marketVelocityMean": 94.7
+              "engine": "Santosh Tech Radar Daemon v2.5",
+              "trackedRepositories": None,
+              "marketVelocityMean": None,
+              "note": "Placeholder telemetry. Live GitHub API aggregation not yet implemented."
           }
           with open("data/radar-telemetry.json", "w") as f:
               json.dump(payload, f, indent=2)
@@ -38,11 +40,17 @@ jobs:
           PY
           python3 update.py
 
-      - name: Commit Intelligence Telemetry
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/
-          git diff --cached --quiet && exit 0
-          git commit -m "telemetry: autonomous radar cycle $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push
+      - name: Create Pull Request for Telemetry Update
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_PAT || secrets.github_token}}
+          commit-message: "telemetry: autonomous radar cycle $(date -u +'%Y-%m-%d %H:%M UTC')"
+          title: "telemetry: autonomous radar cycle"
+          body: |
+            Automated tech radar telemetry update from the Autonomous Tech Radar Daemon.
+            - Engine: Santosh Tech Radar Daemon v2.5
+            - Tracked repositories: not yet aggregated (placeholder)
+            - Market velocity mean: not yet computed (placeholder)
+            - Note: synthetic numbers removed; live API aggregation pending.
+          branch: telemetry/radar-cycle
+          delete-branch: true

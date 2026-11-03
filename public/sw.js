@@ -35,7 +35,8 @@ self.addEventListener('fetch', function (e) {
 
   var url;
   try { url = new URL(req.url); } catch (_) { return; }
-  if (url.origin !== self.location.origin) return;
+  // Same-origin only — compare hostnames, never cache cross-origin
+  if (url.hostname !== self.location.hostname) return;
 
   // API: prefer fresh data, fall back to the last good response.
   if (url.pathname.indexOf('/api/') === 0) {
@@ -43,15 +44,16 @@ self.addEventListener('fetch', function (e) {
       fetch(req)
         .then(function (res) {
           if (res && res.ok) {
-            var copy = res.clone();
+            var copy = res;
             caches.open(VERSION).then(function (c) { c.put(req, copy); });
           }
           return res;
         })
         .catch(function () {
           return caches.match(req).then(function (hit) {
+            // Shape must match the search route: { results: [] }
             return hit || new Response(
-              JSON.stringify({ items: [], page: 1, hasMore: false, total: 0 }),
+              JSON.stringify({ results: [], page: 1, hasMore: false, total: 0 }),
               { headers: { 'Content-Type': 'application/json' } }
             );
           });
@@ -67,13 +69,13 @@ self.addEventListener('fetch', function (e) {
       return fetch(req)
         .then(function (res) {
           if (res && res.ok && res.type === 'basic') {
-            var copy = res.clone();
+            var copy = res;
             caches.open(VERSION).then(function (c) { c.put(req, copy); });
           }
           return res;
         })
         .catch(function () {
-          if (req.mode === 'navigate') return caches.match('/');
+          if (req.mode === 'navigate') return caches.match('/' );
           return new Response('', { status: 504, statusText: 'Offline' });
         });
     })

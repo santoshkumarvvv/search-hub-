@@ -67,8 +67,8 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
   },
   {
     id: 'doc-radar-api',
-    title: 'Tech Radar SaaS Engine & Developer Telemetry",
-    url: 'https://santoshkumarvvv.github.io/#radar",
+    title: 'Tech Radar SaaS Engine & Developer Telemetry',
+    url: 'https://santoshkumarvvv.github.io/#radar',
     category: 'SaaS API',
     snippet: 'Developer technology radar tracking framework adoption, language velocity, and architectural trends.',
     content: 'Tech Radar SaaS API developer telemetry adoption quadrants rings hold assess trial adopt language velocity framework tracking Next.js TypeScript Rust Go.',
@@ -85,7 +85,7 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
     id: 'doc-bm25-algorithm',
     title: 'Okapi BM25 Probabilistic Ranking Specification',
     url: 'https://santoshkumarvvv.github.io/',
-    category: 'Documentation",
+    category: 'Documentation',
     snippet: 'Robertson-Spärck Jones probabilistic term frequency saturation and document length normalization.',
     content: 'Okapi BM25 algorithm Robertson Sparck Jones probabilistic model term frequency saturation k1 b parameter document length normalization inverse document frequency IDF calculation.',
   },
@@ -131,7 +131,7 @@ function getCorsHeaders(request: NextRequest): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io",
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key",
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
     'Access-Control-Max-Age': '86400',
   };
 }
@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
   // API key verification (tiered quotas: free 1k, pro 50k, enterprise 500k monthly)
   const apiKey = request.headers.get('x-api-key') || '';
   const keyCheck = await ApiKeyGateway.verifyAndConsume(apiKey);
-  if (!keyCheck valid) {
+  if (!keyCheck.valid) {
     return NextResponse.json(
       { error: keyCheck.error, help: keyCheck.help },
       { status: keyCheck.statusCode || 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Client IP for secondary rate limiting
-  const forwarded = request.headers.get('x-forwarded-for'));
+  const forwarded = request.headers.get('x-forwarded-for');
   const ip =
     (forwarded ? forwarded.split(',')[0].trim() : '') ||
     request.headers.get('x-real-ip') ||

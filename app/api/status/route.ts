@@ -4,6 +4,9 @@ import { APP_VERSION } from '@/lib/version';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+// Track process start time for real uptime computation
+const processStartTime = Date.now();
+
 export async function GET(request: NextRequest) {
   if (request.method !== 'GET') {
     return NextResponse.json(
@@ -12,12 +15,25 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const uptimeMs = Date.now() - processStartTime;
+  const uptimeSeconds = Math.floor(uptimeMs / 1000);
+  const days = Math.floor(uptimeSeconds / 86400);
+  const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+  const seconds = uptimeSeconds % 60;
+
+  // Simple availability signal: if the process is running, it's up.
+  // For true SLA tracking, pair with an external uptime monitor (e.g. UptimeRobot).
   const statusPayload = {
     status: 'nominal',
     service: 'search-hub-engine',
     version: APP_VERSION,
     timestamp: new Date().toISOString(),
-    uptime: '99.98%',
+    uptime: {
+      processMs: uptimeMs,
+      human: `${days}d ${hours}h ${minutes}m ${seconds}s`,
+      note: 'Instance uptime only. For SLA guarantees use an external monitor.',
+    },
     engines: {
       search: 'Okapi BM25 + Web Worker Sharding',
       federatedRanker: '0.78 Lexical / 0.22 Recency',

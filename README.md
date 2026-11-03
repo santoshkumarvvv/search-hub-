@@ -6,11 +6,11 @@
 
 <div align="center">
   <a href="https://github.com/santoshkumarvvv/search-hub-/actions">
-    <img src="https://img.shields.io/badge/CI_VERIFICATION-PASSING-2563EB?style=for-the-badge&logo=githubactions&logoColor=white" alt="CI Status" />
+    <img src="https://img.shields.io/badge/CI-WORKFLOWS_PRESENT-2563EB?style=for-the-badge&logo=githubactions&logoColor=white" alt="CI Status" />
   </a>
   &nbsp;
   <a href="https://github.com/santoshkumarvvv/search-hub-/actions/workflows/codeql.yml">
-    <img src="https://img.shields.io/badge/CODEQL-0_ALERTS-10B981?style=for-the-badge&logo=github&logoColor=white" alt="CodeQL" />
+    <img src="https://img.shields.io/badge/CODEQL-CONFIGURED-10B981?style=for-the-badge&logo=github&logoColor=white" alt="CodeQL" />
   </a>
   &nbsp;
   <a href="https://nextjs.org">
@@ -37,13 +37,14 @@
 ### 02 · Engineering Benchmarks & Security Posture
 
 | Capability / Metric | Specification | Architectural Mechanism |
-| :--- | :--- | :--- |
+| :--- | :--- | :** |
 | **App Version** | **`2.4.0`** | Single source of truth defined in `lib/version.ts`, synced across `package.json`, `/api/status`, and telemetry. |
 | **Cryptographic Vault** | **`scrypt:v1`** | Salted KDF ($N=16384, r=8, p=1$, keylen=64) with `crypto.timingSafeEqual` and legacy SHA-256 auto-migration. |
-| **Worker Isolation** | **`Trusted Origin Guard`** | `public/workers/searchWorker.js` validates `e.origin` against strict domain allow-lists before query execution. |
+| **Worker Isolation** | **`Trusted Origin Guard`** | `public/workers/searchWorker.js` validates message origin against a strict domain allow-list before query execution. |
 | **Ranking Formula** | **`0.78 Lexical / 0.22 Recency`** | Deterministic composite ranking with multi-token intersection boosts (`lib/federatedRanker.ts`). |
-| **Full-Text Index** | **`Okapi BM25`** | Robertson-Spärck Jones BM25 with Damerau-Levenshtein fuzzy typo tolerance (`lib/search/bm25.ts`). |
+| **Full-Text Index** | **`Okapi BM25`** | Robertson-Spärck Jones BM25 with basic Levenshtein fuzzy typo tolerance (`lib/search/bm25.ts`). |
 | **SaaS Rate Limiter** | **`Sliding Window`** | Tiered quotas (`free`, `pro`, `enterprise`) with sliding 60-second window rate limiting and actionable hints. |
+| **Key Minting Guard** | **`IP Throttle`** | `/api/v1/keys` limits to 5 mints per IP per hour. |
 
 ---
 
@@ -59,9 +60,6 @@ search-hub-/
 │   │   └── v1/
 │   │       ├── keys/         # Cryptographic key minting with scrypt:v1 (/api/v1/keys)
 │   │       └── radar/        # Authenticated rate-limited intelligence feed (/api/v1/radar)
-│   ├── layout.tsx            # Root layout with dark-first typography & metadata
-│   ├── page.tsx              # Server-rendered catalog & federated search entry
-│   └── globals.css           # Tailwind CSS utility layer
 ├── components/
 │   ├── Browser.tsx           # Interactive search controller, category filters & URL sync
 │   └── Card.tsx              # Package/application card with resilient fallback states
@@ -72,8 +70,10 @@ search-hub-/
 │   ├── saas/
 │   │   ├── apiKeyGateway.ts  # scrypt:v1 key vault, rate limiter & legacy migration
 │   │   └── techRadarEngine.ts# Multi-category technology velocity indicators
+│   ├── apps.ts               # Legal app catalogue (no pirated/mod content)
 │   └── types.ts              # Strict TypeScript domain contracts
 ├── public/
+│   ├── sw.js                 # Service worker with same-origin cache policy
 │   └── workers/
 │       └── searchWorker.js   # Hardened Web Worker with trusted origin allow-list
 ├── test/
