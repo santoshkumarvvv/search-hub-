@@ -11,7 +11,7 @@ const b = 0.75;
 // Strict allowlist — exact hostname match only. No includes(), no endsWith().
 const TRUSTED_HOSTS = new Set([
   'localhost', '127.0.0.1', '::1',
-  'santoshkumarvvv.github.io', 'search-hub-pearl.vercel.app', 'search-hub-.vercel.app'
+  'santoshkumarvvv.github.io'
 ]);
 
 function isTrustedOrigin(origin) {
@@ -37,7 +37,7 @@ function bm25Search(query, catalog) {
   const scores = {};
 
   catalog.forEach((item, idx) => {
-    const text = ((item.title || '') + ' ' + (item.category || '') + ' ' + (item.tags || []).join(' ')).toLowerCase();
+    const text = ((item.title || '') + ' ' + (item.category || '') + ' ' + (d.tags || []).join(' ')).toLowerCase();
     const words = text.split(/\W+/).filter(Boolean);
     const seen = new Set();
     words.forEach(w => {
