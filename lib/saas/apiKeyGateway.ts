@@ -97,11 +97,11 @@ export class ApiKeyGateway {
     // Check stored records with async scrypt verification
     for (const record of this.keys.values()) {
       if (record.keyHash.startsWith('scrypt$v1$')) {
-        const parts = record.keyHash.split '$';
+        const parts = record.keyHash.split('$'');
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
         const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS)) as Buffer;
-        const expected = Buffer.from(expectedDerivedHex, 'hex'));
+        const expected = Buffer.from(expectedDerivedHex, 'hex');
 
         if (computed.length === expected.length && crypto.timingSafeEqual(computed, expected)) {
           matchedRecord = record;
@@ -120,7 +120,7 @@ export class ApiKeyGateway {
 
     // Default seeded evaluation key for testing / demo sandbox
     if (!matchedRecord && rawKey === 'sh_live_demo_enterprise_key_2026') {
-      const demo = await this.generateKey('Demo Enterprise Evaluator', 'enterprise'));
+      const demo = await this.generateKey('Demo Enterprise Evaluator', 'enterprise');;
       matchedRecord = demo.record;
     }
 
@@ -151,4 +151,36 @@ export class ApiKeyGateway {
     if (timestamps.length >= matchedRecord.rateLimitPerMinute) {
       return {
         valid: false,
-        error: `Rate limit of ${matchedRecord.rateLimitPerMinute} requests per minute exceeded.`)
+        error: `Rate limit of ${matchedRecord.rateLimitPerMinute} requests per minute exceeded.`
+      };
+    }
+
+    timestamps.push(now);
+    this.requestTimestamps.set(matchedRecord.id, timestamps);
+    matchedRecord.totalUsage += 1;
+
+    const remainingQuota = matchedRecord.monthlyQuota - matchedRecord.totalUsage;
+
+    return {
+      valid: true,
+      record: matchedRecord,
+      remainingQuota,
+      migrationNote: matchedRecord.tier === 'enterprise'
+        ? 'Enterprise tier: priority routing enabled.'
+        : undefined,
+    };
+  }
+
+  public static getRecord(id: string): ApiKeyRecord | undefined {
+    return this.keys.get(id);
+  }
+
+  public static listKeys(): ApiKeyRecord[] {
+    return Array.from(this.keys.values());
+  }
+
+  public static revokeKey(id: string): boolean {
+    this.requestTimestamps.delete(id);
+    return this.keys.delete(id);
+  }
+}
