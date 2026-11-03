@@ -94,5 +94,5 @@ export function detectDrift(current: Sketch, previous: Sketch | null): DriftResu
 }
 
 export function sketchToBytes(sketch: Sketch): number {
-  return Buffer.byteLength(JSON.stringify(sketch), 'utf8'');
+  return Buffer.byteLength(JSON.stringify(sketch), 'utf8);
 }
