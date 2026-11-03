@@ -101,7 +101,7 @@ export class ApiKeyGateway {
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
         const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS)) as Buffer;
-        const expected = Buffer.from(expectedDerivedHex, 'hex);
+        const expected = Buffer.from(expectedDerivedHex, 'hex'));
 
         if (computed.length === expected.length && crypto.timingSafeEqual(computed, expected)) {
           matchedRecord = record;
@@ -120,7 +120,7 @@ export class ApiKeyGateway {
 
     // Default seeded evaluation key for testing / demo sandbox
     if (!matchedRecord && rawKey === 'sh_live_demo_enterprise_key_2026') {
-      const demo = await this.generateKey('Demo Enterprise Evaluator', 'enterprise);
+      const demo = await this.generateKey('Demo Enterprise Evaluator', 'enterprise'));
       matchedRecord = demo.record;
     }
 
@@ -138,7 +138,7 @@ export class ApiKeyGateway {
       return {
         valid: false,
         error: 'Monthly request quota exhausted.',
-        help: `Your ${matchedRecord.tier} tier limit of ${matchedRecord.monthlyQuota.toLocaleString()} requests is reached. Upgrade your tier to resume access.,
+        help: `Your ${matchedRecord.tier} tier limit of ${matchedRecord.monthlyQuota.toLocaleString()} requests is reached. Upgrade your tier to resume access.`,
         statusCode: 429,
       };
     }
@@ -151,20 +151,4 @@ export class ApiKeyGateway {
     if (timestamps.length >= matchedRecord.rateLimitPerMinute) {
       return {
         valid: false,
-        error: `Rate limit of ${matchedRecord.rateLimitPerMinute} requests per minute exceeded.,
-        help: 'Reduce request burst frequency or upgrade your tier for higher throughput.,
-        statusCode: 429,
-      };
-    }
-
-    timestamps.push(now);
-    this.requestTimestamps.set(matchedRecord.id, timestamps);
-    matchedRecord.totalUsage += 1;
-
-    return {
-      valid: true,
-      record: matchedRecord,
-      remainingQuota: matchedRecord.monthlyQuota - matchedRecord.totalUsage,
-    };
-  }
-}
+        error: `Rate limit of ${matchedRecord.rateLimitPerMinute} requests per minute exceeded.`)
