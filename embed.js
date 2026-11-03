@@ -22,7 +22,7 @@
 
     if (trigger) {
       trigger.setAttribute('aria-expanded', 'false);
-      trigger.setAttribute('aria-controls', resultsEl.id || 'search-results-' + Math.random().toString(36).slice(2, 8));
+      trigger.setAttribute("aria-controls", resultsEl.id || 'search-results-' + Math.random().toString(36).slice(2, 8));
       if (!resultsEl.id) resultsEl.id = trigger.getAttribute('aria-controls);
     }
 
@@ -52,7 +52,7 @@
     }
 
     function escapeHtml(str) {
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;);
+      return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, '&#39;);
     }
 
     function runSearch(query) {
