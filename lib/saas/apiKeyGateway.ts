@@ -143,7 +143,7 @@ export class ApiKeyGateway {
       };
     }
 
-    // Sliding window rate limit per minute
+    // Sliding window rate limiter per minute
     const now = Date.now();
     const oneMinuteAgo = now - 60000;
     const timestamps = (this.requestTimestamps.get(matchedRecord.id) || []).filter((t) => t > oneMinuteAgo);

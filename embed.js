@@ -52,15 +52,20 @@
     }
 
     function escapeHtml(str) {
-      return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, '&#39;);
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;);
     }
 
     function runSearch(query) {
-      if (activeController) activeController .abort();
+      if (activeController) activeControllerabort();
       activeController = new AbortController();
-      var timer = setTimeout(function () { activeController .abort(); }, FETCH_TIMEOUT_MS);
+      var timer = setTimeout(function () { activeControllerabort(); }, FETCH_TIMEOUT_MS);
 
-      fetch(indexUrl, { signal: activeController .signal })
+      fetch(indexUrl, { signal: activeControllersignal })
         .then(function (res) {
           clearTimeout(timer);
           if (!res.ok) throw new Error('Index fetch failed: ' + res.status);
