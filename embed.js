@@ -56,11 +56,11 @@
     }
 
     function runSearch(query) {
-      if (activeController) activeController abort();
+      if (activeController) activeController && activeController .abort();
       activeController = new AbortController();
-      var timer = setTimeout(function () { activeController abort(); }, FETCH_TIMEOUT_MS);
+      var timer = setTimeout(function () { activeController && activeController .abort(); }, FETCH_TIMEOUT_MS);
 
-      fetch(indexUrl, { signal: activeController signal })
+      fetch(indexUrl, { signal: activeController && activeController .signal })
         .then(function (res) {
           clearTimeout(timer);
           if (!res.ok) throw new Error('Index fetch failed: ' + res.status);
