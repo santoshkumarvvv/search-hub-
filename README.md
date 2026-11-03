@@ -78,6 +78,8 @@ search-hub-/
 │       └── searchWorker.js   # Hardened Web Worker with trusted origin allow-list
 ├── test/
 │   └── bm25.test.mjs         # Deterministic unit test matrix for BM25 and Federated Ranker
+├── embed.js                  # Client-side search widget (debounce, fetch timeout, aria)
+├── pricing.html              # Public pricing page (₹19 / ₹99 / ₹199)
 └── tsconfig.json             # Strict TypeScript compiler configuration
 ```
 
@@ -98,6 +100,12 @@ Static type check and build verification:
 npm run lint
 npm run build
 ```
+
+---
+
+### 05 · Deployment Note
+
+**API routes (`/app/api/*`) run only on Vercel.** On GitHub Pages they return **404** — this is expected, not a bug. The static files (`pricing.html`, `embed.js`, `demo.html`) work on any static host including GitHub Pages. For full functionality deploy to Vercel.
 
 ---
 
