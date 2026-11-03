@@ -3,12 +3,16 @@ import { ApiKeyGateway } from '@/lib/saas/apiKeyGateway';
 import { Job, validateInstruction, canRun, markRun, DeliveryChannel } from '@/lib/agent/scheduler';
 import crypto from 'crypto';
 
+// NOTE: In-memory Map is per-instance on Vercel serverless.
+// Jobs persist only within a single warm instance. For durable cross-instance
+// storage, set KV_REST_API_URL and KV_REST_API_TOKEN env vars.
+// TODO: migrate to Vercel KV or Redis for production durability.
 const jobs = new Map<string, Job>();
 
 async function requireUltra(req: NextRequest): Promise<NextResponse | null> {
   const key = req.headers.get('x-api-key') || '';
   const result = await ApiKeyGateway.verifyAndConsume(key);
-  if (!result valid || result.record?.tier !== 'enterprise') {
+  if (!result?.valid || result.record?.tier !== 'enterprise') {
     return NextResponse.json(
       { error: result.error || 'Ultra tier required', help: result.help },
       { status: result.statusCode || 403 }
@@ -30,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   const instruction = (body.instruction || '').trim();
   const check = validateInstruction(instruction);
-  if (!check valid) {
+  if (!check?.valid) {
     return NextResponse.json({ error: check.reason }, { status: 400 });
   }
 

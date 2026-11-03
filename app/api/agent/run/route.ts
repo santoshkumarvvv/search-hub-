@@ -5,56 +5,13 @@ import { buildPolarityLexicon, scoreDocumentPolarity, detectContradiction } from
 import { buildSketch, detectDrift, Sketch } from '@/lib/agent/drift';
 import { detectAllAnomalies, RunRecord } from '@/lib/agent/anomaly';
 import { apps } from '@/lib/apps';
-import fs from 'fs';
-import path from 'path';
 
+// In-memory stores are per-instance on Vercel serverless.
+// TODO: migrate to Vercel KV (KV_REST_API_URL / KV_REST_API_TOKEN) for
+// durable snapshots and histories across cron invocations.
 const jobs = new Map<string, Job>();
 const snapshots = new Map<string, Sketch>();
 const histories = new Map<string, RunRecord[]>();
-
-function loadJobs() {
-  const kvUrl = process.env.KV_REST_API_URL;
-  const kvToken = process.env.KV_REST_API_TOKEN;
-  if (!kvUrl || !kvToken) {
-    const filePath = path.join(process.cwd(), 'data', 'agent-runs.json');
-    try {
-      if (fs.existsSync(filePath)) {
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        if (Array.isArray(raw.jobs)) {
-          for (const j of raw.jobs) jobs.set(j.id, j);
-        }
-      }
-    } catch {
-      // placeholder store
-    }
-  }
-}
-
-function saveSnapshot(jobId: string, sketch: Sketch) {
-  snapshots.set(jobId, sketch);
-  const kvUrl = process.env.KV_REST_API_URL;
-  const kvToken = process.env.KV_REST_API_TOKEN;
-  if (kvUrl && kvToken) {
-    fetch(`${kvUrl}/set/agent:snapshot:${jobId}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${kvToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(sketch),
-    }).catch(() => {});
-  } else {
-    const filePath = path.join(process.cwd(), 'data', 'agent-runs.json');
-    try {
-      let data: { jobs?: Job[]; snapshots?: Record<string, Sketch> } = {};
-      if (fs.existsSync(filePath)) {
-        data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      }
-      data.snapshots = data.snapshots || {};
-      data.snapshots[jobId] = sketch;
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    } catch {
-      // placeholder
-    }
-  }
-}
 
 export async function POST(req: NextRequest) {
   const secret = process.env.CRON_SECRET || '';
@@ -62,8 +19,6 @@ export async function POST(req: NextRequest) {
   if (!secret || header !== secret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  loadJobs();
 
   const engine = new BM25Engine<IndexDocument>(1.2, 0.75);
   engine.addDocuments(apps.map((a) => ({
@@ -75,6 +30,9 @@ export async function POST(req: NextRequest) {
   })));
 
   const now = Date.now();
+  // IST = UTC+5:30 for Indian users
+  const istOffsetMs = 5.5 * 60 * 60 * 1000;
+  const istNow = now + istOffsetMs;
   const results: RunResult[] = [];
 
   for (const job of jobs.values()) {
@@ -99,15 +57,29 @@ export async function POST(req: NextRequest) {
       const prevSketch = snapshots.get(job.id) || null;
       const drift = detectDrift(currentSketch, prevSketch);
 
+      // Cross-corpus contradiction check across top results
+      const contradictions: Array<string> = [];
+      for (let i = 0; i < corpusTexts.length; i++) {
+        for (let j = i + 1; j < corpusTexts.length; j++) {
+          const c = detectContradiction(corpusTexts[i], corpusTexts[j], lexicon);
+          if (c.isContradiction) {
+            contradictions.push(`docs ${i}-${j}: polarity ${c.scoreA.toFixed(2)} vs ${c.scoreB.toFixed(2)}, cosine ${c.cosine.toFixed(2)}`);
+          }
+        }
+      }
+
       const history = histories.get(job.id) || [];
       const currentRecord: RunRecord = {
         ranAt: now,
-        hourOfDay: new Date(now).getUTCHours(),
+        hourOfDay: new Date(istNow).getUTCHours(),
         resultCount: topResults.length,
         topScore: topResults[0]?.score || 0,
         valueField: null,
       };
       const anomalies = detectAllAnomalies(history, currentRecord);
+      if (contradictions.length > 0) {
+        anomalies.push({ type: 'value', severity: 'high', reason: `Cross-corpus contradiction: ${contradictions.join('; ')}` });
+      }
       history.push(currentRecord);
       if (history.length > 50) history.shift();
       histories.set(job.id, history);
@@ -138,14 +110,29 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      snapshots.set(job.id, currentSketch);
+
+      // Email delivery placeholder: when deliveryChannel is email and a material
+      // change or anomaly is detected, the payload includes an emailDraft field.
+      // Wire to Resend/SMTP via RESEND_API_KEY env var. TODO.
+      const emailDraft = job.deliveryChannel === 'email' && (drift.classification !== 'STABLE_EQUILIBRIUM' || (delta && (delta.newItems > 0 || delta.removedItems > 0)) || anomalies.length > 0 || thresholdMet)
+        ? {
+            to: 'TODO_USER_EMAIL',
+            subject: `[SearchHub Agent] ${job.instruction.slice(0, 40)}`,
+            body: `New: ${delta?.newItems || 0}, Removed: ${delta?.removedItems || 0}, Anomalies: ${anomalies.length}, Threshold: ${thresholdMet ? 'MET' : 'no'}`,
+          }
+        : null;
+
       if (drift.classification !== 'STABLE_EQUILIBRIUM' || (delta && (delta.newItems > 0 || delta.removedItems > 0)) || anomalies.length > 0 || thresholdMet) {
         markRun(job, now, 'ok', null);
       } else {
-        markRun(job, now, 'skipped', 'no material change'');
+        markRun(job, now, 'skipped', 'no material change');
       }
 
-      saveSnapshot(job.id, currentSketch);
       results.push({ jobId: job.id, ranAt: now, status: 'ok', topResults, delta, anomalies, thresholdMet, error: null });
+      if (emailDraft) {
+        (results[results.length - 1] as RunResult & { emailDraft?: unknown }).emailDraft = emailDraft;
+      }
     } catch (e) {
       markRun(job, now, 'failed', String(e));
       results.push({ jobId: job.id, ranAt: now, status: 'failed', topResults: [], delta: null, anomalies: [], thresholdMet: false, error: String(e) });
