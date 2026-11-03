@@ -45,14 +45,13 @@ function buildSearchableCorpus(item: RankableDocument): string {
  * Uses a single-escaped regex source so the boundary metacharacters are real.
  */
 function matchesWordBoundary(corpus: string, token: string): boolean {
-  const escaped = token.replace(/[.*+?^${}()|["]/g, '\$&);
-  const pattern = '(?:^|\s)' + escaped + '(?:\s|$)';
+  const escaped = token.replace(/[.*+?^${}()|["]/g, '\\$&);
+  const pattern = '(?:^|\\s)' + escaped + '(?:\\s|$)';
   return new RegExp(pattern).test(corpus);
 }
 
 /**
  * Ranks an array of federated catalog documents against a search query.
- *
  * Scored as:
  *   Composite = Math.min(0.999, (lexicalScore * lexicalBias) + (recencyWeight * recencyBias) + tokenBoost)
  *
