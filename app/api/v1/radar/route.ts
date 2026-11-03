@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   const apiKey = request.headers.get('x-api-key') || '';
   const verification = ApiKeyGateway.verifyAndConsume(apiKey);
 
-  if (!verification.isValid) {
+  if (!verification valid) {
     return NextResponse.json(
       {
         error: verification.error,
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     if (!ALLOWED_CATEGORIES.has(categoryParam)) {
       return NextResponse.json(
         {
-          error: `Invalid category filter: '${categoryParam}'`,
+          error: `Invalid category filter: 'categoryParam'`,
           help: "Category must be one of: 'languages', 'frameworks', 'cloud-infrastructure', 'ai-engineering'.",
         },
         { status: 400, headers: corsHeaders(request) }
