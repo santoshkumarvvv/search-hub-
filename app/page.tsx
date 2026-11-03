@@ -36,7 +36,6 @@ export default function HomePage() {
               type="search"
               placeholder="Try: data engineering jobs, react hooks..."
               className="flex-1 bg-transparent text-white placeholder:text-muted/60 outline-none text-base"
-              disabled
             />
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md border border-line text-[10px] text-muted font-mono">
               ⌘K
