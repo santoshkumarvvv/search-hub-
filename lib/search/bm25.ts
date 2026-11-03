@@ -175,7 +175,7 @@ export class BM25Engine<T extends IndexDocument = IndexDocument> {
     for (const [docId, score] of docScores.entries()) {
       const doc = this.documents.get(docId);
       if (doc) {
-        results.push([
+        results.push({
           document: doc,
           score: Number(score.toFixed(4)),
           matchedTerms: Array.from(matchedTermsMap.get(docId) || []),
