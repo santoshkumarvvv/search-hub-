@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiKeyGateway } from '@/lib/saas/apiKeyGateway';
-import { Job, validateInstruction, canRun, markRun, DeliveryChannel } from '@/lib/agent/scheduler';
+import { Job, validateInstruction, DeliveryChannel } from '@/lib/agent/scheduler';
+import { agentStore } from '@/lib/agent/store';
 import crypto from 'crypto';
-
-// NOTE: In-memory Map is per-instance on Vercel serverless.
-// Jobs persist only within a single warm instance. For durable cross-instance
-// storage, set KV_REST_API_URL and KV_REST_API_TOKEN env vars.
-// TODO: migrate to Vercel KV or Redis for production durability.
-const jobs = new Map<string, Job>();
 
 async function requireUltra(req: NextRequest): Promise<NextResponse | null> {
   const key = req.headers.get('x-api-key') || '';
@@ -60,7 +55,8 @@ export async function POST(req: NextRequest) {
     weekKey: '',
   };
 
-  jobs.set(job.id, job);
+  await agentStore.setJob(job);
+  await agentStore.registerJobId(job.id);
   return NextResponse.json({ job }, { status: 201 });
 }
 
@@ -72,7 +68,8 @@ export async function GET(req: NextRequest) {
   const ver = await ApiKeyGateway.verifyAndConsume(key);
   const userId = ver.record?.id || 'unknown';
 
-  const userJobs = Array.from(jobs.values()).filter((j) => j.userId === userId);
+  const allJobs = await agentStore.getAllJobs();
+  const userJobs = allJobs.filter((j) => j.userId === userId);
   return NextResponse.json({ jobs: userJobs });
 }
 
@@ -82,9 +79,13 @@ export async function DELETE(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const jobId = searchParams.get('id') || '';
-  if (!jobId || !jobs.has(jobId)) {
+  if (!jobId) {
+    return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
+  }
+  const existing = await agentStore.getJob(jobId);
+  if (!existing) {
     return NextResponse.json({ error: 'Job not found' }, { status: 404 });
   }
-  jobs.delete(jobId);
+  await agentStore.deleteJob(jobId);
   return NextResponse.json({ deleted: jobId });
 }
