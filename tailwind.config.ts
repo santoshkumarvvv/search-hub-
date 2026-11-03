@@ -8,17 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink:       '#0d1117',
-        panel:     '#161b22',
-        panel2:    '#1c2333',
-        line:      '#30363d',
-        muted:     '#8b949e',
-        accent:    '#58a6ff',
-        accent2:   '#3fb950',
-        highlight: '#f0883e',
-        pink:      '#db61a2',
-        purple:    '#bc8cff',
-        danger:    '#f85149'
+        ink:       '#0a0a0f',
+        panel:     '#12121a',
+        panel2:    '#1a1a28',
+        line:      '#2a2a3a',
+        muted:     '#8a8a9a',
+        accent:    '#6c5ce7',
+        accent2:   '#00d2a0',
+        highlight: '#f5c542',
+        pink:      '#ff6b6b',
+        purple:    '#6c5ce7',
+        danger:    '#ff6b6b',
+        gold:      '#f5c542'
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif']
@@ -26,7 +27,7 @@ export default {
       animation: {
         'fade-in':  'fadeIn .25s ease',
         'slide-up': 'slideUp .3s ease',
-        'shimmer':  'shimmer 1.5s infinite'
+        'shimmer': 'shimmer 1.5s infinite'
       },
       keyframes: {
         fadeIn:  { from: { opacity: '0' }, to: { opacity: '1' } },

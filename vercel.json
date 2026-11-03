@@ -10,5 +10,11 @@
         { "key": "Referrer-Policy", "value": "no-referrer" }
       ]
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/agent/cron",
+      "schedule": "*/15 * * * *"
+    }
   ]
 }
