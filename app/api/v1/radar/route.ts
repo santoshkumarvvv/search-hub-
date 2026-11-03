@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   const apiKey = request.headers.get('x-api-key') || '';
   const verification = ApiKeyGateway.verifyAndConsume(apiKey);
 
-  if (!verification valid) {
+  if (!verification?.valid) {
     return NextResponse.json(
       {
         error: verification.error,
