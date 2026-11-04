@@ -23,14 +23,14 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary_large_image' },
   referrer: 'no-referrer'
-);
+};
 
 export const viewport: Viewport = {
   themeColor: '#0a0a0f',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover'
-);
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
