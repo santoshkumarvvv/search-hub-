@@ -1,7 +1,17 @@
 import crypto from 'crypto';
-import { promisify } from 'util';
 
-const scryptAsync = promisify(crypto.scrypt);
+function scryptAsync(
+  password: string,
+  salt: Buffer,
+  options: crypto.ScryptOptions & { keylen: number }
+): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    crypto.scrypt(password, salt, options.keylen, options, (err, derivedKey) => {
+      if (err) reject(err);
+      else resolve(derivedKey as Buffer);
+    });
+  });
+}
 
 export type PricingTier = 'free' | 'pro' | 'enterprise';
 
@@ -45,7 +55,7 @@ export class ApiKeyGateway {
    */
   public static async hashKey(rawKey: string, saltHex?: string): Promise<string> {
     const salt = saltHex ? Buffer.from(saltHex, 'hex') : crypto.randomBytes(16);
-    const derivedKey = (await scryptAsync(rawKey, salt, { ...this.SCRYPT_PARAMS, keylen: 64 })) as Buffer;
+    const derivedKey = await scryptAsync(rawKey, salt, { ...this.SCRYPT_PARAMS, keylen: 64 });
     return `scrypt$v1$${salt.toString('hex')}$${derivedKey.toString('hex')}`;
   }
 
@@ -100,7 +110,7 @@ export class ApiKeyGateway {
         const parts = record.keyHash.split("$");
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
-        const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), { ...this.SCRYPT_PARAMS, keylen: 64 })) as Buffer;
+        const computed = await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), { ...this.SCRYPT_PARAMS, keylen: 64 });
         const expected = Buffer.from(expectedDerivedHex, "hex");
 
         if (computed.length === expected.length && crypto.timingSafeEqual(computed, expected)) {
