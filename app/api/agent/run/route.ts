@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     title: a.name,
     category: a.category,
     content: `${a.description} ${a.tags.join(' ')}`,
-    metadata: { link: a.link, rating: a.rating },
+    metadata: { link: a.icon, rating: a.rating },
   })));
 
   const now = Date.now();
