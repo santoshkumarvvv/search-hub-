@@ -115,7 +115,7 @@ export default function HomePage() {
         onLoad={() => {
           const w = window as unknown as { SearchEmbed?: { init: () => void } };
           w.SearchEmbed?.init();
-        }
+        }}
       />
 
       {/* 1. HERO */}
