@@ -9,7 +9,7 @@
     var container = document.querySelector(options.container || '[data-search-embed]');
     if (!container) return;
 
-    var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]);
+    var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]');
     var resultsEl = container.querySelector('[data-search-results]') || container;
     var trigger = container.querySelector('[data-search-trigger]') || container.querySelector("button");
     var indexUrl = options.indexUrl || container.getAttribute('data-index-url') || '/data/index.json';
@@ -23,7 +23,7 @@
     if (trigger) {
       trigger.setAttribute("aria-expanded", "false");
       trigger.setAttribute("aria-controls", resultsEl.id || "search-results-" + Math.random().toString(36).slice(2, 8));
-      if (!resultsEl.id) resultsEl.id = trigger.getAttribute('aria-controls);
+      if (!resultsEl.id) resultsEl.id = trigger.getAttribute('aria-controls');
     }
 
     function setExpanded(state) {
@@ -57,7 +57,7 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;);
+        .replace(/'/g, '&#39;');
     }
 
     function runSearch(query) {

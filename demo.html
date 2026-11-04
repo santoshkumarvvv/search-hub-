@@ -156,7 +156,7 @@ try {
 }
 
 // ── UI ──
-var q = document.getElementById('q'), meta = document.getElementById('meta'), results = document.getElementById('results);
+var q = document.getElementById('q'), meta = document.getElementById('meta'), results = document.getElementById('results');
 function render(hits) {
   if (!hits.length) { results.innerHTML = '<li class="empty">No matches. Try a different term.</li>'; return; }
   results.innerHTML = hits.map(function(h){

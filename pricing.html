@@ -138,7 +138,7 @@
 function pay(plan) {
   alert('Razorpay checkout for ' + plan + ' — keys pending. Email kumasantosh947@gmail.com to get early access.');
 }
-document.querySelectorAll('[href^="#razorpay-"]).forEach(el => {
+document.querySelectorAll('[href^="#razorpay-"]').forEach(el => {
   el.addEventListener('click', e => { e.preventDefault(); pay(el.getAttribute('href').split('-')[1]); });
 });
 </script>
