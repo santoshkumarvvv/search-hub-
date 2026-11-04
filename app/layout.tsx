@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary_large_image' },
   referrer: 'no-referrer'
-};
+);
 
 export const viewport: Viewport = {
   themeColor: '#0a0a0f',

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
   // Header-only authentication — apiKey query param removed (leaks to logs/history)
   const apiKey = request.headers.get('x-api-key') || '';
-  const verification = ApiKeyGateway.verifyAndConsume(apiKey);
+  const verification = await ApiKeyGateway.verifyAndConsume(apiKey);
 
   if (!verification?.valid) {
     return NextResponse.json(
