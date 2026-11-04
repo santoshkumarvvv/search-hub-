@@ -3,136 +3,423 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SearchEmbed — Pricing</title>
-<meta name="description" content="Client-side BM25 search widget. Zero server cost. UPI pricing for India. Compare against Algolia, Meilisearch, Typesense.">
+<title>Pricing · SearchEmbed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0a0a0f; --card:#12121a; --text:#e8e8f0; --muted:#a0a0b8; --accent:#6c5ce7; --green:#00d2a0; --red:#ff6b6b; --border:#2a2a3a; --gold:#f5c542; }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; line-height:1.6; }
-  .container { max-width:1100px; margin:0 auto; padding:40px 20px; }
-  h1 { font-size:2.5rem; text-align:center; margin-bottom:8px; }
-  .subtitle { text-align:center; color:var(--muted); margin-bottom:48px; font-size:1.1rem; }
-  .badge { display:inline-block; background:var(--accent); color:#fff; padding:4px 14px; border-radius:20px; font-size:0.8rem; margin-bottom:16px; }
-  table { width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; margin-bottom:48px; }
-  th, td { padding:16px 20px; text-align:left; border-bottom:1px solid var(--border); }
-  th { background:#1a1a28; color:var(--muted); font-weight:500; font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; }
-  td { font-size:0.95rem; }
-  .highlight { background:rgba(108,92,231,0.08); }
-  .price { font-weight:700; font-size:1.2rem; }
-  .green { color:var(--green); }
-  .red { color:var(--red); }
-  .muted { color:var(--muted); }
-  .plans { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; margin-bottom:48px; }
-  .plan { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:32px; position:relative; }
-  .plan.featured { border-color:var(--accent); box-shadow:0 0 30px rgba(108,92,231,0.15); }
-  .plan.featured::after { content:'MOST POPULAR'; position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:4px 16px; border-radius:20px; font-size:0.7rem; font-weight:700; letter-spacing:1px; }
-  .plan.ultra { border-color:var(--gold); box-shadow:0 0 30px rgba(245,197,66,0.12); }
-  .plan.ultra::after { content:'ULTRA'; position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(90deg,var(--gold),#ff8a00); color:#0a0a0f; padding:4px 16px; border-radius:20px; font-size:0.7rem; font-weight:700; letter-spacing:1px; }
-  .plan h3 { font-size:1.3rem; margin-bottom:8px; }
-  .plan .amount { font-size:2.2rem; font-weight:800; margin:16px 0; }
-  .plan .amount span { font-size:0.9rem; color:var(--muted); font-weight:400; }
-  .plan ul { list-style:none; margin:20px 0; }
-  .plan li { padding:8px 0; padding-left:24px; position:relative; color:var(--muted); font-size:0.9rem; }
-  .plan li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-weight:700; }
-  .plan li.no::before { content:'✗'; color:var(--red); }
-  .btn { display:block; width:100%; padding:14px; border:none; border-radius:12px; font-size:0.95rem; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; transition:transform 0.18s ease, box-shadow 0.18s ease; } .btn:active { transform:scale(0.98) !important; } :focus-visible { outline:2px solid var(--gold); outline-offset:3px; } @media (prefers-reduced-motion:reduce) { *, ::before, ::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; transform:none !important; } }
-  .btn:hover { transform:translateY(-2px); }
-  .btn-primary { background:var(--accent); color:#fff; }
-  .btn-gold { background:linear-gradient(90deg,var(--gold),#ff8a00); color:#0a0a0f; }
-  .btn-secondary { background:transparent; border:1px solid var(--border); color:var(--text); }
-  .faq { max-width:700px; margin:0 auto; }
-  .faq details { background:var(--card); border:1px solid var(--border); border-radius:8px; margin-bottom:12px; padding:16px 20px; }
-  .faq summary { cursor:pointer; font-weight:600; }
-  .faq p { color:var(--muted); margin-top:12px; font-size:0.9rem; }
-  .note { text-align:center; color:var(--muted); font-size:0.85rem; margin-top:32px; }
-  .micro-copy { text-align:center; color:var(--muted); font-size:0.85rem; margin-bottom:32px; }
-  .micro-copy span { color:var(--gold); }
-  @media (max-width:600px) { h1 { font-size:1.8rem; } table { font-size:0.8rem; } th, td { padding:10px 8px; } }
+  :root {
+    --bg: #05060a;
+    --card: #0e1017;
+    --border: rgba(255, 255, 255, 0.05);
+    --border-hover: rgba(255, 255, 255, 0.14);
+    --text: rgba(255, 255, 255, 0.90);
+    --muted: rgba(255, 255, 255, 0.50);
+    --purple: #7c5cff;
+    --gold: #f5c542;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  h1, h2, h3, .brand {
+    font-family: "Syne", system-ui, sans-serif;
+    letter-spacing: -0.03em;
+    color: var(--text);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(5, 6, 10, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    font-size: 1.125rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .nav-links a:hover {
+    color: var(--text);
+  }
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 72px 24px 96px;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+    text-align: center;
+    line-height: 1.08;
+    margin-bottom: 16px;
+  }
+  .hero-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .hero-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 4px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #7c5cff 0%, #b88cff 50%, #f5c542 100%);
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    max-width: 620px;
+    margin: 0 auto 48px;
+    font-size: 1.05rem;
+  }
+  .micro-copy {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 640px;
+    margin: 0 auto 36px;
+  }
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 72px;
+  }
+  .plan {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .plan:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--border-hover);
+    box-shadow: 0 20px 44px -16px rgba(0, 0, 0, 0.8);
+  }
+  .plan.featured {
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+  .plan-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .plan h3 {
+    font-size: 1.35rem;
+  }
+  .badge-recommended {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #05060a;
+    background: linear-gradient(135deg, #7c5cff 0%, #b88cff 50%, #f5c542 100%);
+  }
+  .who-it-fits {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 8px;
+  }
+  .plan .amount {
+    font-family: "Syne", sans-serif;
+    font-size: 2.75rem;
+    font-weight: 800;
+    margin: 20px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .plan .amount span {
+    font-family: "Inter", sans-serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .plan ul {
+    list-style: none;
+    margin: 16px 0 28px;
+  }
+  .plan li {
+    padding: 7px 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .plan li::before {
+    content: "✓ ";
+    color: var(--text);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .plan li.no {
+    opacity: 0.45;
+  }
+  .plan li.no::before {
+    content: "— ";
+    color: var(--muted);
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    padding: 14px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #7c5cff 0%, #b88cff 50%, #f5c542 100%);
+    color: #05060a;
+    font-weight: 700;
+    box-shadow: 0 10px 28px -8px rgba(124, 92, 255, 0.5), 0 4px 12px -4px rgba(245, 197, 66, 0.22);
+  }
+  .btn-secondary {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7);
+  }
+  .btn-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0 72px;
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  th, td {
+    padding: 15px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  td {
+    color: var(--muted);
+  }
+  td.highlight, th.highlight {
+    color: var(--text);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .faq {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .faq details {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 12px;
+    padding: 18px 22px;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .faq p {
+    color: var(--muted);
+    margin-top: 12px;
+    font-size: 0.9rem;
+  }
+  code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.82rem;
+    background: var(--bg);
+    padding: 3px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin-top: 56px;
+  }
+  .note a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+    .plan:hover, .btn:hover { transform: none !important; }
+  }
+  @media (max-width: 640px) {
+    table { font-size: 0.78rem; }
+    th, td { padding: 10px 8px; }
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <div style="text-align:center"><span class="badge">SEARCH EMBED</span></div>
-  <h1>Stop paying for search.</h1>
-  <p class="subtitle">A BM25 search widget that runs entirely in the browser. No server. No cloud bill. No Algolia invoice.</p>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">SearchEmbed</a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="/demo.html">Demo</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/catalog">Catalog</a>
+    </nav>
+  </div>
+</header>
 
-  <h2 style="margin-bottom:16px">Why switch</h2>
+<main class="container">
+  <h1>Stop overpaying for <span class="hero-underline">instant search.</span></h1>
+  <p class="subtitle">Sub-millisecond Okapi BM25 ranking with typo tolerance, scrypt API key gateways, and predictable Rupee billing via UPI.</p>
+
+  <p class="micro-copy">Compared to ₹199/month for autonomous platform agents, indie teams get unlimited widgets and 50,000 hosted API searches for ₹99/month.</p>
+
+  <div class="plans">
+    <div class="plan">
+      <div>
+        <div class="plan-header">
+          <h3>Solo Dev</h3>
+        </div>
+        <p class="who-it-fits">Fits personal sites, portfolios, and technical blogs.</p>
+        <div class="amount">₹19<span>/month</span></div>
+        <ul>
+          <li>1 search widget (&lt;2 KB gzip)</li>
+          <li>Up to 5,000 indexed docs</li>
+          <li>Okapi BM25 + 1-edit typo tolerance</li>
+          <li>Web Worker offloading</li>
+          <li>Email support</li>
+          <li class="no">API key gateway</li>
+          <li class="no">Scheduled search agents</li>
+        </ul>
+      </div>
+      <a class="btn btn-secondary" href="#razorpay-starter">Pay ₹19/mo with UPI</a>
+    </div>
+
+    <div class="plan featured">
+      <div>
+        <div class="plan-header">
+          <h3>Team</h3>
+          <span class="badge-recommended">Most popular for indie devs</span>
+        </div>
+        <p class="who-it-fits">Fits indie SaaS products, documentation hubs, and production web apps.</p>
+        <div class="amount">₹99<span>/month</span></div>
+        <ul>
+          <li>Unlimited widgets &amp; documents</li>
+          <li>50,000 hosted API searches / month</li>
+          <li>Everything in Solo Dev</li>
+          <li>Scrypt API key gateway + rate quotas</li>
+          <li>Custom ranking boosts &amp; exports</li>
+          <li>Priority engineering support</li>
+          <li class="no">Scheduled search agents</li>
+        </ul>
+      </div>
+      <a class="btn btn-primary" href="#razorpay-pro">Choose Team — ₹99/mo</a>
+    </div>
+
+    <div class="plan">
+      <div>
+        <div class="plan-header">
+          <h3>Platform</h3>
+        </div>
+        <p class="who-it-fits">Fits high-volume platforms running autonomous scheduled search agents.</p>
+        <div class="amount">₹199<span>/month</span></div>
+        <ul>
+          <li>500,000 hosted API searches / month</li>
+          <li>Everything in Team</li>
+          <li>Scheduled autonomous agent runs</li>
+          <li>3 runs/day, 15 runs/week</li>
+          <li>Semantic drift &amp; contradiction alerts</li>
+          <li>Dedicated priority routing &amp; SLA</li>
+        </ul>
+      </div>
+      <a class="btn btn-secondary" href="#razorpay-ultra">Choose Platform — ₹199/mo</a>
+    </div>
+  </div>
+
+  <h2 style="margin-bottom:16px">How SearchEmbed compares</h2>
   <table>
     <thead>
-      <tr><th>Feature</th><th>Algolia</th><th>Meilisearch</th><th>Typesense</th><th class="highlight">SearchEmbed</th></tr>
+      <tr><th>Capability</th><th>Algolia</th><th>Meilisearch</th><th>Typesense</th><th class="highlight">SearchEmbed</th></tr>
     </thead>
     <tbody>
-      <tr><td>Server cost</td><td class="red">$50–500/mo</td><td class="red">$30+/mo</td><td class="red">$22+/mo</td><td class="highlight green">₹0 — runs in browser</td></tr>
-      <tr><td>Free tier limit</td><td>10k records</td><td>Self-host only</td><td>1 cluster</td><td class="highlight green">Unlimited (client-side)</td></tr>
-      <tr><td>Setup time</td><td>Days</td><td>Hours</td><td>Hours</td><td class="highlight green">Minutes — one script tag</td></tr>
-      <tr><td>Dependencies</td><td>API client SDK</td><td>Docker + server</td><td>Docker + server</td><td class="highlight green">Zero</td></tr>
-      <tr><td>Data privacy</td><td>Leaves your site</td><td>Leaves your site</td><td>Leaves your site</td><td class="highlight green">Never leaves browser</td></tr>
-      <tr><td>India pricing</td><td class="red">USD only</td><td class="red">USD only</td><td class="red">USD only</td><td class="highlight green">UPI, ₹19–199/mo</td></tr>
-      <tr><td>Latency</td><td>50–150ms network</td><td>20–80ms</td><td>20–80ms</td><td class="highlight green">&lt;5ms (local compute)</td></tr>
+      <tr><td>Base monthly cost</td><td>$50–500/mo</td><td>$30+/mo</td><td>$22+/mo</td><td class="highlight">₹19–₹199/mo</td></tr>
+      <tr><td>Client-side mode</td><td>None</td><td>Server required</td><td>Server required</td><td class="highlight">Included (&lt;2 KB gzip)</td></tr>
+      <tr><td>Setup time</td><td>Days</td><td>Hours</td><td>Hours</td><td class="highlight">60 seconds — one script tag</td></tr>
+      <tr><td>Runtime dependencies</td><td>Heavy SDK</td><td>Docker + cluster</td><td>Docker + cluster</td><td class="highlight">Zero dependencies</td></tr>
+      <tr><td>Query privacy</td><td>Third-party cloud</td><td>Hosted server</td><td>Hosted server</td><td class="highlight">Local or scrypt-vaulted API</td></tr>
+      <tr><td>India billing</td><td>USD card only</td><td>USD card only</td><td>USD card only</td><td class="highlight">UPI &amp; INR native</td></tr>
+      <tr><td>Retrieval latency</td><td>50–150ms network</td><td>20–80ms</td><td>20–80ms</td><td class="highlight">&lt;1ms local / edge BM25</td></tr>
     </tbody>
   </table>
 
-  <h2 style="margin-bottom:16px;text-align:center">Plans</h2>
-  <p class="micro-copy">Ultra में ये अपने आप आ जाता है — <span>scheduled search, no re-typing</span>.</p>
-  <div class="plans">
-    <div class="plan">
-      <h3>Starter</h3>
-      <p class="muted">For personal sites &amp; blogs</p>
-      <div class="amount">₹19<span>/month</span></div>
-      <ul>
-        <li>1 search widget</li>
-        <li>Up to 5,000 indexed docs</li>
-        <li>BM25 + fuzzy matching</li>
-        <li>Web worker offloading</li>
-        <li>Email support</li>
-        <li class="no">API key gateway</li>
-        <li class="no">Agent mode</li>
-      </ul>
-      <a class="btn btn-secondary" href="#razorpay-starter">Pay with UPI</a>
-    </div>
-    <div class="plan featured">
-      <h3>Pro</h3>
-      <p class="muted">For dev tools &amp; SaaS</p>
-      <div class="amount">₹99<span>/month</span></div>
-      <ul>
-        <li>Unlimited widgets</li>
-        <li>Unlimited documents</li>
-        <li>Everything in Starter</li>
-        <li>API key gateway + quotas</li>
-        <li>Priority support</li>
-        <li>Custom ranking boosts</li>
-        <li>Filters &amp; exports</li>
-        <li class="no">Agent mode</li>
-      </ul>
-      <a class="btn btn-primary" href="#razorpay-pro">Pay with UPI</a>
-    </div>
-    <div class="plan ultra">
-      <h3>Ultra</h3>
-      <p class="muted">For teams that want search on autopilot</p>
-      <div class="amount">₹199<span>/month</span></div>
-      <ul>
-        <li>Everything in Pro</li>
-        <li>Agent mode — scheduled searches</li>
-        <li>Morning job digests &amp; news roundups</li>
-        <li>3 runs/day, 20 runs/week</li>
-        <li>Run history &amp; failure alerts</li>
-        <li>SLA + dedicated support</li>
-      </ul>
-      <a class="btn btn-gold" href="#razorpay-ultra">Pay with UPI</a>
-    </div>
+  <div class="faq">
+    <h2 style="margin-bottom:20px">Frequently asked questions</h2>
+    <details><summary>Does client-side mode really need no server?</summary><p>Yes. In client-side mode, Okapi BM25 ranking, tokenization, and typo tolerance run inside the visitor's browser or Web Worker against a static JSON index. Hosted API keys on Team and Platform add server-side rate limiting and multi-origin search.</p></details>
+    <details><summary>How do I embed it?</summary><p>One script tag: <code>&lt;script src="https://santoshkumarvvv.github.io/embed.js"&gt;&lt;/script&gt;</code> plus a container div with <code>data-search-embed</code>. Full documentation is in the repository README.</p></details>
+    <details><summary>Can I cancel anytime?</summary><p>Yes. UPI AutoPay or monthly payment — cancel from the dashboard at any time with zero lock-in.</p></details>
+    <details><summary>Is my search data private?</summary><p>With client-side mode, search queries never leave the browser. With the hosted API gateway, keys are hashed using scrypt (N=16384, r=8, p=1) and verified in constant time.</p></details>
+    <details><summary>What does Platform's autonomous agent mode do?</summary><p>You define a recurring search objective — such as monitoring high-signal records every morning — and the agent executes on schedule, detects semantic drift or anomalies, and exports clean JSON/CSV digests.</p></details>
   </div>
 
-  <div class="faq">
-    <h2 style="margin-bottom:16px">FAQ</h2>
-    <details><summary>Does it really need no server?</summary><p>The search engine (BM25 ranking, indexing, fuzzy matching) runs in a Web Worker inside the visitor's browser. Your site just serves a static JSON index file. The only server-side piece is optional API key management for the Pro/Ultra tiers.</p></details>
-    <details><summary>How do I embed it?</summary><p>One script tag. <code>&lt;script src="https://santoshkumarvvv.github.io/embed.js"&gt;&lt;script&gt;</code> plus a container div. Full docs in the README.</p></details>
-    <details><summary>Can I cancel anytime?</summary><p>Yes. UPI AutoPay or monthly card — cancel from the Razorpay dashboard, no questions asked. No lock-in.</p></details>
-    <details><summary>Is my search data private?</summary><p>With the free/client-side mode, search queries never leave the browser. No third party sees what your users search.</p></details>
-    <details><summary>What does Ultra's agent mode do?</summary><p>You write one instruction — like "every morning at 8am send me the top 3 data engineering jobs" — and the system runs it on schedule and delivers results without you re-searching. Up to 3 runs per day, 20 per week.</p></details>
-  </div>
-  <p class="note">Built by Santosh Kumar · <a href="https://santoshkumarvvv.github.io" style="color:var(--accent)">santoshkumarvvv.github.io</a> · Open source core on GitHub</p>
-</div>
-<div id="checkout-status" role="status" aria-live="polite" style="display:none;max-width:560px;margin:20px auto 0;padding:14px 18px;border-radius:8px;background:#13131d;border:1px solid #f5c542;color:#e8e8f0;text-align:center;font-size:0.9rem"></div>
+  <p class="note">SearchEmbed · <a href="https://github.com/santoshkumarvvv/search-hub-">GitHub Repository</a> · <a href="mailto:kumasantosh947@gmail.com">kumasantosh947@gmail.com</a></p>
+</main>
+
+<div id="checkout-status" role="status" aria-live="polite" style="display:none;max-width:560px;margin:0 auto 48px;padding:16px 20px;border-radius:12px;background:#0e1017;border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.9);text-align:center;font-size:0.9rem"></div>
 <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
 <script>
 // Razorpay Standard Checkout — Starter: ₹19 (1900 paise) | Pro: ₹99 (9900 paise) | Ultra: ₹199 (19900 paise)

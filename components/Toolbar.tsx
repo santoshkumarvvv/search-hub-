@@ -16,59 +16,107 @@ interface ToolbarProps {
   onSort: (s: SortKey) => void;
 }
 
-export default function Toolbar({ q, category, genre, sort, genres, count, loading, onQ, onCategory, onGenre, onSort }: ToolbarProps) {
+export default function Toolbar({
+  q,
+  category,
+  genre,
+  sort,
+  genres,
+  count,
+  loading,
+  onQ,
+  onCategory,
+  onGenre,
+  onSort,
+}: ToolbarProps) {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-md">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-extrabold text-white">Search Hub</h1>
-          <span className="text-xs text-muted">{count} apps{loading ? ' …' : ''}</span>
+    <section aria-label="Catalog search and filters" className="border-b border-white/5 bg-ink">
+      <div className="mx-auto max-w-[1120px] px-4 pt-10 pb-8 sm:px-6">
+        <div className="mb-6 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+          <div>
+            <h1 className="font-display text-2xl font-extrabold text-white/90 sm:text-4xl">
+              Indexed Catalog
+            </h1>
+            <p className="mt-1.5 text-sm text-white/50">
+              Client-side Web Worker BM25 index · {count} records matched{loading ? ' · indexing…' : ''}
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+        {/* Prominent search input */}
+        <div className="flex items-center gap-3.5 rounded-2xl border border-white/5 bg-panel px-4 py-4 focus-within:border-white/20">
+          <svg
+            className="h-5 w-5 shrink-0 text-white/50"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.75}
+              d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"
+            />
+          </svg>
           <input
             type="search"
             value={q}
             onChange={(e) => onQ(e.target.value)}
-            placeholder="Search apps, games, tools…"
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-muted focus:border-white/30 focus:outline-none sm:max-w-xs"
+            aria-label="Search catalog apps, games, and developer tools"
+            placeholder="Search indexed records (try: termux, wireguard, fdroid,vlc, k9)..."
+            className="w-full bg-transparent text-sm text-white/90 placeholder:text-white/50 focus:outline-none sm:text-base"
           />
+        </div>
 
-          <div className="flex flex-wrap gap-2">
+        {/* Filter bar */}
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-white/5 bg-panel p-1">
             {(['all', 'game', 'app', 'tool'] as const).map((c) => (
               <button
                 key={c}
+                type="button"
                 onClick={() => onCategory(c)}
-                className={`rounded-full px-3 py-1 text-xs font-semibold capitalize transition ${category === c ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+                  category === c
+                    ? 'bg-white/10 text-white/90'
+                    : 'text-white/50 hover:text-white/90'
+                }`}
               >
-                {c === 'all' ? 'All' : c === 'game' ? '🎮 Games' : c === 'app' ? '📱 Apps' : '🔧 Tools'}
+                {c === 'all' ? 'All' : c === 'game' ? 'Games' : c === 'app' ? 'Apps' : 'Tools'}
               </button>
             ))}
           </div>
 
-          <select
-            value={genre}
-            onChange={(e) => onGenre(e.target.value)}
-            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white focus:outline-none"
-          >
-            <option value="all">All genres</option>
-            {genres.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <select
+              aria-label="Filter by genre"
+              value={genre}
+              onChange={(e) => onGenre(e.target.value)}
+              className="rounded-xl border border-white/5 bg-panel px-3 py-2 text-xs text-white/90 focus:outline-none"
+            >
+              <option value="all">All genres</option>
+              {genres.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
 
-          <select
-            value={sort}
-            onChange={(e) => onSort(e.target.value as SortKey)}
-            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-white focus:outline-none"
-          >
-            <option value="popular">Popular</option>
-            <option value="rating">Rating</option>
-            <option value="newest">Newest</option>
-            <option value="name">Name</option>
-          </select>
+            <select
+              aria-label="Sort catalog"
+              value={sort}
+              onChange={(e) => onSort(e.target.value as SortKey)}
+              className="rounded-xl border border-white/5 bg-panel px-3 py-2 text-xs text-white/90 focus:outline-none"
+            >
+              <option value="popular">Sort: Popular</option>
+              <option value="rating">Sort: Rating</option>
+              <option value="newest">Sort: Featured</option>
+              <option value="name">Sort: Name</option>
+            </select>
+          </div>
         </div>
       </div>
-    </header>
+    </section>
   );
 }

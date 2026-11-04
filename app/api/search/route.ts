@@ -13,6 +13,9 @@ searchEngine.addDocuments(CATALOG_CORPUS);
 /** Exact hostname allowlist — never use includes/endsWith on the raw Origin string (CWE-20). */
 const ALLOWED_HOSTNAMES = new Set([
   'santoshkumarvvv.github.io',
+  'search-hub-live.vercel.app',
+  'search-hub-27mv.vercel.app',
+  'search-hub-hcyu.vercel.app',
   'localhost',
   '127.0.0.1',
 ]);

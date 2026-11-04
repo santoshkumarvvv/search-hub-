@@ -141,7 +141,8 @@ export default function Browser() {
     if (genre !== 'all') sp.set('genre', genre);
     if (sort !== 'popular') sp.set('sort', sort);
     const qs = sp.toString();
-    const url = qs ? `/?${qs}` : '/';
+    const basePath = window.location.pathname || '/catalog';
+    const url = qs ? `${basePath}?${qs}` : basePath;
     window.history.replaceState(null, '', url);
   }, [q, category, genre, sort, mounted]);
 
@@ -212,7 +213,7 @@ export default function Browser() {
         onSort={setSort}
       />
 
-      <main id="grid" className="mx-auto max-w-[1400px] px-4 py-5">
+      <main id="main" className="mx-auto max-w-[1120px] px-4 py-10 sm:px-6 animate-fade-in">
         {q ? (
           <div className="mb-4">
             <h2 className="text-lg font-extrabold text-white">
@@ -225,10 +226,10 @@ export default function Browser() {
         ) : (
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-extrabold text-white">
-              {category === 'all' && '🔥 Trending & Popular'}
-              {category === 'game' && '🎮 Games'}
-              {category === 'app' && '📱 Apps'}
-              {category === 'tool' && '🔧 Tools'}
+              {category === 'all' && 'All Indexed Records'}
+              {category === 'game' && 'Games'}
+              {category === 'app' && 'Applications'}
+              {category === 'tool' && 'Developer & System Tools'}
             </h2>
           </div>
         )}
@@ -243,7 +244,7 @@ export default function Browser() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((it) => (
             <Card key={it.uid} item={it} />
           ))}

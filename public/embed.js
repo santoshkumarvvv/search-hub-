@@ -55,7 +55,7 @@
 
     function render(results, latencyMs, sourceLabel) {
       if (!results || !results.length) {
-        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:#a0a0b8;padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecrft", "scrypt", or "wireguard".</div>';
+        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:rgba(255,255,255,0.5);padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecrft", "scrypt", or "wireguard".</div>';
         setStatus('0 results');
         setExpanded(true);
         return;
@@ -71,12 +71,12 @@
         var url = r.url || '';
         var score = typeof r.score === 'number' ? r.score.toFixed(2) : '';
         var titleHtml = url
-          ? '<a href="' + escapeHtml(url) + '" style="color:#ffffff;text-decoration:none;font-weight:700">' + escapeHtml(title) + '</a>'
-          : '<span style="color:#ffffff;font-weight:700">' + escapeHtml(title) + '</span>';
+          ? '<a href="' + escapeHtml(url) + '" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600">' + escapeHtml(title) + '</a>'
+          : '<span style="color:rgba(255,255,255,0.9);font-weight:600">' + escapeHtml(title) + '</span>';
         var scoreHtml = score
-          ? '<span style="font-family:monospace;font-size:0.75rem;color:#00d2a0;font-weight:600">BM25 ' + escapeHtml(score) + '</span>'
+          ? '<span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:500">BM25 ' + escapeHtml(score) + '</span>'
           : '';
-        html += '<li role="option" style="padding:14px 16px;border:1px solid #262638;border-radius:12px;background:#0e0e16;transition:transform 0.15s ease"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">' + titleHtml + scoreHtml + '</div><div style="color:#a0a0b8;font-size:0.85rem;margin-top:4px;line-height:1.45">' + escapeHtml(desc) + '</div></li>';
+        html += '<li role="option" style="padding:14px 18px;border:1px solid rgba(255,255,255,0.05);border-radius:12px;background:#05060a;transition:border-color 0.15s ease"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">' + titleHtml + scoreHtml + '</div><div style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
       }
       html += '</ul>';
       resultsEl.innerHTML = html;
