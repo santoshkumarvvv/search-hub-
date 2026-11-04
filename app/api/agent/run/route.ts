@@ -4,7 +4,7 @@ import { Job, RunResult, canRun, markRun, validateInstruction } from '@/lib/agen
 import { buildPolarityLexicon, scoreDocumentPolarity, detectContradiction } from '@/lib/agent/polarity';
 import { buildSketch, detectDrift, Sketch } from '@/lib/agent/drift';
 import { detectAllAnomalies, RunRecord } from '@/lib/agent/anomaly';
-import { apps } from '@/lib/apps';
+import { APPS } from '@/lib/apps';
 import { agentStore } from '@/lib/agent/store';
 
 export async function POST(req: NextRequest) {
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
   }
 
   const engine = new BM25Engine<IndexDocument>(1.2, 0.75);
-  engine.addDocuments(apps.map((a) => ({
-    id: a.id,
+  engine.addDocuments(APPS.map((a) => ({
+    id: a.uid,
     title: a.name,
     category: a.category,
     content: `${a.description} ${a.tags.join(' ')}`,
