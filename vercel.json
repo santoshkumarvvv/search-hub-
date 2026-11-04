@@ -14,7 +14,8 @@
   "crons": [
     {
       "path": "/api/agent/cron",
-      "schedule": "*/15 * * * *"
+              "schedule": "0 0 * * *"
+
     }
   ]
 }
