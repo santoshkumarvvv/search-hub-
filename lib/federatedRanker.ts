@@ -45,7 +45,7 @@ function buildSearchableCorpus(item: RankableDocument): string {
  * Uses a single-escaped regex source so the boundary metacharacters are real.
  */
 function matchesWordBoundary(corpus: string, token: string): boolean {
-  const escaped = token.replace(/[.*+?^${}()|["]/g, '\$&');
+  const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const pattern = '(?:^|\\s)' + escaped + '(?:\\s|$)';
   return new RegExp(pattern).test(corpus);
 }
@@ -61,7 +61,7 @@ function matchesWordBoundary(corpus: string, token: string): boolean {
  * @returns Sorted array of RankedHit objects in descending compositeScore order.
  */
 export function rankFederatedCatalog<T extends RankableDocument>(
-  catalog: ReadOnlyArray<T>,
+  catalog: ReadonlyArray<T>,
   rawQuery: string,
   lexicalBias: number = 0.78
 ): RankedHit<T>[] {
