@@ -4,6 +4,15 @@
 
 :root {
   color-scheme: dark;
+  --bg: #0a0a0f;
+  --panel: #12121a;
+  --panel-elevated: #181824;
+  --line: #262638;
+  --text: #f2f2f8;
+  --muted: #a0a0b8;
+  --purple: #7c5cff;
+  --gold: #f5c542;
+  --green: #00d2a0;
 }
 
 html,
@@ -15,25 +24,66 @@ body {
 
 html {
   background:
-    radial-gradient(1200px 600px at 50% -10%, #1b2236 0%, transparent 60%),
-    linear-gradient(160deg, #0a0a0f 0%, #12121a 55%, #1a1a2e 100%);
+    radial-gradient(1100px 540px at 50% -8%, rgba(124, 92, 255, 0.16) 0%, rgba(245, 197, 66, 0.05) 42%, transparent 70%),
+    linear-gradient(180deg, #0a0a0f 0%, #0e0e16 55%, #12121c 100%);
   background-attachment: fixed;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
 
 body {
-  color: #e8e8f0;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Keyboard focus stays visible everywhere. */
+h1, h2, h3, .font-display {
+  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Unified Button System */
+@layer components {
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200 select-none;
+    transform: translateY(0) scale(1);
+  }
+  .btn-base:hover {
+    transform: translateY(-2px);
+  }
+  .btn-base:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .btn-primary {
+    @apply btn-base text-ink font-bold;
+    background: linear-gradient(135deg, #7c5cff 0%, #b88cff 48%, #f5c542 100%);
+    box-shadow: 0 10px 28px -8px rgba(124, 92, 255, 0.55), 0 4px 12px -4px rgba(245, 197, 66, 0.25);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 14px 34px -6px rgba(124, 92, 255, 0.7), 0 6px 16px -4px rgba(245, 197, 66, 0.35);
+  }
+  .btn-secondary {
+    @apply btn-base border border-line bg-panel/80 text-white/90 hover:border-purple/70 hover:bg-panel2 hover:text-white;
+    box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+  }
+  .card-surface {
+    @apply rounded-2xl border border-line bg-panel/90 transition-all duration-200;
+    transform: scale(1);
+  }
+  .card-surface:hover {
+    transform: scale(1.02);
+    border-color: rgba(124, 92, 255, 0.45);
+    box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.65), 0 0 24px -8px rgba(124, 92, 255, 0.2);
+  }
+}
+
+/* Keyboard focus stays visible everywhere (WCAG AA). */
 :focus-visible {
-  outline: 2px solid #6c5ce7;
-  outline-offset: 2px;
-  border-radius: 6px;
+  outline: 2px solid #f5c542;
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 .sr-only {
@@ -53,11 +103,11 @@ body {
   left: -9999px;
   top: 0;
   z-index: 999;
-  background: #00d2a0;
+  background: #f5c542;
   color: #0a0a0f;
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-weight: 700;
-  border-radius: 0 0 8px 0;
+  border-radius: 0 0 10px 0;
   text-decoration: none;
 }
 .skip-link:focus {
@@ -72,15 +122,15 @@ body {
   background: #0a0a0f;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3a;
+  background: #262638;
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #6c5ce7;
+  background: #7c5cff;
 }
 
 input[type='search']::-webkit-search-cancel-button {
-  filter: invert(0.6);
+  filter: invert(0.75);
   cursor: pointer;
 }
 
@@ -92,5 +142,10 @@ input[type='search']::-webkit-search-cancel-button {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .card-surface:hover,
+  .btn-base:hover,
+  .btn-base:active {
+    transform: none !important;
   }
 }

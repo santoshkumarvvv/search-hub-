@@ -6,7 +6,7 @@
 <title>SearchEmbed — Pricing</title>
 <meta name="description" content="Client-side BM25 search widget. Zero server cost. UPI pricing for India. Compare against Algolia, Meilisearch, Typesense.">
 <style>
-  :root { --bg:#0a0a0f; --card:#12121a; --text:#e8e8f0; --muted:#8a8a9a; --accent:#6c5ce7; --green:#00d2a0; --red:#ff6b6b; --border:#2a2a3a; --gold:#f5c542; }
+  :root { --bg:#0a0a0f; --card:#12121a; --text:#e8e8f0; --muted:#a0a0b8; --accent:#6c5ce7; --green:#00d2a0; --red:#ff6b6b; --border:#2a2a3a; --gold:#f5c542; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; line-height:1.6; }
   .container { max-width:1100px; margin:0 auto; padding:40px 20px; }
@@ -35,7 +35,7 @@
   .plan li { padding:8px 0; padding-left:24px; position:relative; color:var(--muted); font-size:0.9rem; }
   .plan li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-weight:700; }
   .plan li.no::before { content:'✗'; color:var(--red); }
-  .btn { display:block; width:100%; padding:14px; border:none; border-radius:8px; font-size:1rem; font-weight:600; cursor:pointer; text-align:center; text-decoration:none; transition:transform 0.15s; }
+  .btn { display:block; width:100%; padding:14px; border:none; border-radius:12px; font-size:0.95rem; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; transition:transform 0.18s ease, box-shadow 0.18s ease; } .btn:active { transform:scale(0.98) !important; } :focus-visible { outline:2px solid var(--gold); outline-offset:3px; } @media (prefers-reduced-motion:reduce) { *, ::before, ::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; transform:none !important; } }
   .btn:hover { transform:translateY(-2px); }
   .btn-primary { background:var(--accent); color:#fff; }
   .btn-gold { background:linear-gradient(90deg,var(--gold),#ff8a00); color:#0a0a0f; }
