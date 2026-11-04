@@ -3,15 +3,13 @@
 import { useEffect } from 'react';
 import Script from 'next/script';
 
-const DEMO_KEY = 'sh_live_homepagedemo0001_0123456789abcdef0123456789abcdef';
-
 const FEATURES = [
   {
     title: 'BM25 ranking',
     sentence: 'Scores every document by term saturation and length normalization so the best answer always ranks first.',
     icon: (
       <svg className="h-5 w-5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+        <path strokeWidth={2} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
       </svg>
     ),
   },
@@ -20,7 +18,7 @@ const FEATURES = [
     sentence: 'Recovers misspelled queries automatically with single-edit Levenshtein matching across Latin and Devanagari text.',
     icon: (
       <svg className="h-5 w-5 text-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <path strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
     ),
   },
@@ -29,7 +27,7 @@ const FEATURES = [
     sentence: 'Verifies scrypt-hashed API keys in O(1) time with built-in per-minute rate limits for Starter, Pro, and Ultra plans.',
     icon: (
       <svg className="h-5 w-5 text-accent2" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        <path strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
       </svg>
     ),
   },
@@ -117,10 +115,10 @@ export default function HomePage() {
         onLoad={() => {
           const w = window as unknown as { SearchEmbed?: { init: () => void } };
           w.SearchEmbed?.init();
-        }}
+        }
       />
 
-      {/* 1. HERO (Max 8 words headline, 1 line subheadline, 1 primary + 1 ghost CTA) */}
+      {/* 1. HERO */}
       <section className="mx-auto max-w-[1120px] px-4 pt-16 pb-12 sm:px-6 sm:pt-24 sm:pb-16 text-center">
         <h1 className="font-display mx-auto max-w-4xl text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl">
           Search that just works.{' '}
@@ -143,18 +141,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. WOW MOMENT: LIVE MINI SEARCH BOX POWERED BY public/embed.js + /api/search */}
+      {/* 2. LIVE MINI SEARCH BOX — local index, no API key exposed */}
       <section aria-label="Live BM25 Search Sandbox" className="mx-auto max-w-[920px] px-4 pb-16 sm:px-6">
         <div
           data-search-embed
-          data-api-url="/api/search"
-          data-api-key={DEMO_KEY}
           data-index-url="/data/index.json"
           className="rounded-2xl border border-line bg-panel/95 p-5 sm:p-7 shadow-2xl"
         >
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <span className="font-mono text-xs font-semibold uppercase tracking-wider text-gold">
-              Live Widget · Powered by /embed.js &amp; /api/search
+              Live Widget · Powered by /embed.js
             </span>
             <span
               data-search-status
@@ -167,7 +163,7 @@ export default function HomePage() {
 
           <div className="flex items-center gap-3 rounded-xl border border-line bg-ink px-4 py-3.5 focus-within:border-purple">
             <svg className="h-5 w-5 text-muted shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+              <path strokeWidth={2} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
             </svg>
             <input
               data-search-input
@@ -201,7 +197,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. THREE FEATURE CARDS (Icon + 1 sentence each, equal height, hover lift) */}
+      {/* 3. THREE FEATURE CARDS */}
       <section id="features" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {FEATURES.map((f) => (
@@ -218,7 +214,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. SIMPLE THREE-STEP FLOW: Search -> Get results -> Embed anywhere */}
+      {/* 4. THREE-STEP FLOW */}
       <section className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6">
         <div className="mb-8 text-center">
           <h2 className="font-display text-2xl font-bold text-white sm:text-3xl">
@@ -239,7 +235,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. PRICING TEASER (Three plans in Rupees) */}
+      {/* 5. PRICING TEASER */}
       <section id="pricing" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6">
         <div className="mb-10 text-center">
           <h2 className="font-display text-2xl font-bold text-white sm:text-4xl">
@@ -254,9 +250,7 @@ export default function HomePage() {
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${
-                plan.featured ? 'border-purple/80 bg-gradient-to-b from-panel2/95 to-panel' : ''
-              }`}
+              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${plan.featured ? 'border-purple/80 bg-gradient-to-b from-panel2/95 to-panel' : ''}`}
             >
               <div>
                 <div className="flex items-center justify-between">
@@ -276,9 +270,7 @@ export default function HomePage() {
                 <ul className="mt-6 space-y-2.5 text-xs sm:text-sm text-muted">
                   {plan.features.map((feat) => (
                     <li key={feat} className="flex items-start gap-2.5">
-                      <span className="text-accent2 font-bold" aria-hidden="true">
-                        ✓
-                      </span>
+                      <span className="text-accent2 font-bold" aria-hidden="true">✓</span>
                       <span>{feat}</span>
                     </li>
                   ))}
