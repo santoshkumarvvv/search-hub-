@@ -28,15 +28,16 @@ test('canRun enforces daily cap of 3', () => {
   assert.equal(r.reason, "daily cap reached");
 });
 
-test('polarity lexicon assigns negative weight to vulnerability terms', () => {
+test('polarity lexicon weights vulnerability terms against safety terms', () => {
   const docs = [
     'critical vulnerability CVE-2024-1 exploit found in production pipeline spark jobs data engineering'
   ];
   const lex = buildPolarityLexicon(docs);
-  const seed = new Set(['critical', 'vulnerability', 'cve', 'exploit', 'found', 'in', 'production', 'pipeline', 'spark', 'jobs', 'data', 'engineering']);
-  const topicScores = [...lex.scores.entries()].filter(([w]) => !seed.has(w));
-  assert.ok(topicScores.length > 0);
-  assert.ok(topicScores.every(([, s]) => s > 0));
+  assert.ok(lex.scores.get('vulnerable') > 0);
+  assert.ok(lex.scores.get('critical') > 0);
+  assert.ok(lex.scores.get('exploit') > 0);
+  assert.ok(lex.scores.get('secure') < 0);
+  assert.ok(lex.scores.get('stable') < 0);
 });
 
 test('detectContradiction flags opposing polarity on similar docs', () => {

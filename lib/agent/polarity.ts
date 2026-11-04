@@ -6,6 +6,17 @@ const POSITIVE_SEEDS = ['guarantee', 'throughput', 'optimized', 'production-read
 const NEGATIVE_SEEDS_HI = ['चेतावनी', 'कमजोरी', 'जोखिम', 'त्रुटि', 'विफलता', 'हमला', 'खतरा', 'टूटा', 'गंभीर', 'रिसाव', 'एक्सपोजर', 'दोष', 'कमजोर', 'अस्थिर'];
 const POSITIVE_SEEDS_HI = ['सुधार', 'सुरक्षित', 'तेज़', 'स्थिर', 'विश्वसनीय', 'ऑप्टिमाइज़्ड', 'प्रोडक्शन', 'हल', 'बेहतर', 'मज़बूत', 'प्रभावशाली', 'सत्यापित'];
 
+const ALL_SEEDS = new Set([
+  ...NEGATIVE_SEEDS,
+  ...POSITIVE_SEEDS,
+  ...NEGATIVE_SEEDS_HI,
+  ...POSITIVE_SEEDS_HI,
+]);
+
+function topicTokens(text: string): string[] {
+  return tokenize(text).filter((t) => !ALL_SEEDS.has(t));
+}
+
 const MIN_COOCCURRENCE = 5;
 const PMI_FLOOR = 0;
 
@@ -105,8 +116,8 @@ export function detectContradiction(
   cosineThreshold = 0.8,
   polarityThreshold = 1.5
 ): { isContradiction: boolean; scoreA: number; scoreB: number; cosine: number } {
-  const tokensA = new Set(tokenize(docA));
-  const tokensB = new Set(tokenize(docB));
+  const tokensA = new Set(topicTokens(docA));
+  const tokensB = new Set(topicTokens(docB));
   const union = new Set([...tokensA, ...tokensB]);
   let dot = 0;
   let normA = 0;

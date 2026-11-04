@@ -32,8 +32,9 @@ export function detectTimeAnomaly(history: RunRecord[], currentHour: number): An
   const hours = history.map((r) => r.hourOfDay);
   const m = mean(hours);
   const sd = stdDev(hours);
-  if (sd === 0) return null;
-  const z = Math.abs(currentHour - m) / sd;
+  if (sd === 0 && currentHour === m) return null;
+  const effectiveSd = sd === 0 ? 1 : sd;
+  const z = Math.abs(currentHour - m) / effectiveSd;
   if (z > 2) {
     const severity: Severity = z > 3 ? 'high' : z > 2.5 ? 'medium' : 'low';
     return {
