@@ -2,6 +2,7 @@
   "name": "search-hub-engine",
   "version": "2.4.0",
   "private": true,
+  "type": "module",
   "description": "High-speed federated query router and universal developer search hub built with TypeScript, Next.js 14, and Tailwind CSS.",
   "scripts": {
     "dev": "next dev",
