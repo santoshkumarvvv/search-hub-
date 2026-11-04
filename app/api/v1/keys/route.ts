@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { rawKey, record } = ApiKeyGateway.generateKey(rawName, rawTier);
+    const { rawKey, record } = await ApiKeyGateway.generateKey(rawName, rawTier);
 
     return NextResponse.json(
       {
