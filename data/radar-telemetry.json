@@ -1,8 +1,14 @@
 {
   "status": "synchronized",
-  "lastCycle": "2026-11-03T00:39:13.388744Z",
+  "lastCycle": "2026-11-04T05:10:35.338343Z",
   "engine": "Santosh Tech Radar Daemon v2.5",
-  "trackedRepositories": [],
-  "marketVelocityMean": null,
-  "note": "Live GitHub API aggregation active. Seed reset to match autonomous-radar-daemon.yml output type (array of full_names)."
+  "trackedRepositories": [
+    "Dicklesworthstone/frankensearch",
+    "Blackcat-Informatics/purrdf",
+    "xerj-org/xerj",
+    "ravelroot/Inverted-Index-Search-Engine",
+    "yaqyn/cinesearch-rag-engine"
+  ],
+  "marketVelocityMean": 3822.2,
+  "note": "Live GitHub API aggregation active."
 }
