@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
   }
 
   const searchParams = request.nextUrl.searchParams;
-  const categoryParam = searchParams.get('category);
-  const limitParam = searchParams.get('limit);
+  const categoryParam = searchParams.get('category');
+  const limitParam = searchParams.get('limit');
 
   let filtered: TechRadarItem[] = [...GLOBAL_TECH_RADAR];
 
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     if (!ALLOWED_CATEGORIES.has(categoryParam)) {
       return NextResponse.json(
         {
-          error: `Invalid category filter: 'categoryParam'`,
+          error: `Invalid category filter: '${categoryParam}'`,
           help: "Category must be one of: 'languages', 'frameworks', 'cloud-infrastructure', 'ai-engineering'.",
         },
         { status: 400, headers: corsHeaders(request) }
