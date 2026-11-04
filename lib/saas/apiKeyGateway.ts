@@ -45,7 +45,7 @@ export class ApiKeyGateway {
    */
   public static async hashKey(rawKey: string, saltHex?: string): Promise<string> {
     const salt = saltHex ? Buffer.from(saltHex, 'hex') : crypto.randomBytes(16);
-    const derivedKey = (await scryptAsync(rawKey, salt, 64, this.SCRYPT_PARAMS)) as Buffer;
+    const derivedKey = (await scryptAsync(rawKey, salt, { ...this.SCRYPT_PARAMS, keylen: 64 })) as Buffer;
     return `scrypt$v1$${salt.toString('hex')}$${derivedKey.toString('hex')}`;
   }
 
@@ -100,7 +100,7 @@ export class ApiKeyGateway {
         const parts = record.keyHash.split("$");
         const saltHex = parts[2];
         const expectedDerivedHex = parts[3];
-        const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), 64, this.SCRYPT_PARAMS)) as Buffer;
+        const computed = (await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), { ...this.SCRYPT_PARAMS, keylen: 64 })) as Buffer;
         const expected = Buffer.from(expectedDerivedHex, "hex");
 
         if (computed.length === expected.length && crypto.timingSafeEqual(computed, expected)) {
