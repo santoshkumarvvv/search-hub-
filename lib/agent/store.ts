@@ -1,21 +1,40 @@
-import { Job } from './scheduler';
-import { Sketch } from './drift';
-import { RunRecord } from './anomaly';
+import type { Job } from './scheduler';
+import type { Sketch } from './drift';
+import type { RunRecord } from './anomaly';
 
 /**
- * Shared agent store. Uses Vercel KV when KV_REST_API_URL + KV_REST_API_TOKEN
+ * Shared agent & billing store. Uses Vercel KV when KV_REST_API_URL + KV_REST_API_TOKEN
  * are set; falls back to in-memory Maps for local dev.
- * All three agent routes (create, run, cron) import from here so cron and
- * run see the same jobs on any warm instance.
  */
 
 const KV_URL = process.env.KV_REST_API_URL || '';
 const KV_TOKEN = process.env.KV_REST_API_TOKEN || '';
 const USE_KV = KV_URL.length > 0 && KV_TOKEN.length > 0;
 
+export interface SubscriptionRecord {
+  paymentId: string;
+  plan: string;
+  tier: 'free' | 'pro' | 'enterprise';
+  email: string;
+  keyId: string;
+  createdAt: string;
+}
+
+export interface OneTimeKeyClaim {
+  claimToken: string;
+  paymentId: string;
+  apiKey: string;
+  tier: 'free' | 'pro' | 'enterprise';
+  plan: string;
+  email: string;
+  createdAt: string;
+}
+
 const memJobs = new Map<string, Job>();
 const memSnapshots = new Map<string, Sketch>();
 const memHistories = new Map<string, RunRecord[]>();
+const memSubscriptions = new Map<string, SubscriptionRecord>();
+const memClaims = new Map<string, OneTimeKeyClaim>();
 
 async function kvGet<T>(key: string): Promise<T | null> {
   if (!USE_KV) return null;
@@ -71,6 +90,12 @@ function snapKey(id: string) {
 function histKey(id: string) {
   return `agent:hist:${id}`;
 }
+function subKey(id: string) {
+  return `billing:sub:${id}`;
+}
+function claimKey(token: string) {
+  return `billing:claim:${token}`;
+}
 
 export const agentStore = {
   async getJob(id: string): Promise<Job | null> {
@@ -90,8 +115,7 @@ export const agentStore = {
 
   async getAllJobs(): Promise<Job[]> {
     if (!USE_KV) return Array.from(memJobs.values());
-    // KV has no list-all; rely on in-memory index of ids
-    const ids = await kvGet<string[]>('agent:job:ids') || [];
+    const ids = (await kvGet<string[]>('agent:job:ids')) || [];
     const jobs: Job[] = [];
     for (const id of ids) {
       const j = await kvGet<Job>(jobKey(id));
@@ -125,6 +149,38 @@ export const agentStore = {
 
   async setHistory(id: string, history: RunRecord[]): Promise<void> {
     memHistories.set(id, history);
-    await kvSet(histKey(id), history, 60 * 60 * 24 * 30); // 30-day TTL
+    await kvSet(histKey(id), history, 60 * 60 * 24 * 30);
+  },
+
+  async setSubscription(sub: SubscriptionRecord): Promise<void> {
+    memSubscriptions.set(sub.paymentId, sub);
+    if (sub.email) memSubscriptions.set(sub.email, sub);
+    await kvSet(subKey(sub.paymentId), sub);
+    if (sub.email) await kvSet(subKey(sub.email), sub);
+  },
+
+  async getSubscription(idOrEmail: string): Promise<SubscriptionRecord | null> {
+    if (!USE_KV) return memSubscriptions.get(idOrEmail) || null;
+    return kvGet<SubscriptionRecord>(subKey(idOrEmail));
+  },
+
+  async setOneTimeKeyClaim(claim: OneTimeKeyClaim): Promise<void> {
+    memClaims.set(claim.claimToken, claim);
+    memClaims.set(claim.paymentId, claim);
+    await kvSet(claimKey(claim.claimToken), claim, 60 * 60 * 24);
+    await kvSet(claimKey(claim.paymentId), claim, 60 * 60 * 24);
+  },
+
+  async consumeOneTimeKeyClaim(tokenOrPaymentId: string): Promise<OneTimeKeyClaim | null> {
+    let claim = memClaims.get(tokenOrPaymentId) || null;
+    if (!claim && USE_KV) {
+      claim = await kvGet<OneTimeKeyClaim>(claimKey(tokenOrPaymentId));
+    }
+    if (!claim) return null;
+    memClaims.delete(claim.claimToken);
+    memClaims.delete(claim.paymentId);
+    await kvDel(claimKey(claim.claimToken));
+    await kvDel(claimKey(claim.paymentId));
+    return claim;
   },
 };

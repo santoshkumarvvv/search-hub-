@@ -44,7 +44,7 @@ self.addEventListener('fetch', function (e) {
       fetch(req)
         .then(function (res) {
           if (res && res.ok) {
-            var copy = res;
+            var copy = res.clone();
             caches.open(VERSION).then(function (c) { c.put(req, copy); });
           }
           return res;
@@ -69,7 +69,7 @@ self.addEventListener('fetch', function (e) {
       return fetch(req)
         .then(function (res) {
           if (res && res.ok && res.type === 'basic') {
-            var copy = res;
+            var copy = res.clone();
             caches.open(VERSION).then(function (c) { c.put(req, copy); });
           }
           return res;

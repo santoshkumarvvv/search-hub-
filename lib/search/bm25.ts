@@ -42,7 +42,7 @@ export class BM25Engine<T extends IndexDocument = IndexDocument> {
   public static tokenize(text: string): string[] {
     return text
       .toLowerCase()
-      .replace(/[^\w\s-]/g, ' ')
+      .replace(/[^\p{L}\p{M}\p{N}\s-]/gu, ' ')
       .split(/\s+/)
       .filter((token) => token.length > 1);
   }

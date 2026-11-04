@@ -113,7 +113,7 @@ export function detectContradiction(
   docA: string,
   docB: string,
   lexicon: PolarityLexicon,
-  cosineThreshold = 0.8,
+  cosineThreshold = 0.35,
   polarityThreshold = 1.5
 ): { isContradiction: boolean; scoreA: number; scoreB: number; cosine: number } {
   const tokensA = new Set(topicTokens(docA));

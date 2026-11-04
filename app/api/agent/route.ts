@@ -1,26 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ApiKeyGateway } from '@/lib/saas/apiKeyGateway';
+import { ApiKeyGateway, ApiKeyRecord } from '@/lib/saas/apiKeyGateway';
 import { Job, validateInstruction, DeliveryChannel } from '@/lib/agent/scheduler';
 import { agentStore } from '@/lib/agent/store';
 import crypto from 'crypto';
 
-async function requireUltra(req: NextRequest): Promise<NextResponse | null> {
+async function authenticateUltra(
+  req: NextRequest
+): Promise<{ denied: NextResponse | null; record: ApiKeyRecord | null }> {
   const key = req.headers.get('x-api-key') || '';
   const result = await ApiKeyGateway.verifyAndConsume(key);
   if (!result?.valid || result.record?.tier !== 'enterprise') {
-    return NextResponse.json(
-      { error: result.error || 'Ultra tier required', help: result.help },
-      { status: result.statusCode || 403 }
-    );
+    return {
+      denied: NextResponse.json(
+        { error: result.error || 'Ultra tier required', help: result.help },
+        { status: result.statusCode || 403 }
+      ),
+      record: null,
+    };
   }
-  return null;
+  return { denied: null, record: result.record };
 }
 
 export async function POST(req: NextRequest) {
-  const denied = await requireUltra(req);
-  if (denied) return denied;
+  const { denied, record } = await authenticateUltra(req);
+  if (denied || !record) return denied!;
 
-  let body: { instruction?: string; cron?: string; deliveryChannel?: DeliveryChannel; threshold?: string };
+  let body: {
+    instruction?: string;
+    cron?: string;
+    deliveryChannel?: DeliveryChannel;
+    threshold?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -33,9 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: check.reason }, { status: 400 });
   }
 
-  const key = req.headers.get('x-api-key') || '';
-  const ver = await ApiKeyGateway.verifyAndConsume(key);
-  const userId = ver.record?.id || 'unknown';
+  const userId = record.id;
 
   const job: Job = {
     id: `job_${crypto.randomBytes(8).toString('hex')}`,
@@ -61,21 +69,17 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const denied = await requireUltra(req);
-  if (denied) return denied;
-
-  const key = req.headers.get('x-api-key') || '';
-  const ver = await ApiKeyGateway.verifyAndConsume(key);
-  const userId = ver.record?.id || 'unknown';
+  const { denied, record } = await authenticateUltra(req);
+  if (denied || !record) return denied!;
 
   const allJobs = await agentStore.getAllJobs();
-  const userJobs = allJobs.filter((j) => j.userId === userId);
+  const userJobs = allJobs.filter((j) => j.userId === record.id);
   return NextResponse.json({ jobs: userJobs });
 }
 
 export async function DELETE(req: NextRequest) {
-  const denied = await requireUltra(req);
-  if (denied) return denied;
+  const { denied, record } = await authenticateUltra(req);
+  if (denied || !record) return denied!;
 
   const { searchParams } = new URL(req.url);
   const jobId = searchParams.get('id') || '';
@@ -83,7 +87,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
   }
   const existing = await agentStore.getJob(jobId);
-  if (!existing) {
+  if (!existing || existing.userId !== record.id) {
     return NextResponse.json({ error: 'Job not found' }, { status: 404 });
   }
   await agentStore.deleteJob(jobId);

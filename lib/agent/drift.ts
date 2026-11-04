@@ -24,6 +24,10 @@ function tokenize(text: string): string[] {
     .filter((t) => t.length > 2 && t.length < 30);
 }
 
+function getOwnProb(map: Record<string, number>, key: string): number {
+  return Object.prototype.hasOwnProperty.call(map, key) ? map[key] : 0;
+}
+
 export function buildSketch(documents: string[], now: number): Sketch {
   const df = new Map<string, number>();
   const N = documents.length || 1;
@@ -37,8 +41,7 @@ export function buildSketch(documents: string[], now: number): Sketch {
   }
   const sorted = [...df.entries()].sort((a, b) => b[1] - a[1]);
   const top = sorted.slice(0, TOP_K);
-  const rest = sorted.slice(TOP_K);
-  const p: Record<string, number> = {};
+  const p: Record<string, number> = Object.create(null);
   let topSum = 0;
   for (const [term, count] of top) {
     const prob = count / N;
@@ -62,18 +65,18 @@ function klDivergence(p: Record<string, number>, q: Record<string, number>): num
   const keys = new Set([...Object.keys(p), ...Object.keys(q)]);
   let sum = 0;
   for (const k of keys) {
-    const pv = Math.max(p[k] || 0, EPS);
-    const qv = Math.max(q[k] || 0, EPS);
+    const pv = Math.max(getOwnProb(p, k), EPS);
+    const qv = Math.max(getOwnProb(q, k), EPS);
     sum += pv * Math.log2(pv / qv);
   }
   return sum;
 }
 
 export function jensenShannonDivergence(p: Record<string, number>, q: Record<string, number>): number {
-  const m: Record<string, number> = {};
+  const m: Record<string, number> = Object.create(null);
   const keys = new Set([...Object.keys(p), ...Object.keys(q)]);
   for (const k of keys) {
-    m[k] = ((p[k] || 0) + (q[k] || 0)) / 2;
+    m[k] = (getOwnProb(p, k) + getOwnProb(q, k)) / 2;
   }
   const klPM = klDivergence(p, m);
   const klQM = klDivergence(q, m);

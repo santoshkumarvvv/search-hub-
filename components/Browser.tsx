@@ -1,15 +1,31 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Card from './Card';
 import Toolbar from './Toolbar';
 import { APPS } from '@/lib/apps';
+import { BM25Engine, IndexDocument } from '@/lib/search/bm25';
 import type { AppItem, AppCategory, SortKey } from '@/lib/types';
 
 /**
- * Fully client-side APK catalog browser.
- * Reads filters from URL search params on mount, writes them back on change.
+ * Client-side APK catalog browser powered by Web Worker BM25 (searchWorker.js)
+ * with synchronous BM25Engine fallback before worker initialization completes.
  */
+
+interface AppIndexDoc extends IndexDocument {
+  app: AppItem;
+}
+
+const syncEngine = new BM25Engine<AppIndexDoc>(1.2, 0.75);
+syncEngine.addDocuments(
+  APPS.map((a) => ({
+    id: a.uid,
+    title: a.name,
+    category: a.category,
+    content: `${a.developer} ${a.description} ${a.genre || ''} ${(a.genres || []).join(' ')} ${(a.tags || []).join(' ')}`,
+    app: a,
+  }))
+);
 
 function readParams(): {
   q: string;
@@ -32,7 +48,7 @@ function readParams(): {
     q: sp.get('q') || '',
     category: validCat,
     genre: sp.get('genre') || 'all',
-    sort: validSort
+    sort: validSort,
   };
 }
 
@@ -54,8 +70,13 @@ export default function Browser() {
   const [category, setCategory] = useState<AppCategory | 'all'>('all');
   const [genre, setGenre] = useState('all');
   const [sort, setSort] = useState<SortKey>('popular');
+  const [workerResults, setWorkerResults] = useState<AppItem[] | null>(null);
+  const [workerReady, setWorkerReady] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const workerRef = useRef<Worker | null>(null);
+  const queryIdRef = useRef(0);
 
-  // Read URL params on mount
+  // Read URL params and initialize Web Worker on mount
   useEffect(() => {
     const p = readParams();
     setQ(p.q);
@@ -63,7 +84,53 @@ export default function Browser() {
     setGenre(p.genre);
     setSort(p.sort);
     setMounted(true);
+
+    if (typeof window !== 'undefined' && typeof Worker !== 'undefined') {
+      try {
+        const w = new Worker('/workers/searchWorker.js');
+        workerRef.current = w;
+        w.onmessage = (e: MessageEvent) => {
+          const data = e.data;
+          if (!data || typeof data !== 'object') return;
+          if (data.type === 'INDEXED') {
+            setWorkerReady(true);
+          } else if (data.type === 'RESULTS' && data.queryId === queryIdRef.current) {
+            const matchedApps = Array.isArray(data.results)
+              ? data.results.map((r: { item: AppItem }) => r.item).filter(Boolean)
+              : [];
+            setWorkerResults(matchedApps);
+            setSearching(false);
+          }
+        };
+        w.postMessage({ type: 'INDEX_CATALOG', payload: APPS });
+        return () => {
+          w.terminate();
+          workerRef.current = null;
+        };
+      } catch {
+        setWorkerReady(false);
+      }
+    }
   }, []);
+
+  // Dispatch BM25 search to Web Worker when query changes
+  useEffect(() => {
+    const trimmed = q.trim();
+    if (!trimmed) {
+      setWorkerResults(null);
+      setSearching(false);
+      return;
+    }
+    if (workerRef.current && workerReady) {
+      const nextId = ++queryIdRef.current;
+      setSearching(true);
+      workerRef.current.postMessage({
+        type: 'SEARCH',
+        payload: { query: trimmed },
+        queryId: nextId,
+      });
+    }
+  }, [q, workerReady]);
 
   // Sync filters to URL
   useEffect(() => {
@@ -78,19 +145,19 @@ export default function Browser() {
     window.history.replaceState(null, '', url);
   }, [q, category, genre, sort, mounted]);
 
-  // Filter & sort
+  // Filter & sort using BM25 (Web Worker results when available, synchronous BM25Engine fallback otherwise)
   const items = useMemo(() => {
-    let list = [...APPS];
+    const trimmed = q.trim();
+    let list: AppItem[];
 
-    if (q.trim()) {
-      const lq = q.trim().toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.name.toLowerCase().includes(lq) ||
-          a.description.toLowerCase().includes(lq) ||
-          a.developer.toLowerCase().includes(lq) ||
-          a.genres.some((g) => g.toLowerCase().includes(lq))
-      );
+    if (trimmed) {
+      if (workerResults !== null) {
+        list = [...workerResults];
+      } else {
+        list = syncEngine.search(trimmed, APPS.length).map((r) => r.document.app);
+      }
+    } else {
+      list = [...APPS];
     }
 
     if (category !== 'all') {
@@ -102,28 +169,30 @@ export default function Browser() {
       list = list.filter((a) => a.genres.some((x) => x.toLowerCase() === g));
     }
 
-    switch (sort) {
-      case 'rating':
-        list.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'newest':
-        list.sort((a, b) =>
-          a.editorChoice === b.editorChoice ? 0 : a.editorChoice ? -1 : 1
-        );
-        break;
-      case 'name':
-        list.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      default:
-        list.sort((a, b) => {
-          if (a.trending !== b.trending) return a.trending ? -1 : 1;
-          if (a.editorChoice !== b.editorChoice) return a.editorChoice ? -1 : 1;
-          return 0;
-        });
+    if (!trimmed) {
+      switch (sort) {
+        case 'rating':
+          list.sort((a, b) => b.rating - a.rating);
+          break;
+        case 'newest':
+          list.sort((a, b) =>
+            a.editorChoice === b.editorChoice ? 0 : a.editorChoice ? -1 : 1
+          );
+          break;
+        case 'name':
+          list.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        default:
+          list.sort((a, b) => {
+            if (a.trending !== b.trending) return a.trending ? -1 : 1;
+            if (a.editorChoice !== b.editorChoice) return a.editorChoice ? -1 : 1;
+            return 0;
+          });
+      }
     }
 
     return list;
-  }, [q, category, genre, sort]);
+  }, [q, workerResults, category, genre, sort]);
 
   const genres = useMemo(() => collectGenres(APPS), []);
 
@@ -136,7 +205,7 @@ export default function Browser() {
         sort={sort}
         genres={genres}
         count={items.length}
-        loading={false}
+        loading={searching}
         onQ={setQ}
         onCategory={setCategory}
         onGenre={setGenre}
@@ -150,7 +219,7 @@ export default function Browser() {
               Search results for &quot;{q}&quot;
             </h2>
             <p className="text-xs text-muted mt-0.5">
-              {items.length} apps found
+              {items.length} apps found · Okapi BM25 + Typo Tolerance
             </p>
           </div>
         ) : (

@@ -132,14 +132,52 @@
   </div>
   <p class="note">Built by Santosh Kumar · <a href="https://santoshkumarvvv.github.io" style="color:var(--accent)">santoshkumarvvv.github.io</a> · Open source core on GitHub</p>
 </div>
+<div id="checkout-status" role="status" aria-live="polite" style="display:none;max-width:560px;margin:20px auto 0;padding:14px 18px;border-radius:8px;background:#13131d;border:1px solid #f5c542;color:#e8e8f0;text-align:center;font-size:0.9rem"></div>
+<script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
 <script>
-// Razorpay checkout — plan IDs from env, keys pending KYC.
-// Starter: ₹19 | Pro: ₹99 | Ultra: ₹199. No ₹49 middle tier.
-function pay(plan) {
-  alert('Razorpay checkout for ' + plan + ' — keys pending. Email kumasantosh947@gmail.com to get early access.');
+// Razorpay Standard Checkout — Starter: ₹19 (1900 paise) | Pro: ₹99 (9900 paise) | Ultra: ₹199 (19900 paise)
+var PLAN_AMOUNTS = { starter: 1900, pro: 9900, ultra: 19900 };
+function showKeysPending(btn, plan) {
+  if (btn) {
+    btn.textContent = "Keys Pending (₹" + (PLAN_AMOUNTS[plan] / 100) + "/mo)";
+    btn.setAttribute("aria-disabled", "true");
+    btn.style.opacity = "0.75";
+  }
+  var banner = document.getElementById("checkout-status");
+  if (banner) {
+    banner.style.display = "block";
+    banner.textContent = "Razorpay live keys pending for " + plan.toUpperCase() + " plan (₹" + (PLAN_AMOUNTS[plan] / 100) + "/month). Email kumasantosh947@gmail.com for early provisioning.";
+  }
 }
-document.querySelectorAll('[href^="#razorpay-"]').forEach(el => {
-  el.addEventListener('click', e => { e.preventDefault(); pay(el.getAttribute('href').split('-')[1]); });
+function pay(plan, btn) {
+  var amount = PLAN_AMOUNTS[plan] || 9900;
+  var keyId = window.RAZORPAY_KEY_ID || document.documentElement.getAttribute("data-razorpay-key") || "";
+  if (!keyId || typeof window.Razorpay !== "function") {
+    showKeysPending(btn, plan);
+    return;
+  }
+  var rzp = new window.Razorpay({
+    key: keyId,
+    amount: amount,
+    currency: "INR",
+    name: "SearchEmbed",
+    description: "SearchEmbed " + plan.toUpperCase() + " Plan",
+    method: { upi: true, card: true, netbanking: true },
+    notes: { plan: plan },
+    handler: function (response) {
+      if (response && response.razorpay_payment_id) {
+        window.location.href = "/api/webhook?payment_id=" + encodeURIComponent(response.razorpay_payment_id);
+      }
+    }
+  });
+  rzp.open();
+}
+document.querySelectorAll('[href^="#razorpay-"]').forEach(function (el) {
+  el.addEventListener("click", function (e) {
+    e.preventDefault();
+    var plan = el.getAttribute("href").split("-")[1];
+    pay(plan, el);
+  });
 });
 </script>
 </body>

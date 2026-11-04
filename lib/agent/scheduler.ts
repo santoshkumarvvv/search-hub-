@@ -44,7 +44,7 @@ export interface RunResult {
 }
 
 const DAILY_CAP = 3;
-const WEEKLY_CAP = 20;
+const WEEKLY_CAP = 15;
 
 function todayKey(ts: number): string {
   return new Date(ts).toISOString().slice(0, 10);
@@ -80,20 +80,26 @@ export function canRun(job: Job, now: number): {
   }
   const today = patch.runCountToday ?? job.runCountToday;
   const week = patch.runCountWeek ?? job.runCountWeek;
-  if (today >= DAILY_CAP) return { allowed: false, reason: 'daily cap reached' };
-  if (week >= WEEKLY_CAP) return { allowed: false, reason: 'weekly cap reached' };
-  if (now < job.nextRunAt) return { allowed: false, reason: 'not due' };
+  if (today >= DAILY_CAP) return { allowed: false, reason: 'daily cap reached', patch: Object.keys(patch).length ? patch : undefined };
+  if (week >= WEEKLY_CAP) return { allowed: false, reason: 'weekly cap reached', patch: Object.keys(patch).length ? patch : undefined };
+  if (now < job.nextRunAt) return { allowed: false, reason: 'not due', patch: Object.keys(patch).length ? patch : undefined };
   return { allowed: true, patch: Object.keys(patch).length ? patch : undefined };
 }
 
 export function markRun(job: Job, now: number, status: LastStatus, error: string | null): Job {
+  const gate = canRun(job, now);
+  const base: Job = gate.patch ? { ...job, ...gate.patch } : job;
+  const dk = base.dayKey || todayKey(now);
+  const wk = base.weekKey || weekKey(now);
   return {
-    ...job,
+    ...base,
+    dayKey: dk,
+    weekKey: wk,
     lastRunAt: now,
     lastStatus: status,
     lastError: error,
-    runCountToday: job.runCountToday + 1,
-    runCountWeek: job.runCountWeek + 1,
+    runCountToday: base.runCountToday + 1,
+    runCountWeek: base.runCountWeek + 1,
     nextRunAt: now + 15 * 60 * 1000,
   };
 }

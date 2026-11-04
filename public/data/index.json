@@ -1,0 +1,774 @@
+[
+  {
+    "id": "doc-search-hub",
+    "title": "SearchHub Federated Search Engine",
+    "name": "SearchHub Federated Search Engine",
+    "url": "https://santoshkumarvvv.github.io/",
+    "category": "Search Engine",
+    "snippet": "High-velocity multi-source search engine with Okapi BM25 lexical ranking and Damerau-Levenshtein typo tolerance.",
+    "description": "High-velocity multi-source search engine with Okapi BM25 lexical ranking and Damerau-Levenshtein typo tolerance.",
+    "tags": [
+      "bm25",
+      "search",
+      "federated",
+      "levenshtein",
+      "typescript"
+    ],
+    "content": "SearchHub federated search engine Okapi BM25 lexical ranking Damerau-Levenshtein typo tolerance inverted index TypeScript web worker sharding zero-dependency microsecond latency Santosh Kumar."
+  },
+  {
+    "id": "doc-searchembed",
+    "title": "SearchEmbed Standalone Modal Widget",
+    "name": "SearchEmbed Standalone Modal Widget",
+    "url": "https://santoshkumarvvv.github.io/#architecture",
+    "category": "Architecture",
+    "snippet": "Drop-in 14.8KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.",
+    "description": "Drop-in 14.8KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.",
+    "tags": [
+      "widget",
+      "embed",
+      "bm25",
+      "algolia",
+      "static"
+    ],
+    "content": "SearchEmbed standalone embeddable search widget modal 14.8KB zero dependency Algolia Elasticsearch replacement client-side BM25 index headless input integration keyboard shortcuts."
+  },
+  {
+    "id": "doc-dev-showcase",
+    "title": "SearchHub Dev Showcase Flutter Mobile Engine",
+    "name": "SearchHub Dev Showcase Flutter Mobile Engine",
+    "url": "https://github.com/santoshkumarvvv/dev-showcase",
+    "category": "Mobile Engine",
+    "snippet": "120fps native Flutter mobile platform with Domain-Driven Design (DDD), Clean Architecture, and Riverpod state.",
+    "description": "120fps native Flutter mobile platform with Domain-Driven Design (DDD), Clean Architecture, and Riverpod state.",
+    "tags": [
+      "flutter",
+      "mobile",
+      "ddd",
+      "riverpod"
+    ],
+    "content": "Dev Showcase native Flutter mobile platform 120fps domain driven design DDD clean architecture Riverpod state management automated GitHub Actions CI CD Android iOS."
+  },
+  {
+    "id": "doc-scrypt-kdf",
+    "title": "Scrypt KDF Cryptographic Authentication Engine",
+    "name": "Scrypt KDF Cryptographic Authentication Engine",
+    "url": "https://santoshkumarvvv.github.io/#works",
+    "category": "Security",
+    "snippet": "Sequential memory-hard key derivation safeguarding authentication credentials against GPU and ASIC attacks.",
+    "description": "Sequential memory-hard key derivation safeguarding authentication credentials against GPU and ASIC attacks.",
+    "tags": [
+      "security",
+      "scrypt",
+      "kdf",
+      "auth"
+    ],
+    "content": "Scrypt KDF cryptographic key derivation function sequential memory-hard password hashing authentication GPU ASIC brute force attack resistance salt rounds security architecture."
+  },
+  {
+    "id": "doc-radar-api",
+    "title": "Tech Radar SaaS Engine & Developer Telemetry",
+    "name": "Tech Radar SaaS Engine & Developer Telemetry",
+    "url": "https://santoshkumarvvv.github.io/#radar",
+    "category": "SaaS API",
+    "snippet": "Developer technology radar tracking framework adoption, language velocity, and architectural trends.",
+    "description": "Developer technology radar tracking framework adoption, language velocity, and architectural trends.",
+    "tags": [
+      "radar",
+      "telemetry",
+      "saas",
+      "nextjs"
+    ],
+    "content": "Tech Radar SaaS API developer telemetry adoption quadrants rings hold assess trial adopt language velocity framework tracking Next.js TypeScript Rust Go."
+  },
+  {
+    "id": "doc-santosh-portfolio",
+    "title": "Santosh Kumar Systems Engineering Hub",
+    "name": "Santosh Kumar Systems Engineering Hub",
+    "url": "https://santoshkumarvvv.github.io/",
+    "category": "Portfolio",
+    "snippet": "Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).",
+    "description": "Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).",
+    "tags": [
+      "portfolio",
+      "systems",
+      "santosh",
+      "typescript"
+    ],
+    "content": "Santosh Kumar santoshkumarvvv systems architect search engine engineering portfolio Vite React TypeScript Tailwind CSS open source projects GitHub."
+  },
+  {
+    "id": "doc-bm25-algorithm",
+    "title": "Okapi BM25 Probabilistic Ranking Specification",
+    "name": "Okapi BM25 Probabilistic Ranking Specification",
+    "url": "https://santoshkumarvvv.github.io/",
+    "category": "Documentation",
+    "snippet": "Robertson-Sparck Jones probabilistic term frequency saturation and document length normalization.",
+    "description": "Robertson-Sparck Jones probabilistic term frequency saturation and document length normalization.",
+    "tags": [
+      "bm25",
+      "ranking",
+      "idf",
+      "algorithm"
+    ],
+    "content": "Okapi BM25 algorithm Robertson Sparck Jones probabilistic model term frequency saturation k1 b parameter document length normalization inverse document frequency IDF calculation."
+  },
+  {
+    "id": "app-app-minecraft",
+    "title": "Minecraft (game)",
+    "name": "Minecraft",
+    "url": "https://santoshkumarvvv.github.io/?app=app-minecraft",
+    "category": "game",
+    "snippet": "Explore infinite worlds and build everything from the simplest of homes to the grandest of castles. Play in creative mode with unlimited res...",
+    "description": "Explore infinite worlds and build everything from the simplest of homes to the grandest of castles. Play in creative mode with unlimited resources or mine deep into the world in survival mode.",
+    "tags": [
+      "Game",
+      "Sandbox"
+    ],
+    "content": "Minecraft game Sandbox Mojang Studios Explore infinite worlds and build everything from the simplest of homes to the grandest of castles. Play in creative mode with unlimited resources or mine deep into the world in survival mode. Sandbox Survival Adventure Game Sandbox"
+  },
+  {
+    "id": "app-app-gta-san",
+    "title": "GTA: San Andreas (game)",
+    "name": "GTA: San Andreas",
+    "url": "https://santoshkumarvvv.github.io/?app=app-gta-san",
+    "category": "game",
+    "snippet": "Five years ago, Carl Johnson escaped from the pressures of life in Los Santos, San Andreas. Now, it's the early 90s and CJ has to go home.",
+    "description": "Five years ago, Carl Johnson escaped from the pressures of life in Los Santos, San Andreas. Now, it's the early 90s and CJ has to go home.",
+    "tags": [
+      "Game",
+      "Action"
+    ],
+    "content": "GTA: San Andreas game Action Rockstar Games Five years ago, Carl Johnson escaped from the pressures of life in Los Santos, San Andreas. Now, it's the early 90s and CJ has to go home. Action Adventure Open World Game Action"
+  },
+  {
+    "id": "app-app-yt-music",
+    "title": "YouTube Music (app)",
+    "name": "YouTube Music",
+    "url": "https://santoshkumarvvv.github.io/?app=app-yt-music",
+    "category": "app",
+    "snippet": "YouTube Music is a new music app that allows you to easily find what you're looking for and discover new music. Get playlists and recommenda...",
+    "description": "YouTube Music is a new music app that allows you to easily find what you're looking for and discover new music. Get playlists and recommendations.",
+    "tags": [
+      "Music",
+      "Streaming"
+    ],
+    "content": "YouTube Music app Music Google LLC YouTube Music is a new music app that allows you to easily find what you're looking for and discover new music. Get playlists and recommendations. Music Entertainment Music Streaming"
+  },
+  {
+    "id": "app-app-inshot",
+    "title": "InShot (app)",
+    "name": "InShot",
+    "url": "https://santoshkumarvvv.github.io/?app=app-inshot",
+    "category": "app",
+    "snippet": "InShot - Best FREE HD video editor and video maker with all features, trim & cut video/movie, add music, text, stickers and glitch effects.",
+    "description": "InShot - Best FREE HD video editor and video maker with all features, trim & cut video/movie, add music, text, stickers and glitch effects.",
+    "tags": [
+      "Video",
+      "Editing"
+    ],
+    "content": "InShot app Video Players InShot Inc. InShot - Best FREE HD video editor and video maker with all features, trim & cut video/movie, add music, text, stickers and glitch effects. Video Players Editing Photography Video Editing"
+  },
+  {
+    "id": "app-app-minecraft-pe",
+    "title": "Minecraft PE (game)",
+    "name": "Minecraft PE",
+    "url": "https://santoshkumarvvv.github.io/?app=app-minecraft-pe",
+    "category": "game",
+    "snippet": "The Pocket Edition of Minecraft lets you build, explore and survive on the go. Multiplayer support with up to 10 friends across platforms.",
+    "description": "The Pocket Edition of Minecraft lets you build, explore and survive on the go. Multiplayer support with up to 10 friends across platforms.",
+    "tags": [
+      "Game",
+      "Sandbox"
+    ],
+    "content": "Minecraft PE game Sandbox Mojang Studios The Pocket Edition of Minecraft lets you build, explore and survive on the go. Multiplayer support with up to 10 friends across platforms. Sandbox Survival Game Sandbox"
+  },
+  {
+    "id": "app-app-spotify",
+    "title": "Spotify (app)",
+    "name": "Spotify",
+    "url": "https://santoshkumarvvv.github.io/?app=app-spotify",
+    "category": "app",
+    "snippet": "With Spotify, you can listen to millions of songs and podcasts for free. Listen to the songs and podcasts you love and find music from all o...",
+    "description": "With Spotify, you can listen to millions of songs and podcasts for free. Listen to the songs and podcasts you love and find music from all over the world.",
+    "tags": [
+      "Music",
+      "Streaming"
+    ],
+    "content": "Spotify app Music Spotify AB With Spotify, you can listen to millions of songs and podcasts for free. Listen to the songs and podcasts you love and find music from all over the world. Music Entertainment Music Streaming"
+  },
+  {
+    "id": "app-app-stumble-guys",
+    "title": "Stumble Guys (game)",
+    "name": "Stumble Guys",
+    "url": "https://santoshkumarvvv.github.io/?app=app-stumble-guys",
+    "category": "game",
+    "snippet": "Stumble Guys is a massively multiplayer party knockout game with up to 32 players online. Run, stumble and fall against your opponents.",
+    "description": "Stumble Guys is a massively multiplayer party knockout game with up to 32 players online. Run, stumble and fall against your opponents.",
+    "tags": [
+      "Game",
+      "Party"
+    ],
+    "content": "Stumble Guys game Party Scopely Stumble Guys is a massively multiplayer party knockout game with up to 32 players online. Run, stumble and fall against your opponents. Party Multiplayer Casual Game Party"
+  },
+  {
+    "id": "app-app-canon",
+    "title": "CapCut (app)",
+    "name": "CapCut",
+    "url": "https://santoshkumarvvv.github.io/?app=app-canon",
+    "category": "app",
+    "snippet": "CapCut is a free all-in-one video editing app that helps you create incredible videos. It's packed with advanced features trusted by million...",
+    "description": "CapCut is a free all-in-one video editing app that helps you create incredible videos. It's packed with advanced features trusted by millions.",
+    "tags": [
+      "Video",
+      "Editing"
+    ],
+    "content": "CapCut app Video Players Bytedance CapCut is a free all-in-one video editing app that helps you create incredible videos. It's packed with advanced features trusted by millions. Video Players Editing Photography Video Editing"
+  },
+  {
+    "id": "app-app-dr-driving",
+    "title": "Dr. Driving (game)",
+    "name": "Dr. Driving",
+    "url": "https://santoshkumarvvv.github.io/?app=app-dr-driving",
+    "category": "game",
+    "snippet": "Dr. Driving drives you crazy! Burn up the street with the fastest and most visually stunning driving game with various missions.",
+    "description": "Dr. Driving drives you crazy! Burn up the street with the fastest and most visually stunning driving game with various missions.",
+    "tags": [
+      "Game",
+      "Racing"
+    ],
+    "content": "Dr. Driving game Racing SUD Inc. Dr. Driving drives you crazy! Burn up the street with the fastest and most visually stunning driving game with various missions. Racing Driving Simulation Game Racing"
+  },
+  {
+    "id": "app-app-wa-business",
+    "title": "WhatsApp Business (app)",
+    "name": "WhatsApp Business",
+    "url": "https://santoshkumarvvv.github.io/?app=app-wa-business",
+    "category": "app",
+    "snippet": "WhatsApp Business is a free-to-download app built for small business owners. Connect with customers, showcase products and grow your busines...",
+    "description": "WhatsApp Business is a free-to-download app built for small business owners. Connect with customers, showcase products and grow your business.",
+    "tags": [
+      "Communication",
+      "Business"
+    ],
+    "content": "WhatsApp Business app Communication Meta Platforms WhatsApp Business is a free-to-download app built for small business owners. Connect with customers, showcase products and grow your business. Communication Social Communication Business"
+  },
+  {
+    "id": "app-app-nfs",
+    "title": "Need for Speed No Limits (game)",
+    "name": "Need for Speed No Limits",
+    "url": "https://santoshkumarvvv.github.io/?app=app-nfs",
+    "category": "game",
+    "snippet": "Claim the crown and rule the underground street racing scene. Build your dream ride with an unbelievable range of cars and customizations.",
+    "description": "Claim the crown and rule the underground street racing scene. Build your dream ride with an unbelievable range of cars and customizations.",
+    "tags": [
+      "Game",
+      "Racing"
+    ],
+    "content": "Need for Speed No Limits game Racing Electronic Arts Claim the crown and rule the underground street racing scene. Build your dream ride with an unbelievable range of cars and customizations. Racing Action Cars Game Racing"
+  },
+  {
+    "id": "app-app-netflix",
+    "title": "Netflix (app)",
+    "name": "Netflix",
+    "url": "https://santoshkumarvvv.github.io/?app=app-netflix",
+    "category": "app",
+    "snippet": "Looking for the most talked-about TV shows and movies from around the world? They're all on Netflix. Watch anywhere, cancel anytime.",
+    "description": "Looking for the most talked-about TV shows and movies from around the world? They're all on Netflix. Watch anywhere, cancel anytime.",
+    "tags": [
+      "Entertainment",
+      "Streaming"
+    ],
+    "content": "Netflix app Entertainment Netflix Inc. Looking for the most talked-about TV shows and movies from around the world? They're all on Netflix. Watch anywhere, cancel anytime. Entertainment Video Players Entertainment Streaming"
+  },
+  {
+    "id": "app-app-brawl",
+    "title": "Brawl Stars (game)",
+    "name": "Brawl Stars",
+    "url": "https://santoshkumarvvv.github.io/?app=app-brawl",
+    "category": "game",
+    "snippet": "Fast-paced 3v3 multiplayer and battle royale made for mobile! Play with friends or solo across a variety of game modes in under three minute...",
+    "description": "Fast-paced 3v3 multiplayer and battle royale made for mobile! Play with friends or solo across a variety of game modes in under three minutes.",
+    "tags": [
+      "Game",
+      "Action"
+    ],
+    "content": "Brawl Stars game Action Supercell Fast-paced 3v3 multiplayer and battle royale made for mobile! Play with friends or solo across a variety of game modes in under three minutes. Action Multiplayer Shooter Game Action"
+  },
+  {
+    "id": "app-app-kinemaster",
+    "title": "KineMaster (app)",
+    "name": "KineMaster",
+    "url": "https://santoshkumarvvv.github.io/?app=app-kinemaster",
+    "category": "app",
+    "snippet": "KineMaster is the best video editor for Android. Edit videos with powerful tools, music, effects and stickers. Share on YouTube, TikTok and ...",
+    "description": "KineMaster is the best video editor for Android. Edit videos with powerful tools, music, effects and stickers. Share on YouTube, TikTok and more.",
+    "tags": [
+      "Video",
+      "Editing"
+    ],
+    "content": "KineMaster app Video Players KineMaster Corp. KineMaster is the best video editor for Android. Edit videos with powerful tools, music, effects and stickers. Share on YouTube, TikTok and more. Video Players Editing Video Editing"
+  },
+  {
+    "id": "app-app-pubg",
+    "title": "PUBG Mobile (game)",
+    "name": "PUBG Mobile",
+    "url": "https://santoshkumarvvv.github.io/?app=app-pubg",
+    "category": "game",
+    "snippet": "PUBG MOBILE delivers the most intense free-to-play multiplayer action on mobile. Drop in, gear up, and compete. Survive epic 100-player batt...",
+    "description": "PUBG MOBILE delivers the most intense free-to-play multiplayer action on mobile. Drop in, gear up, and compete. Survive epic 100-player battles.",
+    "tags": [
+      "Game",
+      "Shooter"
+    ],
+    "content": "PUBG Mobile game Shooter Krafton PUBG MOBILE delivers the most intense free-to-play multiplayer action on mobile. Drop in, gear up, and compete. Survive epic 100-player battles. Shooter Action Battle Royale Game Shooter"
+  },
+  {
+    "id": "app-app-torrent",
+    "title": "BitTorrent (tool)",
+    "name": "BitTorrent",
+    "url": "https://santoshkumarvvv.github.io/?app=app-torrent",
+    "category": "tool",
+    "snippet": "Find, download and play torrents anywhere you go. The original torrent app for Android with no speed limits and no download size limits.",
+    "description": "Find, download and play torrents anywhere you go. The original torrent app for Android with no speed limits and no download size limits.",
+    "tags": [
+      "Tool",
+      "Download"
+    ],
+    "content": "BitTorrent tool Tools Rainberry Inc. Find, download and play torrents anywhere you go. The original torrent app for Android with no speed limits and no download size limits. Tools Download Tool Download"
+  },
+  {
+    "id": "app-app-nordvpn",
+    "title": "NordVPN (tool)",
+    "name": "NordVPN",
+    "url": "https://santoshkumarvvv.github.io/?app=app-nordvpn",
+    "category": "tool",
+    "snippet": "NordVPN is a VPN app for safe and private internet access. Protect your online activities with military-grade encryption. 60+ countries.",
+    "description": "NordVPN is a VPN app for safe and private internet access. Protect your online activities with military-grade encryption. 60+ countries.",
+    "tags": [
+      "Tool",
+      "Security"
+    ],
+    "content": "NordVPN tool Tools Nord Security NordVPN is a VPN app for safe and private internet access. Protect your online activities with military-grade encryption. 60+ countries. Tools Security VPN Tool Security"
+  },
+  {
+    "id": "app-app-telegram",
+    "title": "Telegram (app)",
+    "name": "Telegram",
+    "url": "https://santoshkumarvvv.github.io/?app=app-telegram",
+    "category": "app",
+    "snippet": "Pure instant messaging — simple, fast, secure, and synced across all your devices with unlimited cloud storage.",
+    "description": "Pure instant messaging — simple, fast, secure, and synced across all your devices with unlimited cloud storage.",
+    "tags": [
+      "App",
+      "Messaging",
+      "Cloud"
+    ],
+    "content": "Telegram app Communication Telegram FZ-LLC Pure instant messaging — simple, fast, secure, and synced across all your devices with unlimited cloud storage. Communication Social App Messaging Cloud"
+  },
+  {
+    "id": "app-app-signal",
+    "title": "Signal Private Messenger (app)",
+    "name": "Signal Private Messenger",
+    "url": "https://santoshkumarvvv.github.io/?app=app-signal",
+    "category": "app",
+    "snippet": "Say hello to privacy. End-to-end encrypted messaging, voice, and video calls powered by the open-source Signal Protocol.",
+    "description": "Say hello to privacy. End-to-end encrypted messaging, voice, and video calls powered by the open-source Signal Protocol.",
+    "tags": [
+      "App",
+      "Privacy",
+      "Encryption"
+    ],
+    "content": "Signal Private Messenger app Communication Signal Foundation Say hello to privacy. End-to-end encrypted messaging, voice, and video calls powered by the open-source Signal Protocol. Communication Privacy App Privacy Encryption"
+  },
+  {
+    "id": "app-app-firefox",
+    "title": "Mozilla Firefox (app)",
+    "name": "Mozilla Firefox",
+    "url": "https://santoshkumarvvv.github.io/?app=app-firefox",
+    "category": "app",
+    "snippet": "Fast, private, and safe web browser with enhanced tracking protection and rich extension support.",
+    "description": "Fast, private, and safe web browser with enhanced tracking protection and rich extension support.",
+    "tags": [
+      "App",
+      "Browser",
+      "Privacy"
+    ],
+    "content": "Mozilla Firefox app Browser Mozilla Fast, private, and safe web browser with enhanced tracking protection and rich extension support. Browser Productivity App Browser Privacy"
+  },
+  {
+    "id": "app-app-brave",
+    "title": "Brave Private Web Browser (app)",
+    "name": "Brave Private Web Browser",
+    "url": "https://santoshkumarvvv.github.io/?app=app-brave",
+    "category": "app",
+    "snippet": "Fast, free, secure web browser with built-in ad blocker, tracker protection, and HTTPS Everywhere.",
+    "description": "Fast, free, secure web browser with built-in ad blocker, tracker protection, and HTTPS Everywhere.",
+    "tags": [
+      "App",
+      "Browser",
+      "Adblock"
+    ],
+    "content": "Brave Private Web Browser app Browser Brave Software Fast, free, secure web browser with built-in ad blocker, tracker protection, and HTTPS Everywhere. Browser Security App Browser Adblock"
+  },
+  {
+    "id": "app-app-notion",
+    "title": "Notion Notes & Docs (app)",
+    "name": "Notion Notes & Docs",
+    "url": "https://santoshkumarvvv.github.io/?app=app-notion",
+    "category": "app",
+    "snippet": "Write, plan, collaborate, and get organized. Notion is all you need in one workspace for notes, tasks, wikis, and databases.",
+    "description": "Write, plan, collaborate, and get organized. Notion is all you need in one workspace for notes, tasks, wikis, and databases.",
+    "tags": [
+      "App",
+      "Workspace",
+      "Docs"
+    ],
+    "content": "Notion Notes & Docs app Productivity Notion Labs Write, plan, collaborate, and get organized. Notion is all you need in one workspace for notes, tasks, wikis, and databases. Productivity Notes App Workspace Docs"
+  },
+  {
+    "id": "app-app-obsidian",
+    "title": "Obsidian Markdown Vault (app)",
+    "name": "Obsidian Markdown Vault",
+    "url": "https://santoshkumarvvv.github.io/?app=app-obsidian",
+    "category": "app",
+    "snippet": "A powerful knowledge base that works on top of a local folder of plain text Markdown files with backlinks and graph view.",
+    "description": "A powerful knowledge base that works on top of a local folder of plain text Markdown files with backlinks and graph view.",
+    "tags": [
+      "App",
+      "Markdown",
+      "Knowledge"
+    ],
+    "content": "Obsidian Markdown Vault app Productivity Dynalist Inc. A powerful knowledge base that works on top of a local folder of plain text Markdown files with backlinks and graph view. Productivity Notes App Markdown Knowledge"
+  },
+  {
+    "id": "app-app-ankidroid",
+    "title": "AnkiDroid Flashcards (app)",
+    "name": "AnkiDroid Flashcards",
+    "url": "https://santoshkumarvvv.github.io/?app=app-ankidroid",
+    "category": "app",
+    "snippet": "Memorize anything efficiently with spaced repetition flashcards compatible with desktop Anki.",
+    "description": "Memorize anything efficiently with spaced repetition flashcards compatible with desktop Anki.",
+    "tags": [
+      "App",
+      "Flashcards",
+      "Spaced Repetition"
+    ],
+    "content": "AnkiDroid Flashcards app Education AnkiDroid Open Source Memorize anything efficiently with spaced repetition flashcards compatible with desktop Anki. Education Productivity App Flashcards Spaced Repetition"
+  },
+  {
+    "id": "app-app-duolingo",
+    "title": "Duolingo Language Lessons (app)",
+    "name": "Duolingo Language Lessons",
+    "url": "https://santoshkumarvvv.github.io/?app=app-duolingo",
+    "category": "app",
+    "snippet": "Learn Spanish, French, German, Hindi, Japanese, and 40+ languages with quick bite-sized interactive lessons.",
+    "description": "Learn Spanish, French, German, Hindi, Japanese, and 40+ languages with quick bite-sized interactive lessons.",
+    "tags": [
+      "App",
+      "Languages",
+      "Learning"
+    ],
+    "content": "Duolingo Language Lessons app Education Duolingo Learn Spanish, French, German, Hindi, Japanese, and 40+ languages with quick bite-sized interactive lessons. Education Languages App Languages Learning"
+  },
+  {
+    "id": "app-app-khan-academy",
+    "title": "Khan Academy (app)",
+    "name": "Khan Academy",
+    "url": "https://santoshkumarvvv.github.io/?app=app-khan-academy",
+    "category": "app",
+    "snippet": "Spend an afternoon brushing up on statistics, calculus, computer science, physics, and economics for free.",
+    "description": "Spend an afternoon brushing up on statistics, calculus, computer science, physics, and economics for free.",
+    "tags": [
+      "App",
+      "Math",
+      "Science"
+    ],
+    "content": "Khan Academy app Education Khan Academy Spend an afternoon brushing up on statistics, calculus, computer science, physics, and economics for free. Education Science App Math Science"
+  },
+  {
+    "id": "app-app-stellarium",
+    "title": "Stellarium Mobile Sky Map (app)",
+    "name": "Stellarium Mobile Sky Map",
+    "url": "https://santoshkumarvvv.github.io/?app=app-stellarium",
+    "category": "app",
+    "snippet": "Planetarium in your pocket showing an accurate night sky map of stars, constellations, planets, and satellites in real time.",
+    "description": "Planetarium in your pocket showing an accurate night sky map of stars, constellations, planets, and satellites in real time.",
+    "tags": [
+      "App",
+      "Space",
+      "Stars"
+    ],
+    "content": "Stellarium Mobile Sky Map app Education Stellarium Labs Planetarium in your pocket showing an accurate night sky map of stars, constellations, planets, and satellites in real time. Education Astronomy App Space Stars"
+  },
+  {
+    "id": "app-app-retroarch",
+    "title": "RetroArch Frontend (game)",
+    "name": "RetroArch Frontend",
+    "url": "https://santoshkumarvvv.github.io/?app=app-retroarch",
+    "category": "game",
+    "snippet": "Open-source modular frontend for emulators, game engines, and media players with shader and netplay support.",
+    "description": "Open-source modular frontend for emulators, game engines, and media players with shader and netplay support.",
+    "tags": [
+      "Game",
+      "Retro",
+      "Libretro"
+    ],
+    "content": "RetroArch Frontend game Arcade Libretro Open-source modular frontend for emulators, game engines, and media players with shader and netplay support. Arcade Simulation Game Retro Libretro"
+  },
+  {
+    "id": "app-app-chess",
+    "title": "Lichess Free Online Chess (game)",
+    "name": "Lichess Free Online Chess",
+    "url": "https://santoshkumarvvv.github.io/?app=app-chess",
+    "category": "game",
+    "snippet": "Built for the love of chess, this open-source app plays bullet, blitz, classical, and puzzle tactics with zero ads.",
+    "description": "Built for the love of chess, this open-source app plays bullet, blitz, classical, and puzzle tactics with zero ads.",
+    "tags": [
+      "Game",
+      "Chess",
+      "Open Source"
+    ],
+    "content": "Lichess Free Online Chess game Strategy Lichess.org Built for the love of chess, this open-source app plays bullet, blitz, classical, and puzzle tactics with zero ads. Strategy Board Game Chess Open Source"
+  },
+  {
+    "id": "app-app-mindustry",
+    "title": "Mindustry Factory Defense (game)",
+    "name": "Mindustry Factory Defense",
+    "url": "https://santoshkumarvvv.github.io/?app=app-mindustry",
+    "category": "game",
+    "snippet": "A hybrid tower-defense sandbox factory game. Create elaborate supply chains of conveyor belts to feed ammo into your turrets.",
+    "description": "A hybrid tower-defense sandbox factory game. Create elaborate supply chains of conveyor belts to feed ammo into your turrets.",
+    "tags": [
+      "Game",
+      "Tower Defense",
+      "Automation"
+    ],
+    "content": "Mindustry Factory Defense game Strategy Anuken A hybrid tower-defense sandbox factory game. Create elaborate supply chains of conveyor belts to feed ammo into your turrets. Strategy Sandbox Game Tower Defense Automation"
+  },
+  {
+    "id": "app-app-shattered-pd",
+    "title": "Shattered Pixel Dungeon (game)",
+    "name": "Shattered Pixel Dungeon",
+    "url": "https://santoshkumarvvv.github.io/?app=app-shattered-pd",
+    "category": "game",
+    "snippet": "Traditional roguelike dungeon crawler RPG that is simple to get into but hard to master, featuring five unique heroes.",
+    "description": "Traditional roguelike dungeon crawler RPG that is simple to get into but hard to master, featuring five unique heroes.",
+    "tags": [
+      "Game",
+      "Roguelike",
+      "Dungeon"
+    ],
+    "content": "Shattered Pixel Dungeon game RPG Shattered Pixel Traditional roguelike dungeon crawler RPG that is simple to get into but hard to master, featuring five unique heroes. RPG Roguelike Game Roguelike Dungeon"
+  },
+  {
+    "id": "app-app-super-tux-kart",
+    "title": "SuperTuxKart 3D Racing (game)",
+    "name": "SuperTuxKart 3D Racing",
+    "url": "https://santoshkumarvvv.github.io/?app=app-super-tux-kart",
+    "category": "game",
+    "snippet": "3D open-source arcade kart racer with diverse tracks, story mode, soccer mode, and local multiplayer.",
+    "description": "3D open-source arcade kart racer with diverse tracks, story mode, soccer mode, and local multiplayer.",
+    "tags": [
+      "Game",
+      "Kart",
+      "Racing"
+    ],
+    "content": "SuperTuxKart 3D Racing game Racing STK Team 3D open-source arcade kart racer with diverse tracks, story mode, soccer mode, and local multiplayer. Racing Arcade Game Kart Racing"
+  },
+  {
+    "id": "app-app-unciv",
+    "title": "Unciv Turn-Based Empire (game)",
+    "name": "Unciv Turn-Based Empire",
+    "url": "https://santoshkumarvvv.github.io/?app=app-unciv",
+    "category": "game",
+    "snippet": "Open-source 4X civilization-building strategy game for Android — explore, expand, exploit, and exterminate.",
+    "description": "Open-source 4X civilization-building strategy game for Android — explore, expand, exploit, and exterminate.",
+    "tags": [
+      "Game",
+      "4X",
+      "Civilization"
+    ],
+    "content": "Unciv Turn-Based Empire game Strategy Yair Morgenstern Open-source 4X civilization-building strategy game for Android — explore, expand, exploit, and exterminate. Strategy Simulation Game 4X Civilization"
+  },
+  {
+    "id": "app-app-cataclysm-dda",
+    "title": "Cataclysm: Dark Days Ahead (game)",
+    "name": "Cataclysm: Dark Days Ahead",
+    "url": "https://santoshkumarvvv.github.io/?app=app-cataclysm-dda",
+    "category": "game",
+    "snippet": "Turn-based survival game set in a post-apocalyptic world with deep crafting, vehicle building, and procedural cities.",
+    "description": "Turn-based survival game set in a post-apocalyptic world with deep crafting, vehicle building, and procedural cities.",
+    "tags": [
+      "Game",
+      "Survival",
+      "Open World"
+    ],
+    "content": "Cataclysm: Dark Days Ahead game Survival CleverRaven Turn-based survival game set in a post-apocalyptic world with deep crafting, vehicle building, and procedural cities. Survival RPG Game Survival Open World"
+  },
+  {
+    "id": "app-app-termux",
+    "title": "Termux Linux Environment (tool)",
+    "name": "Termux Linux Environment",
+    "url": "https://santoshkumarvvv.github.io/?app=app-termux",
+    "category": "tool",
+    "snippet": "Powerful terminal emulation with an extensive Linux package collection including bash, zsh, git, nodejs, python, and clang.",
+    "description": "Powerful terminal emulation with an extensive Linux package collection including bash, zsh, git, nodejs, python, and clang.",
+    "tags": [
+      "Tool",
+      "Terminal",
+      "Linux"
+    ],
+    "content": "Termux Linux Environment tool Tools Termux Dev Team Powerful terminal emulation with an extensive Linux package collection including bash, zsh, git, nodejs, python, and clang. Tools Developer Tool Terminal Linux"
+  },
+  {
+    "id": "app-app-syncthing",
+    "title": "Syncthing File Sync (tool)",
+    "name": "Syncthing File Sync",
+    "url": "https://santoshkumarvvv.github.io/?app=app-syncthing",
+    "category": "tool",
+    "snippet": "Continuous peer-to-peer file synchronization program that synchronizes files between two or more computers in real time.",
+    "description": "Continuous peer-to-peer file synchronization program that synchronizes files between two or more computers in real time.",
+    "tags": [
+      "Tool",
+      "Sync",
+      "P2P"
+    ],
+    "content": "Syncthing File Sync tool Tools Syncthing Foundation Continuous peer-to-peer file synchronization program that synchronizes files between two or more computers in real time. Tools Cloud Tool Sync P2P"
+  },
+  {
+    "id": "app-app-kde-connect",
+    "title": "KDE Connect (tool)",
+    "name": "KDE Connect",
+    "url": "https://santoshkumarvvv.github.io/?app=app-kde-connect",
+    "category": "tool",
+    "snippet": "Integrate your smartphone and computer: share files and links, sync clipboard, receive notifications, and use phone as trackpad.",
+    "description": "Integrate your smartphone and computer: share files and links, sync clipboard, receive notifications, and use phone as trackpad.",
+    "tags": [
+      "Tool",
+      "Desktop",
+      "Sync"
+    ],
+    "content": "KDE Connect tool Tools KDE Community Integrate your smartphone and computer: share files and links, sync clipboard, receive notifications, and use phone as trackpad. Tools Productivity Tool Desktop Sync"
+  },
+  {
+    "id": "app-app-localsend",
+    "title": "LocalSend Cross-Platform Share (tool)",
+    "name": "LocalSend Cross-Platform Share",
+    "url": "https://santoshkumarvvv.github.io/?app=app-localsend",
+    "category": "tool",
+    "snippet": "Free, open-source app that allows you to securely share files and messages with nearby devices over your local Wi-Fi network.",
+    "description": "Free, open-source app that allows you to securely share files and messages with nearby devices over your local Wi-Fi network.",
+    "tags": [
+      "Tool",
+      "File Transfer",
+      "LAN"
+    ],
+    "content": "LocalSend Cross-Platform Share tool Tools Tien Do Nam Free, open-source app that allows you to securely share files and messages with nearby devices over your local Wi-Fi network. Tools Network Tool File Transfer LAN"
+  },
+  {
+    "id": "app-app-wireguard",
+    "title": "WireGuard VPN Tunnel (tool)",
+    "name": "WireGuard VPN Tunnel",
+    "url": "https://santoshkumarvvv.github.io/?app=app-wireguard",
+    "category": "tool",
+    "snippet": "Extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography inside the Linux kernel.",
+    "description": "Extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography inside the Linux kernel.",
+    "tags": [
+      "Tool",
+      "VPN",
+      "Cryptography"
+    ],
+    "content": "WireGuard VPN Tunnel tool Tools WireGuard Dev Team Extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography inside the Linux kernel. Tools Security VPN Tool VPN Cryptography"
+  },
+  {
+    "id": "app-app-keepassdx",
+    "title": "KeePassDX Password Vault (tool)",
+    "name": "KeePassDX Password Vault",
+    "url": "https://santoshkumarvvv.github.io/?app=app-keepassdx",
+    "category": "tool",
+    "snippet": "Lightweight offline password manager and passkey vault for editing encrypted KDBX files with biometric unlock.",
+    "description": "Lightweight offline password manager and passkey vault for editing encrypted KDBX files with biometric unlock.",
+    "tags": [
+      "Tool",
+      "Password Manager",
+      "Encryption"
+    ],
+    "content": "KeePassDX Password Vault tool Tools Kunzisoft Lightweight offline password manager and passkey vault for editing encrypted KDBX files with biometric unlock. Tools Security Tool Password Manager Encryption"
+  },
+  {
+    "id": "app-app-aegis",
+    "title": "Aegis Authenticator 2FA (tool)",
+    "name": "Aegis Authenticator 2FA",
+    "url": "https://santoshkumarvvv.github.io/?app=app-aegis",
+    "category": "tool",
+    "snippet": "Free, secure, and open-source app for managing your 2-step verification tokens (TOTP and HOTP) with encrypted backups.",
+    "description": "Free, secure, and open-source app for managing your 2-step verification tokens (TOTP and HOTP) with encrypted backups.",
+    "tags": [
+      "Tool",
+      "2FA",
+      "TOTP"
+    ],
+    "content": "Aegis Authenticator 2FA tool Tools Beem Development Free, secure, and open-source app for managing your 2-step verification tokens (TOTP and HOTP) with encrypted backups. Tools Security Tool 2FA TOTP"
+  },
+  {
+    "id": "app-app-fdroid",
+    "title": "F-Droid FOSS Repository (tool)",
+    "name": "F-Droid FOSS Repository",
+    "url": "https://santoshkumarvvv.github.io/?app=app-fdroid",
+    "category": "tool",
+    "snippet": "Installable catalogue of FOSS (Free and Open Source Software) applications for the Android platform with reproducible builds.",
+    "description": "Installable catalogue of FOSS (Free and Open Source Software) applications for the Android platform with reproducible builds.",
+    "tags": [
+      "Tool",
+      "Open Source",
+      "Catalog"
+    ],
+    "content": "F-Droid FOSS Repository tool Tools F-Droid Limited Installable catalogue of FOSS (Free and Open Source Software) applications for the Android platform with reproducible builds. Tools Developer Tool Open Source Catalog"
+  },
+  {
+    "id": "app-app-OrganicMaps",
+    "title": "Organic Maps Offline Hike & Nav (tool)",
+    "name": "Organic Maps Offline Hike & Nav",
+    "url": "https://santoshkumarvvv.github.io/?app=app-OrganicMaps",
+    "category": "tool",
+    "snippet": "Fast, detailed offline maps for travelers, tourists, hikers, and cyclists based on OpenStreetMap data with zero trackers.",
+    "description": "Fast, detailed offline maps for travelers, tourists, hikers, and cyclists based on OpenStreetMap data with zero trackers.",
+    "tags": [
+      "Tool",
+      "Maps",
+      "Offline"
+    ],
+    "content": "Organic Maps Offline Hike & Nav tool Tools Organic Maps Fast, detailed offline maps for travelers, tourists, hikers, and cyclists based on OpenStreetMap data with zero trackers. Tools Navigation Tool Maps Offline"
+  },
+  {
+    "id": "app-app-antennapod",
+    "title": "AntennaPod Podcast Player (app)",
+    "name": "AntennaPod Podcast Player",
+    "url": "https://santoshkumarvvv.github.io/?app=app-antennapod",
+    "category": "app",
+    "snippet": "Podcast manager and player that gives you instant access to millions of free and paid podcasts with chapter and queue control.",
+    "description": "Podcast manager and player that gives you instant access to millions of free and paid podcasts with chapter and queue control.",
+    "tags": [
+      "App",
+      "Podcasts",
+      "Audio"
+    ],
+    "content": "AntennaPod Podcast Player app Media AntennaPod Community Podcast manager and player that gives you instant access to millions of free and paid podcasts with chapter and queue control. Media Audio App Podcasts Audio"
+  },
+  {
+    "id": "app-app-koreader",
+    "title": "KOReader Document Viewer (app)",
+    "name": "KOReader Document Viewer",
+    "url": "https://santoshkumarvvv.github.io/?app=app-koreader",
+    "category": "app",
+    "snippet": "Document viewer primarily aimed at e-ink and mobile readers supporting PDF, DjVu, EPUB, FB2, CBZ, and dictionary lookups.",
+    "description": "Document viewer primarily aimed at e-ink and mobile readers supporting PDF, DjVu, EPUB, FB2, CBZ, and dictionary lookups.",
+    "tags": [
+      "App",
+      "EPUB",
+      "PDF"
+    ],
+    "content": "KOReader Document Viewer app Education KOReader Team Document viewer primarily aimed at e-ink and mobile readers supporting PDF, DjVu, EPUB, FB2, CBZ, and dictionary lookups. Education Reading App EPUB PDF"
+  }
+]

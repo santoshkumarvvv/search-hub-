@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { ApiKeyGateway, PricingTier } from '@/lib/saas/apiKeyGateway';
 
 export const runtime = 'nodejs';
@@ -6,13 +7,15 @@ export const runtime = 'nodejs';
 const VALID_TIERS: Set<PricingTier> = new Set(['free', 'pro', 'enterprise']);
 const NAME_REGEX = /^[a-zA-Z0-9_\-\s]{2,50}$/;
 
-// In-memory IP throttle for key minting (resets on cold start — Vercel KV recommended for production)
 const mintAttempts = new Map<string, { count: number; resetAt: number }>();
 const MINT_LIMIT = 5;
 const MINT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
 function checkMintThrottle(ip: string): boolean {
   const now = Date.now();
+  for (const [k, v] of mintAttempts.entries()) {
+    if (now > v.resetAt) mintAttempts.delete(k);
+  }
   const entry = mintAttempts.get(ip);
   if (!entry || now > entry.resetAt) {
     mintAttempts.set(ip, { count: 1, resetAt: now + MINT_WINDOW_MS });
@@ -23,6 +26,15 @@ function checkMintThrottle(ip: string): boolean {
   return true;
 }
 
+function hasValidAdminSecret(req: NextRequest): boolean {
+  const adminSecret = process.env.ADMIN_SECRET || '';
+  const provided = req.headers.get('x-admin-secret') || '';
+  if (!adminSecret || !provided) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(adminSecret);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 export async function POST(request: NextRequest) {
   if (request.method !== 'POST') {
     return NextResponse.json(
@@ -31,10 +43,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // IP-based mint throttle — prevents unlimited key generation
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-             request.headers.get('x-real-ip') ||
-             'unknown';
+  const ip =
+    request.headers.get('x-real-ip') ||
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    'unknown';
   if (!checkMintThrottle(ip)) {
     return NextResponse.json(
       {
@@ -52,7 +64,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Invalid JSON body.',
-        help: 'Send a valid JSON object with {"name": "Your App Name", "tier": "free" | "pro" | "enterprise"}.',
+        help: 'Send a valid JSON object with {"name": "Your App Name", "tier": "free"}.',
       },
       { status: 400 }
     );
@@ -61,7 +73,6 @@ export async function POST(request: NextRequest) {
   const rawName = typeof body.name === 'string' ? body.name.trim() : '';
   const rawTier = typeof body.tier === 'string' ? (body.tier.toLowerCase() as PricingTier) : 'free';
 
-  // Strict input validation
   if (!rawName || !NAME_REGEX.test(rawName)) {
     return NextResponse.json(
       {
@@ -79,6 +90,16 @@ export async function POST(request: NextRequest) {
         help: "The 'tier' field must be one of: 'free', 'pro', or 'enterprise'.",
       },
       { status: 400 }
+    );
+  }
+
+  if (rawTier !== 'free' && !hasValidAdminSecret(request)) {
+    return NextResponse.json(
+      {
+        error: 'Paid tier key minting requires payment verification or admin authorization.',
+        help: "Public minting may only create 'free' tier keys. Complete UPI checkout at /pricing.html or provide a valid 'x-admin-secret' header.",
+      },
+      { status: 403 }
     );
   }
 
@@ -102,7 +123,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       {
         error: 'Failed to provision API key.',

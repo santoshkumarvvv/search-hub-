@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
+import { POST as runAgent } from '../run/route';
+
+function verifyBearerSecret(authHeader: string, secret: string): boolean {
+  if (!secret || !authHeader) return false;
+  const expected = `Bearer ${secret}`;
+  const a = Buffer.from(authHeader);
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
 
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET || '';
-  const header = req.headers.get('x-cron-secret') || req.headers.get('authorization')?.replace('Bearer ', '') || '';
-  if (!secret || header !== secret) {
+  const auth = req.headers.get('authorization') || '';
+  if (!verifyBearerSecret(auth, secret)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const base = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-  const res = await fetch(`${base}/api/agent/run`, {
+  const forwarded = new NextRequest(req.url, {
     method: 'POST',
-    headers: { 'x-cron-secret': secret, 'Content-Type': 'application/json' },
+    headers: { 'x-cron-secret': secret },
   });
-  const data = await res.json().catch(() => ({}));
-  return NextResponse.json({ status: res.status, data });
+  return runAgent(forwarded);
 }

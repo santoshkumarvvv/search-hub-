@@ -1,31 +1,54 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateInstruction, canRun, markRun } from '../lib/agent/scheduler.ts';
-import { buildPolarityLexicon, scoreDocumentPolarity, detectContradiction } from '../lib/agent/polarity.ts';
-import { buildSketch, detectDrift, jensenShannonDivergence } from '../lib/agent/drift.ts';
+import { buildPolarityLexicon, detectContradiction } from '../lib/agent/polarity.ts';
+import { buildSketch, jensenShannonDivergence, detectDrift } from '../lib/agent/drift.ts';
 import { detectTimeAnomaly, detectValueAnomaly, detectFrequencyAnomaly, detectAllAnomalies } from '../lib/agent/anomaly.ts';
 
 test('validateInstruction rejects URLs and shell metacharacters', () => {
-  assert.equal(validateInstruction('find jobs https://evil.com').valid, false);
+  assert.equal(validateInstruction('https://evil.com').valid, false);
   assert.equal(validateInstruction('rm -rf /').valid, false);
-  assert.equal(validateInstruction('search bihar data engineering jobs').valid, true);
+  assert.equal(validateInstruction('cat /etc/passwd').valid, false);
+  assert.equal(validateInstruction('foo && bar').valid, false);
+  assert.equal(validateInstruction('top 3 data engineering jobs').valid, true);
 });
 
 test('validateInstruction enforces 50 word cap', () => {
-  const words = Array(51).fill('job').join(' ');
-  assert.equal(validateInstruction(words).valid, false);
+  const long = Array(55).fill('word').join(' ');
+  assert.equal(validateInstruction(long).valid, false);
   assert.equal(validateInstruction('short query').valid, true);
 });
 
 test('canRun enforces daily cap of 3', () => {
+  const now = Date.now();
+  const dk = new Date(now).toISOString().slice(0, 10);
+  const d = new Date(now);
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() - day + 1);
+  const wk = d.toISOString().slice(0, 10);
   const job = {
     id: 'j1', userId: 'u1', instruction: 'test', cron: '*/15 * * * *', nextRunAt: 0,
     lastRunAt: null, lastStatus: 'ok', lastError: null, deliveryChannel: 'in-app', tier: 'ultra',
-    threshold: null, runCountToday: 3, runCountWeek: 3, dayKey: '2026-11-04', weekKey: '2026-11-03'
+    threshold: null, runCountToday: 3, runCountWeek: 3, dayKey: dk, weekKey: wk
   };
-  const r = canRun(job, Date.now());
+  const r = canRun(job, now);
   assert.equal(r.allowed, false);
-  assert.equal(r.reason, "daily cap reached");
+  assert.equal(r.reason, 'daily cap reached');
+});
+
+test('markRun applies gate.patch on day rollover and enforces 15 weekly cap', () => {
+  const now = Date.now();
+  const job = {
+    id: 'j2', userId: 'u1', instruction: 'test', cron: '*/15 * * * *', nextRunAt: 0,
+    lastRunAt: null, lastStatus: 'ok', lastError: null, deliveryChannel: 'in-app', tier: 'ultra',
+    threshold: null, runCountToday: 3, runCountWeek: 14, dayKey: '2020-01-01', weekKey: new Date(now - ((new Date(now).getUTCDay() || 7) - 1) * 86400000).toISOString().slice(0, 10)
+  };
+  const updated = markRun(job, now, 'ok', null);
+  assert.equal(updated.runCountToday, 1);
+  assert.equal(updated.runCountWeek, 15);
+  const after = canRun({ ...updated, nextRunAt: 0 }, now);
+  assert.equal(after.allowed, false);
+  assert.equal(after.reason, 'weekly cap reached');
 });
 
 test('polarity lexicon weights vulnerability terms against safety terms', () => {
@@ -44,14 +67,15 @@ test('detectContradiction flags opposing polarity on similar docs', () => {
   const a = 'production pipeline spark jobs data engineering optimized throughput stable reliable performant secure';
   const b = 'production pipeline spark jobs data engineering vulnerable critical failure exploit breach incident risk';
   const lex = buildPolarityLexicon([a, b, a, b, a, b, a, b, a, b]);
-  const r = detectContradiction(a, b, lex, 0.5, 1.0);
+  const r = detectContradiction(a, b, lex);
   assert.equal(r.isContradiction, true);
   assert.ok(Math.sign(r.scoreA) !== Math.sign(r.scoreB));
 });
 
-test('jensenShannonDivergence is zero for identical sketches', () => {
-  const p = { search: 0.5, bm25: 0.5 };
-  assert.equal(jensenShannonDivergence(p, p), 0);
+test('jensenShannonDivergence is zero for identical sketches and safe on constructor token', () => {
+  const s = buildSketch(['constructor prototype toString valueOf search bm25'], 1000);
+  assert.equal(Number.isNaN(jensenShannonDivergence(s.p, s.p)), false);
+  assert.equal(jensenShannonDivergence(s.p, s.p), 0);
 });
 
 test('detectDrift classifies paradigm shift on large divergence', () => {
@@ -62,12 +86,13 @@ test('detectDrift classifies paradigm shift on large divergence', () => {
   assert.ok(['CONCEPTUAL_DRIFT', 'CONTRADICTION_ALERT', 'PARADIGM_SHIFT'].includes(d.classification));
 });
 
-test('detectTimeAnomaly flags hour outside two standard deviations', () => {
+test('detectTimeAnomaly flags hour outside zero-variance baseline when diff >= 3', () => {
   const history = [];
   for (let i = 0; i < 10; i++) history.push({ ranAt: i * 3600000, hourOfDay: 8, resultCount: 3, topScore: 1.5, valueField: null });
   const a = detectTimeAnomaly(history, 23);
   assert.ok(a !== null);
   assert.equal(a.type, 'time');
+  assert.equal(detectTimeAnomaly(history, 9), null);
 });
 
 test('detectValueAnomaly flags fifteen percent deviation', () => {

@@ -7,6 +7,8 @@ export interface Anomaly {
   reason: string;
 }
 
+export type AnomalyFlag = Anomaly;
+
 export interface RunRecord {
   ranAt: number;
   hourOfDay: number;
@@ -27,14 +29,23 @@ function stdDev(values: number[]): number {
   return Math.sqrt(variance);
 }
 
-export function detectTimeAnomaly(history: RunRecord[], currentHour: number): Anomaly | null {
+export function detectTimeAnomaly(history: RunRecord[], currentHour: number): AnomalyFlag | null {
   if (history.length < 5) return null;
   const hours = history.map((r) => r.hourOfDay);
   const m = mean(hours);
   const sd = stdDev(hours);
-  if (sd === 0 && currentHour === m) return null;
-  const effectiveSd = sd === 0 ? 1 : sd;
-  const z = Math.abs(currentHour - m) / effectiveSd;
+  if (sd === 0) {
+    const diff = Math.abs(currentHour - m);
+    if (diff >= 3) {
+      return {
+        type: 'time',
+        severity: diff > 6 ? 'high' : 'medium',
+        reason: `Result arrived at hour ${currentHour}, outside zero-variance baseline (mean ${m.toFixed(1)}, diff=${diff.toFixed(1)})`,
+      };
+    }
+    return null;
+  }
+  const z = Math.abs(currentHour - m) / sd;
   if (z > 2) {
     const severity: Severity = z > 3 ? 'high' : z > 2.5 ? 'medium' : 'low';
     return {
@@ -46,7 +57,7 @@ export function detectTimeAnomaly(history: RunRecord[], currentHour: number): An
   return null;
 }
 
-export function detectValueAnomaly(history: RunRecord[], currentValue: number | null, thresholdPercent = 15): Anomaly | null {
+export function detectValueAnomaly(history: RunRecord[], currentValue: number | null, thresholdPercent = 15): AnomalyFlag | null {
   if (currentValue === null) return null;
   const values = history.map((r) => r.valueField).filter((v): v is number => v !== null);
   if (values.length < 3) return null;
@@ -64,7 +75,7 @@ export function detectValueAnomaly(history: RunRecord[], currentValue: number | 
   return null;
 }
 
-export function detectFrequencyAnomaly(history: RunRecord[]): Anomaly | null {
+export function detectFrequencyAnomaly(history: RunRecord[]): AnomalyFlag | null {
   if (history.length < 4) return null;
   const recent = history.slice(-4);
   const prior = history.slice(0, -2);
@@ -80,8 +91,8 @@ export function detectFrequencyAnomaly(history: RunRecord[]): Anomaly | null {
   return null;
 }
 
-export function detectAllAnomalies(history: RunRecord[], current: RunRecord): Anomaly[] {
-  const anomalies: Anomaly[] = [];
+export function detectAllAnomalies(history: RunRecord[], current: RunRecord): AnomalyFlag[] {
+  const anomalies: AnomalyFlag[] = [];
   const timeA = detectTimeAnomaly(history, current.hourOfDay);
   if (timeA) anomalies.push(timeA);
   const valueA = detectValueAnomaly(history, current.valueField);

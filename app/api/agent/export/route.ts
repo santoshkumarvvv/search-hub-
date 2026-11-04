@@ -1,55 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiKeyGateway } from '@/lib/saas/apiKeyGateway';
+import { agentStore } from '@/lib/agent/store';
 
 export async function GET(req: NextRequest) {
   const key = req.headers.get('x-api-key') || '';
-  const result = await ApiKeyGateway.verifyAndConsume(key);
-  if (!result?.valid || result.record?.tier !== 'enterprise') {
-    return NextResponse.json({ error: result.error || 'Ultra tier required' }, { status: result.statusCode || 403 });
+  const ver = await ApiKeyGateway.verifyAndConsume(key);
+  if (!ver?.valid || ver.record?.tier !== 'enterprise') {
+    return NextResponse.json({ error: 'Ultra tier required' }, { status: 403 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const format = searchParams.get('format') === 'csv' ? 'csv' : 'json';
-  const jobId = searchParams.get('jobId') || '';
+  const format = (req.nextUrl.searchParams.get('format') || 'json').toLowerCase();
+  const jobId = req.nextUrl.searchParams.get('jobId') || '';
 
-  // Export reads from in-memory job state exposed via the agent GET route.
-  // For durable history across serverless instances, configure KV_REST_API_URL
-  // and KV_REST_API_TOKEN. Without KV, export reflects the current warm instance only.
-  // TODO: wire Vercel KV for cross-instance run history.
-  const jobsRes = await fetch(new URL('/api/agent', req.url).toString(), {
-    headers: { 'x-api-key': key },
-  });
-  const jobsData = await jobsRes.json().catch(() => ({ jobs: [] }));
-  const jobs = Array.isArray(jobsData.jobs) ? jobsData.jobs : [];
+  const allJobs = await agentStore.getAllJobs();
+  const userJobs = allJobs.filter((j) => j.userId === ver.record?.id);
+  const targetJobs = jobId ? userJobs.filter((j) => j.id === jobId) : userJobs;
 
-  let payload: unknown = jobs;
-  if (jobId) {
-    payload = jobs.filter((j: { id?: string }) => j.id === jobId);
+  const rows: Array<{
+    jobId: string;
+    instruction: string;
+    ranAt: number;
+    hourOfDay: number;
+    resultCount: number;
+    topScore: number;
+  }> = [];
+
+  for (const j of targetJobs) {
+    const history = await agentStore.getHistory(j.id);
+    for (const h of history) {
+      rows.push({
+        jobId: j.id,
+        instruction: j.instruction,
+        ranAt: h.ranAt,
+        hourOfDay: h.hourOfDay,
+        resultCount: h.resultCount,
+        topScore: h.topScore,
+      });
+    }
   }
 
   if (format === 'csv') {
-    const rows = Array.isArray(payload) ? payload : [payload];
-    const headers = ['jobId', 'userId', 'instruction', 'cron', 'lastRunAt', 'lastStatus', 'deliveryChannel', 'threshold', 'runCountToday', 'runCountWeek'];
-    const lines = [headers.join(',')];
-    for (const row of rows as Array<Record<string, unknown>>) {
-      lines.push([
-        row.jobId || row.id || '',
-        row.userId || '',
-        row.instruction || '',
-        row.cron || '',
-        row.lastRunAt || '',
-        row.lastStatus || '',
-        row.deliveryChannel || '',
-        row.threshold || '',
-        row.runCountToday || 0,
-        row.runCountWeek || 0,
-      ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','));
-    }
-    return new NextResponse(lines.join('\n'), {
+    const header = 'jobId,instruction,ranAt,hourOfDay,resultCount,topScore';
+    const lines = rows.map(
+      (r) =>
+        `"${r.jobId}","${r.instruction.replace(/"/g, '""')}",${r.ranAt},${r.hourOfDay},${r.resultCount},${r.topScore}`
+    );
+    return new NextResponse([header, ...lines].join('\n'), {
       status: 200,
-      headers: { 'Content-Type': 'text/csv', 'Content-Disposition': 'attachment; filename="agent-export.csv"' },
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="agent-history.csv"',
+      },
     });
   }
 
-  return NextResponse.json(payload);
+  return NextResponse.json({ count: rows.length, history: rows });
 }
