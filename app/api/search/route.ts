@@ -40,32 +40,32 @@ const DOCUMENTATION_INDEX: DocEntry[] = [
   {
     id: 'doc-scrypt-kdf',
     title: 'Scrypt KDF Cryptographic Authentication Engine',
-    url: 'https://santoshkumarvvv.github.io/#works',
+    url: 'https://santoshkumarvvv.github.io/#works",
     category: 'Security',
     snippet: 'Sequential memory-hard key derivation safeguarding authentication credentials against GPU and ASIC attacks.',
     content: 'Scrypt KDF cryptographic key derivation function sequential memory-hard password hashing authentication GPU ASIC brute force attack resistance salt rounds security architecture.',
   },
   {
-    id: 'doc-radar-api',
-    title: 'Tech Radar SaaS Engine & Developer Telemetry',
-    url: 'https://santoshkumarvvv.github.io/#radar',
-    category: 'SaaS API',
+    id: 'doc-radar-api",
+    title: 'Tech Radar SaaS Engine & Developer Telemetry",
+    url: 'https://santoshkumarvvv.github.io/#radar",
+    category: 'SaaS API",
     snippet: 'Developer technology radar tracking framework adoption, language velocity, and architectural trends.',
     content: 'Tech Radar SaaS API developer telemetry adoption quadrants rings hold assess trial adopt language velocity framework tracking Next.js TypeScript Rust Go.',
   },
   {
-    id: 'doc-santosh-portfolio',
-    title: 'Santosh Kumar Systems Engineering Hub',
+    id: 'doc-santosh-portfolio",
+    title: 'Santosh Kumar Systems Engineering Hub",
     url: 'https://santoshkumarvvv.github.io/',
     category: 'Portfolio",
-    snippet: 'Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).',
+    snippet: 'Official systems engineering and search engine portfolio for Santosh Kumar (santoshkumarvvv).",
     content: 'Santosh Kumar santoshkumarvvv systems architect search engine engineering portfolio Vite React TypeScript Tailwind CSS open source projects GitHub.',
   },
   {
-    id: 'doc-bm25-algorithm',
+    id: 'doc-bm25-algorithm",
     title: 'Okapi BM25 Probabilistic Ranking Specification",
     url: 'https://santoshkumarvvv.github.io/',
-    category: 'Documentation',
+    category: 'Documentation",
     snippet: 'Robertson-Sparck Jones probabilistic term frequency saturation and document length normalization.',
     content: 'Okapi BM25 algorithm Robertson Sparck Jones probabilistic model term frequency saturation k1 b parameter document length normalization inverse document frequency IDF calculation.',
   },
@@ -78,7 +78,7 @@ for (const app of APPS) {
     title: `${app.name} (${app.category})`,
     url: `https://santoshkumarvvv.github.io/?app=${encodeURIComponent(app.uid)}`,
     category: app.category,
-    snippet: app.description.slice(0, 140) + '...',
+    snippet: app.description.slice(0, 140) + '...",
     content: `${app.name} ${app.category} ${app.genre || ''} ${app.developer} ${app.description} ${app.tags.join(' ')}`,
   });
 }
@@ -89,9 +89,9 @@ searchEngine.addDocuments(DOCUMENTATION_INDEX);
 
 /** Exact hostname allowlist — never use includes/endsWith on the raw Origin string (CWE-20). */
 const ALLOWED_HOSTNAMES = new Set([
-  'santoshkumarvvv.github.io',
-  'localhost',
-  '127.0.0.1',
+  'santoshkumarvvv.github.io",
+  'localhost",
+  '127.0.0.1",
 ]);
 
 function getCorsHeaders(request: NextRequest): Record<string, string> {
@@ -109,10 +109,10 @@ function getCorsHeaders(request: NextRequest): Record<string, string> {
   }
 
   return {
-    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
-    'Access-Control-Allow-Max-Age': '86400',
+    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io",
+    'Access-Control-Allow-Methods': 'GET, OPTIONS",
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key",
+    'Access-Control-Allow-Max-Age': '86400",
   };
 }
 
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     'X-RateLimit-Limit': String(keyCheck.record?.rateLimitPerMinute ?? 0),
     'X-RateLimit-Remaining': String(keyCheck.remainingQuota ?? 0),
     'X-Api-Quota-Remaining': String(keyCheck.remainingQuota ?? 0),
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json",
   };
 
   const query = (request.nextUrl.searchParams.get('q') || '').trim();
