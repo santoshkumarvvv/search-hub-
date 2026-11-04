@@ -22,8 +22,8 @@ export default {
         gold:      '#f5c542'
       },
       fontFamily: {
-        display: ['Outfit', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-        sans:    ['Plus Jakarta Sans', 'Outfit', 'system-ui', 'sans-serif'],
+        display: ['Syne', 'system-ui', 'sans-serif'],
+        sans:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         mono:    ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
       },
       animation: {

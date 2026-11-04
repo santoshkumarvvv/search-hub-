@@ -8,7 +8,7 @@
   --panel: #12121a;
   --panel-elevated: #181824;
   --line: #262638;
-  --text: #f2f2f8;
+  --text: #ffffff;
   --muted: #a0a0b8;
   --purple: #7c5cff;
   --gold: #f5c542;
@@ -24,8 +24,8 @@ body {
 
 html {
   background:
-    radial-gradient(1100px 540px at 50% -8%, rgba(124, 92, 255, 0.16) 0%, rgba(245, 197, 66, 0.05) 42%, transparent 70%),
-    linear-gradient(180deg, #0a0a0f 0%, #0e0e16 55%, #12121c 100%);
+    radial-gradient(1100px 520px at 50% -10%, rgba(124, 92, 255, 0.18) 0%, rgba(245, 197, 66, 0.05) 45%, transparent 70%),
+    linear-gradient(180deg, #0a0a0f 0%, #0e0e16 55%, #12121a 100%);
   background-attachment: fixed;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
@@ -33,18 +33,17 @@ html {
 
 body {
   color: var(--text);
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, .font-display {
-  font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
-  letter-spacing: -0.02em;
+  font-family: 'Syne', system-ui, sans-serif;
+  letter-spacing: -0.025em;
 }
 
-/* Unified Button System */
 @layer components {
   .btn-base {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200 select-none;
@@ -65,21 +64,20 @@ h1, h2, h3, .font-display {
     box-shadow: 0 14px 34px -6px rgba(124, 92, 255, 0.7), 0 6px 16px -4px rgba(245, 197, 66, 0.35);
   }
   .btn-secondary {
-    @apply btn-base border border-line bg-panel/80 text-white/90 hover:border-purple/70 hover:bg-panel2 hover:text-white;
+    @apply btn-base border border-line bg-panel/80 text-white hover:border-purple/70 hover:bg-panel2;
     box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.6);
   }
   .card-surface {
     @apply rounded-2xl border border-line bg-panel/90 transition-all duration-200;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
   .card-surface:hover {
-    transform: scale(1.02);
+    transform: translateY(-2px) scale(1.02);
     border-color: rgba(124, 92, 255, 0.45);
     box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.65), 0 0 24px -8px rgba(124, 92, 255, 0.2);
   }
 }
 
-/* Keyboard focus stays visible everywhere (WCAG AA). */
 :focus-visible {
   outline: 2px solid #f5c542;
   outline-offset: 3px;

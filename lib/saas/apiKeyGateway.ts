@@ -37,7 +37,21 @@ export interface VerificationResult {
 }
 
 export class ApiKeyGateway {
-  private static keys: Map<string, ApiKeyRecord> = new Map(); // keyId -> ApiKeyRecord
+  private static keys: Map<string, ApiKeyRecord> = new Map([
+    [
+      "key_homepagedemo0001",
+      {
+        id: "key_homepagedemo0001",
+        keyHash: "scrypt$v1$00112233445566778899aabbccddeeff$d575c15ed084c33a26dba6800ecf32ab5fc5a0fd60dc683752c3bda6367e31685fd6a3175376b7820247ec1c752f94ad1e8ffb9949e87028a95e1c6ceeb96d1f",
+        name: "Homepage Live Demo Widget (Free Tier)",
+        tier: "free",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        totalUsage: 0,
+        monthlyQuota: 1000,
+        rateLimitPerMinute: 10,
+      },
+    ],
+  ]);
   private static requestTimestamps: Map<string, { timestamps: number[]; expiresAt: number }> = new Map();
   private static readonly TIMESTAMP_TTL_MS = 60_000;
 

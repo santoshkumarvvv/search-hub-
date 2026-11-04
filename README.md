@@ -122,3 +122,15 @@ npm run build
 ### License
 
 Released under the [MIT License](./LICENSE) · Engineered by **[Santosh Kumar (@santoshkumarvvv)](https://github.com/santoshkumarvvv)**.
+
+## Environment Variables (`.env.example`)
+
+```env
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
+CRON_SECRET=
+RESEND_API_KEY=
+```
