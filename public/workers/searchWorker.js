@@ -53,24 +53,24 @@ function bm25Search(query, catalog) {
 
   const docWords = catalog.map((item) => tokenize(docToText(item)));
   const avgdl = docWords.reduce((s, w) => s + w.length, 0) / N || 1;
-  const df = Object.create(null);
+  const df = new Map();
   const scores = new Float64Array(N);
 
   docWords.forEach((words) => {
     const seen = new Set();
     words.forEach((w) => {
       if (!seen.has(w)) {
-        df[w] = (df[w] || 0) + 1;
+        df.set(w, (df.get(w) || 0) + 1);
         seen.add(w);
       }
     });
   });
 
-  const vocab = Object.keys(df);
+  const vocab = Array.from(df.keys());
 
   tokens.forEach((rawTerm) => {
     let term = rawTerm;
-    if (!df[term] && term.length >= 4) {
+    if (!df.has(term) && term.length >= 4) {
       for (let i = 0; i < vocab.length; i++) {
         if (levenshtein(vocab[i], term) <= 1) {
           term = vocab[i];
@@ -78,7 +78,7 @@ function bm25Search(query, catalog) {
         }
       }
     }
-    const termDf = df[term] || 0;
+    const termDf = df.get(term) || 0;
     if (!termDf) return;
     const idf = Math.log(1 + (N - termDf + 0.5) / (termDf + 0.5));
 
@@ -105,7 +105,7 @@ function bm25Search(query, catalog) {
 }
 
 self.onmessage = function (e) {
-  if (!e || !e.data || typeof e.data !== 'object') {
+  if (!e || (e.origin && e.origin !== self.location.origin) || !e.data || typeof e.data !== 'object') {
     return;
   }
 

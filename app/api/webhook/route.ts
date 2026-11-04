@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     });
 
     console.log(
-      `Razorpay payment captured: plan=${safePlan} tier=${tier} email=${safeEmail} keyId=${record.id}`
+      `Razorpay payment captured: tier=${tier} keyId=${record.id}`
     );
 
     return NextResponse.json({
