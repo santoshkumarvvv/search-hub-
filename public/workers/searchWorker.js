@@ -10,7 +10,7 @@ const b = 0.75;
 function tokenize(text) {
   return String(text || '')
     .toLowerCase()
-    .replace(/[^\p{L}\p{M}\p{N}\s-]/gu, ' ')
+    .replace(/[^a-z0-9\s-]/g, ' ')
     .split(/\s+/)
     .filter((t) => t.length > 1);
 }
