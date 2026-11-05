@@ -7,22 +7,80 @@ export const runtime = 'nodejs';
 const VALID_TIERS: Set<PricingTier> = new Set(['free', 'pro', 'enterprise']);
 const NAME_REGEX = /^[a-zA-Z0-9_\-\s]{2,50}$/;
 
-const mintAttempts = new Map<string, { count: number; resetAt: number }>();
+const KV_URL = process.env.KV_REST_API_URL || '';
+const KV_TOKEN = process.env.KV_REST_API_TOKEN || '';
+const USE_KV = KV_URL.length > 0 && KV_TOKEN.length > 0;
+
 const MINT_LIMIT = 5;
 const MINT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const MINT_WINDOW_SECONDS = 3600;
 
-function checkMintThrottle(ip: string): boolean {
-  const now = Date.now();
-  for (const [k, v] of mintAttempts.entries()) {
-    if (now > v.resetAt) mintAttempts.delete(k);
+// In-memory fallback for local dev when KV is not configured
+const localMintTimestamps = new Map<string, number[]>();
+
+async function kvGet<T>(key: string): Promise<T | null> {
+  if (!USE_KV) return null;
+  try {
+    const res = await fetch(`${KV_URL}/get/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${KV_TOKEN}` },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.result as T) ?? null;
+  } catch {
+    return null;
   }
-  const entry = mintAttempts.get(ip);
-  if (!entry || now > entry.resetAt) {
-    mintAttempts.set(ip, { count: 1, resetAt: now + MINT_WINDOW_MS });
+}
+
+async function kvSet(key: string, value: unknown, exSeconds?: number): Promise<void> {
+  if (!USE_KV) return;
+  try {
+    const url = exSeconds
+      ? `${KV_URL}/set/${encodeURIComponent(key)}?ex=${exSeconds}`
+      : `${KV_URL}/set/${encodeURIComponent(key)}`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(value),
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch {
+    // best-effort
+  }
+}
+
+function mintRateLimitKey(ip: string): string {
+  return `ratelimit:mint:${ip}`;
+}
+
+async function checkMintThrottle(ip: string): Promise<boolean> {
+  const now = Date.now();
+  const windowStart = now - MINT_WINDOW_MS;
+  const rlKey = mintRateLimitKey(ip);
+
+  if (USE_KV) {
+    const timestamps: number[] = (await kvGet<number[]>(rlKey)) || [];
+    const activeTimestamps = timestamps.filter((t) => t > windowStart);
+
+    if (activeTimestamps.length >= MINT_LIMIT) {
+      await kvSet(rlKey, activeTimestamps, MINT_WINDOW_SECONDS);
+      return false;
+    }
+
+    activeTimestamps.push(now);
+    await kvSet(rlKey, activeTimestamps, MINT_WINDOW_SECONDS);
     return true;
   }
-  if (entry.count >= MINT_LIMIT) return false;
-  entry.count++;
+
+  const existing = localMintTimestamps.get(ip) || [];
+  const activeLocal = existing.filter((t) => t > windowStart);
+  if (activeLocal.length >= MINT_LIMIT) {
+    localMintTimestamps.set(ip, activeLocal);
+    return false;
+  }
+  activeLocal.push(now);
+  localMintTimestamps.set(ip, activeLocal);
   return true;
 }
 
@@ -47,7 +105,7 @@ export async function POST(request: NextRequest) {
     request.headers.get('x-real-ip') ||
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     'unknown';
-  if (!checkMintThrottle(ip)) {
+  if (!(await checkMintThrottle(ip))) {
     return NextResponse.json(
       {
         error: 'Too many key mint requests from this IP.',
