@@ -10,22 +10,26 @@
 <style>
   :root {
     --bg: #05060a;
-    --card: #0e1017;
-    --border: rgba(255, 255, 255, 0.05);
+    --card: #0c0e14;
+    --border: rgba(255, 255, 255, 0.06);
     --border-hover: rgba(255, 255, 255, 0.14);
-    --text: rgba(255, 255, 255, 0.90);
-    --muted: rgba(255, 255, 255, 0.50);
+    --text: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.52);
     --purple: #7c5cff;
     --gold: #f5c542;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(124, 92, 255, 0.13), transparent 50%),
+      radial-gradient(ellipse 80% 50% at 100% 50%, rgba(245, 197, 66, 0.04), transparent 40%);
+    background-attachment: fixed;
     color: var(--text);
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   h1, h2, h3, .brand {
     font-family: "Syne", system-ui, sans-serif;
@@ -45,9 +49,9 @@
     position: sticky;
     top: 0;
     z-index: 40;
-    background: rgba(5, 6, 10, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+    background: rgba(5, 6, 10, 0.78);
+    backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
   .topbar-inner {
     max-width: 1120px;
@@ -124,24 +128,28 @@
     margin-bottom: 72px;
   }
   .plan {
-    background: var(--card);
+    background: linear-gradient(180deg, rgba(18, 21, 31, 0.92) 0%, rgba(12, 14, 20, 0.97) 100%);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 32px 28px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 24px -8px rgba(0, 0, 0, 0.5);
   }
   .plan:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-4px) scale(1.015);
     border-color: var(--border-hover);
-    box-shadow: 0 20px 44px -16px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 28px 56px -16px rgba(0, 0, 0, 0.8);
   }
   .plan.featured {
     border-color: rgba(124, 92, 255, 0.45);
-    box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.35), 0 0 30px rgba(124, 92, 255, 0.55), 0 0 48px -10px rgba(124, 92, 255, 0.45), 0 24px 48px -16px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.3), 0 0 40px rgba(124, 92, 255, 0.4), 0 0 80px -20px rgba(124, 92, 255, 0.35), 0 24px 48px -16px rgba(0, 0, 0, 0.9);
     position: relative;
+  }
+  .plan.featured:hover {
+    box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.5), 0 0 50px rgba(124, 92, 255, 0.55), 0 0 90px -16px rgba(124, 92, 255, 0.4), 0 32px 64px -16px rgba(0, 0, 0, 0.95);
   }
   .plan-header {
     display: flex;
@@ -301,10 +309,11 @@
     text-align: center;
     margin: 0 auto 72px;
     max-width: 640px;
-    padding: 20px 24px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(124, 92, 255, 0.08) 0%, rgba(245, 197, 66, 0.06) 100%);
-    border: 1px solid rgba(124, 92, 255, 0.18);
+    padding: 22px 28px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(124, 92, 255, 0.1) 0%, rgba(245, 197, 66, 0.06) 100%);
+    border: 1px solid rgba(124, 92, 255, 0.22);
+    box-shadow: 0 0 40px -12px rgba(124, 92, 255, 0.25);
   }
   .guarantee strong {
     color: var(--text);
