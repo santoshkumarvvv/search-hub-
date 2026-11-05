@@ -53,12 +53,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="bg-ink font-sans text-white/90 antialiased selection:bg-white/15 selection:text-white">
+      <body className="bg-ink font-sans text-white/90 antialiased selection:bg-white/15 selection:text-white min-h-screen">
         <a className="skip-link" href="#main">
           Skip to content
         </a>
 
-        <header className="sticky top-0 z-40 border-b border-white/5 bg-ink/85 backdrop-blur-md">
+        <header className="sticky top-0 z-40 border-b border-white/5 bg-ink/80 backdrop-blur-xl">
           <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-4 sm:px-6">
             <Link
               href="/"
