@@ -7,7 +7,7 @@ import Script from 'next/script';
 // Fallback matches the seeded demo key in apiKeyGateway.ts so local dev works out of the box.
 const SANDBOX_DEMO_KEY =
   process.env.NEXT_PUBLIC_DEMO_API_KEY ||
-  ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_);
+  ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_');
 
 const BENTO_FEATURES = [
   {
@@ -139,7 +139,7 @@ export default function HomePage() {
         onLoad={() => {
           const w = window as unknown as { SearchEmbed?: { init: () => void } };
           w.SearchEmbed?.init();
-        }
+        }}
       />
 
       {/* 1. HERO */}
