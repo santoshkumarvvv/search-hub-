@@ -10,20 +10,24 @@
 <style>
   :root {
     --bg: #05060a;
-    --card: #0e1017;
-    --border: rgba(255, 255, 255, 0.05);
+    --card: #0c0e14;
+    --border: rgba(255, 255, 255, 0.06);
     --border-hover: rgba(255, 255, 255, 0.14);
-    --text: rgba(255, 255, 255, 0.90);
-    --muted: rgba(255, 255, 255, 0.50);
+    --text: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.52);
     --gold: #f5c542;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(124, 92, 255, 0.12), transparent 50%),
+      radial-gradient(ellipse 60% 40% at 0% 80%, rgba(124, 92, 255, 0.05), transparent 40%);
+    background-attachment: fixed;
     color: var(--text);
     font-family: "Inter", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   h1, .title, .brand {
     font-family: "Syne", system-ui, sans-serif;
@@ -42,9 +46,9 @@
     position: sticky;
     top: 0;
     z-index: 40;
-    background: rgba(5, 6, 10, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+    background: rgba(5, 6, 10, 0.78);
+    backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
   .topbar-inner {
     max-width: 1120px;
@@ -100,10 +104,11 @@
     font-size: 1.05rem;
     outline: none;
     margin-bottom: 12px;
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.2s ease;
   }
   .search-box:focus {
-    border-color: rgba(255, 255, 255, 0.22);
+    border-color: rgba(124, 92, 255, 0.45);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.15), 0 0 24px -4px rgba(124, 92, 255, 0.25);
   }
   .meta {
     font-family: "JetBrains Mono", monospace;
@@ -115,16 +120,18 @@
     list-style: none;
   }
   .result {
-    background: var(--card);
+    background: linear-gradient(180deg, rgba(18, 21, 31, 0.9) 0%, rgba(12, 14, 20, 0.95) 100%);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 20px 24px;
     margin-bottom: 12px;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 20px -8px rgba(0,0,0,0.4);
   }
   .result:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-3px) scale(1.01);
     border-color: var(--border-hover);
+    box-shadow: 0 16px 36px -12px rgba(0,0,0,0.7);
   }
   .result .title {
     font-weight: 700;
