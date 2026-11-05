@@ -509,7 +509,7 @@ function pay(plan, btn) {
   });
   rzp.open();
 }
-document.querySelectorAll('[href^="#razorpay-"]).forEach(function (el) {
+document.querySelectorAll('[href^="#razorpay-"]').forEach(function (el) {
   el.addEventListener("click", function (e) {
     e.preventDefault();
     var plan = el.getAttribute("href").split("-")[1];
