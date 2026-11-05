@@ -301,6 +301,14 @@ try {
   };
   worker.postMessage({ type: 'INDEX_CATALOG', payload: DOCS });
   useWorker = true;
+  // 3s timeout fallback if worker stuck on Starting up / indexing
+  setTimeout(function() {
+    if (useWorker && meta && meta.textContent.indexOf('indexed') === -1 && meta.textContent.indexOf('results') === -1) {
+      useWorker = false;
+      if (worker) { try { worker.terminate(); } catch(e) {} worker = null; }
+      meta.textContent = DOCS.length + ' documents ready · main-thread fallback (worker timeout)';
+    }
+  }, 3000);
 } catch (err) {
   useWorker = false;
   worker = null;
