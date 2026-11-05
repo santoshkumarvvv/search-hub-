@@ -15,7 +15,7 @@ function escapeHtml(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;);
+    .replace(/'/g, '&#39;');
 }
 
 function resolveTier(plan: string): PricingTier {
@@ -32,13 +32,13 @@ function resolveTier(plan: string): PricingTier {
  */
 function encryptSecret(plaintext: string): string {
   const secret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
-  if (!secret) throw new Error('RAZORPAY_WEBHOOK_SECRET required for key encryption);
+  if (!secret) throw new Error('RAZORPAY_WEBHOOK_SECRET required for key encryption');
   const key = crypto.createHash('sha256').update(secret).digest();
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
   const enc = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
-  return Buffer.concat([iv, tag, enc]).toString('base64);
+  return Buffer.concat([iv, tag, enc]).toString('base64');
 }
 
 export async function POST(req: NextRequest) {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
   const signature = req.headers.get('x-razorpay-signature') || '';
   const body = await req.text();
 
-  const expected = crypto.createHmac('sha256', secret).update(body).digest('hex);
+  const expected = crypto.createHmac('sha256', secret).update(body).digest('hex');
 
   if (
     signature.length !== expected.length ||
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
       `_${safePlan.replace(/[^a-zA-Z0-9_-]/g, '') || 'plan'}`;
 
     const { rawKey, record } = await ApiKeyGateway.generateKey(keyLabel, tier);
-    const claimToken = crypto.randomBytes(16).toString('hex);
+    const claimToken = crypto.randomBytes(16).toString('hex');
     const createdAt = new Date().toISOString();
 
     // Encrypt the raw API key before persisting — KV leak alone cannot expose it
@@ -174,13 +174,13 @@ export async function GET(req: NextRequest) {
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
     const key = crypto.createHash('sha256').update(secret).digest();
-    const buf = Buffer.from(claim.apiKey, 'base64);
+    const buf = Buffer.from(claim.apiKey, 'base64');
     const iv = buf.subarray(0, 12);
     const tag = buf.subarray(12, 28);
     const enc = buf.subarray(28);
     const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
     decipher.setAuthTag(tag);
-    plaintextKey = decipher.update(enc) + decipher.final('utf8);
+    plaintextKey = decipher.update(enc) + decipher.final('utf8');
   } catch {
     return NextResponse.json({ error: 'Key decryption failed' }, { status: 500 });
   }
