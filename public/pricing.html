@@ -139,7 +139,9 @@
     box-shadow: 0 20px 44px -16px rgba(0, 0, 0, 0.8);
   }
   .plan.featured {
-    border-color: rgba(255, 255, 255, 0.16);
+    border-color: rgba(124, 92, 255, 0.45);
+    box-shadow: 0 0 0 1px rgba(124, 92, 255, 0.25), 0 0 48px -10px rgba(124, 92, 255, 0.45), 0 24px 48px -16px rgba(0, 0, 0, 0.9);
+    position: relative;
   }
   .plan-header {
     display: flex;
@@ -230,6 +232,13 @@
   .btn-secondary:hover {
     border-color: rgba(255, 255, 255, 0.18);
   }
+  .trust-line {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-top: 10px;
+    letter-spacing: 0.01em;
+  }
   table {
     width: 100%;
     border-collapse: collapse;
@@ -288,6 +297,24 @@
     border: 1px solid var(--border);
     color: var(--text);
   }
+  .guarantee {
+    text-align: center;
+    margin: 0 auto 72px;
+    max-width: 640px;
+    padding: 20px 24px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(124, 92, 255, 0.08) 0%, rgba(245, 197, 66, 0.06) 100%);
+    border: 1px solid rgba(124, 92, 255, 0.18);
+  }
+  .guarantee strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .guarantee p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 6px;
+  }
   .note {
     text-align: center;
     color: var(--muted);
@@ -338,7 +365,7 @@
         <p class="who-it-fits">Fits personal sites, portfolios, and technical blogs.</p>
         <div class="amount">₹19<span>/month</span></div>
         <ul>
-          <li>1 search widget (&lt;2 KB gzip)</li>
+          <li>1 search widget (<2 KB gzip)</li>
           <li>Up to 5,000 indexed docs</li>
           <li>Okapi BM25 + 1-edit typo tolerance</li>
           <li>Web Worker offloading</li>
@@ -347,7 +374,10 @@
           <li class="no">Scheduled search agents</li>
         </ul>
       </div>
-      <a class="btn btn-secondary" href="#razorpay-starter">Pay ₹19/mo with UPI</a>
+      <div>
+        <a class="btn btn-secondary" href="#razorpay-starter">Pay ₹19/mo with UPI</a>
+        <p class="trust-line">UPI · Cancel anytime · No card needed</p>
+      </div>
     </div>
 
     <div class="plan featured">
@@ -359,16 +389,19 @@
         <p class="who-it-fits">Fits indie SaaS products, documentation hubs, and production web apps.</p>
         <div class="amount">₹99<span>/month</span></div>
         <ul>
-          <li>Unlimited widgets &amp; documents</li>
+          <li>Unlimited widgets & documents</li>
           <li>50,000 hosted API searches / month</li>
           <li>Everything in Solo Dev</li>
           <li>Scrypt API key gateway + rate quotas</li>
-          <li>Custom ranking boosts &amp; exports</li>
+          <li>Custom ranking boosts & exports</li>
           <li>Priority engineering support</li>
           <li class="no">Scheduled search agents</li>
         </ul>
       </div>
-      <a class="btn btn-primary" href="#razorpay-pro">Choose Team — ₹99/mo</a>
+      <div>
+        <a class="btn btn-primary" href="#razorpay-pro">Choose Team — ₹99/mo</a>
+        <p class="trust-line">UPI · Cancel anytime · No card needed</p>
+      </div>
     </div>
 
     <div class="plan">
@@ -383,12 +416,20 @@
           <li>Everything in Team</li>
           <li>Scheduled autonomous agent runs</li>
           <li>3 runs/day, 15 runs/week</li>
-          <li>Semantic drift &amp; contradiction alerts</li>
-          <li>Dedicated priority routing &amp; SLA</li>
+          <li>Semantic drift & contradiction alerts</li>
+          <li>Dedicated priority routing & SLA</li>
         </ul>
       </div>
-      <a class="btn btn-secondary" href="#razorpay-ultra">Choose Platform — ₹199/mo</a>
+      <div>
+        <a class="btn btn-secondary" href="#razorpay-ultra">Choose Platform — ₹199/mo</a>
+        <p class="trust-line">UPI · Cancel anytime · No card needed</p>
+      </div>
     </div>
+  </div>
+
+  <div class="guarantee">
+    <strong>14-day money-back guarantee</strong>
+    <p>Not satisfied? Email us within 14 days for a full refund. No questions, no forms.</p>
   </div>
 
   <h2 style="margin-bottom:16px">How SearchEmbed compares</h2>
@@ -398,19 +439,19 @@
     </thead>
     <tbody>
       <tr><td>Base monthly cost</td><td>$50–500/mo</td><td>$30+/mo</td><td>$22+/mo</td><td class="highlight">₹19–₹199/mo</td></tr>
-      <tr><td>Client-side mode</td><td>None</td><td>Server required</td><td>Server required</td><td class="highlight">Included (&lt;2 KB gzip)</td></tr>
+      <tr><td>Client-side mode</td><td>None</td><td>Server required</td><td>Server required</td><td class="highlight">Included (<2 KB gzip)</td></tr>
       <tr><td>Setup time</td><td>Days</td><td>Hours</td><td>Hours</td><td class="highlight">60 seconds — one script tag</td></tr>
       <tr><td>Runtime dependencies</td><td>Heavy SDK</td><td>Docker + cluster</td><td>Docker + cluster</td><td class="highlight">Zero dependencies</td></tr>
       <tr><td>Query privacy</td><td>Third-party cloud</td><td>Hosted server</td><td>Hosted server</td><td class="highlight">Local or scrypt-vaulted API</td></tr>
-      <tr><td>India billing</td><td>USD card only</td><td>USD card only</td><td>USD card only</td><td class="highlight">UPI &amp; INR native</td></tr>
-      <tr><td>Retrieval latency</td><td>50–150ms network</td><td>20–80ms</td><td>20–80ms</td><td class="highlight">&lt;1ms local / edge BM25</td></tr>
+      <tr><td>India billing</td><td>USD card only</td><td>USD card only</td><td>USD card only</td><td class="highlight">UPI & INR native</td></tr>
+      <tr><td>Retrieval latency</td><td>50–150ms network</td><td>20–80ms</td><td>20–80ms</td><td class="highlight"><1ms local / edge BM25</td></tr>
     </tbody>
   </table>
 
   <div class="faq">
     <h2 style="margin-bottom:20px">Frequently asked questions</h2>
     <details><summary>Does client-side mode really need no server?</summary><p>Yes. In client-side mode, Okapi BM25 ranking, tokenization, and typo tolerance run inside the visitor's browser or Web Worker against a static JSON index. Hosted API keys on Team and Platform add server-side rate limiting and multi-origin search.</p></details>
-    <details><summary>How do I embed it?</summary><p>One script tag: <code>&lt;script src="https://santoshkumarvvv.github.io/embed.js"&gt;&lt;/script&gt;</code> plus a container div with <code>data-search-embed</code>. Full documentation is in the repository README.</p></details>
+    <details><summary>How do I embed it?</summary><p>One script tag: <code><script src="https://santoshkumarvvv.github.io/embed.js"></script></code> plus a container div with <code>data-search-embed</code>. Full documentation is in the repository README.</p></details>
     <details><summary>Can I cancel anytime?</summary><p>Yes. UPI AutoPay or monthly payment — cancel from the dashboard at any time with zero lock-in.</p></details>
     <details><summary>Is my search data private?</summary><p>With client-side mode, search queries never leave the browser. With the hosted API gateway, keys are hashed using scrypt (N=16384, r=8, p=1) and verified in constant time.</p></details>
     <details><summary>What does Platform's autonomous agent mode do?</summary><p>You define a recurring search objective — such as monitoring high-signal records every morning — and the agent executes on schedule, detects semantic drift or anomalies, and exports clean JSON/CSV digests.</p></details>
@@ -459,7 +500,7 @@ function pay(plan, btn) {
   });
   rzp.open();
 }
-document.querySelectorAll('[href^="#razorpay-"]').forEach(function (el) {
+document.querySelectorAll('[href^="#razorpay-"]).forEach(function (el) {
   el.addEventListener("click", function (e) {
     e.preventDefault();
     var plan = el.getAttribute("href").split("-")[1];
