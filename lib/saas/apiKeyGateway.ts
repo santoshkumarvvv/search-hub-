@@ -96,7 +96,7 @@ export class ApiKeyGateway {
     this.seeded = true;
     const demoRaw = process.env.NEXT_PUBLIC_DEMO_API_KEY || '';
     if (!demoRaw.startsWith('sh_live_')) return;
-    const parts = demoRaw.split('_);
+    const parts = demoRaw.split('_');
     if (parts.length !== 4) return;
     const keyId = parts[2];
     const keyHash = await this.hashKey(demoRaw);
@@ -134,13 +134,13 @@ export class ApiKeyGateway {
   public static async generateKey(
     name: string,
     tier: PricingTier = 'free'
-  ): Promise<{ rawKey: string; record: ApiKeyRecord]> {
-    const keyId = crypto.randomBytes(8).toString('hex);
-    const secret = crypto.randomBytes(16).toString('hex);
+  ): Promise<{ rawKey: string; record: ApiKeyRecord }> {
+    const keyId = crypto.randomBytes(8).toString('hex');
+    const secret = crypto.randomBytes(16).toString('hex');
     const rawKey = `sh_live_${keyId}_${secret}`;
     const keyHash = await this.hashKey(rawKey);
 
-    const quotas: Record<PricingTier, { monthly: number; rpm: number]> = {
+    const quotas: Record<PricingTier, { monthly: number; rpm: number }> = {
       free: { monthly: 1000, rpm: 10 },
       pro: { monthly: 50000, rpm: 60 },
       enterprise: { monthly: 500000, rpm: 300 },
@@ -166,7 +166,7 @@ export class ApiKeyGateway {
   public static async mintKey(
     name: string,
     tier: PricingTier = 'free'
-  ): Promise<{ rawKey: string; record: ApiKeyRecord]> {
+  ): Promise<{ rawKey: string; record: ApiKeyRecord }> {
     return this.generateKey(name, tier);
   }
 
@@ -190,7 +190,7 @@ export class ApiKeyGateway {
       };
     }
 
-    const parts = rawKey.split('_);
+    const parts = rawKey.split('_');
     if (parts.length !== 4 || parts[0] !== 'sh' || parts[1] !== 'live' || !parts[2] || !parts[3]) {
       return {
         valid: false,
@@ -224,14 +224,14 @@ export class ApiKeyGateway {
       };
     }
 
-    const hashParts = candidate.keyHash.split('$);
+    const hashParts = candidate.keyHash.split('$');
     const saltHex = hashParts[2];
     const expectedDerivedHex = hashParts[3];
     const computed = await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), {
       ...this.SCRYPT_PARAMS,
       keylen: 64,
     });
-    const expected = Buffer.from(expectedDerivedHex, 'hex);
+    const expected = Buffer.from(expectedDerivedHex, 'hex');
 
     if (computed.length !== expected.length || !crypto.timingSafeEqual(computed, expected)) {
       return {
