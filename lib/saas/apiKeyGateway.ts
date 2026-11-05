@@ -36,24 +36,52 @@ export interface VerificationResult {
   migrationNote?: string;
 }
 
+const KV_URL = process.env.KV_REST_API_URL || '';
+const KV_TOKEN = process.env.KV_REST_API_TOKEN || '';
+const USE_KV = KV_URL.length > 0 && KV_TOKEN.length > 0;
+
+async function kvGet<T>(key: string): Promise<T | null> {
+  if (!USE_KV) return null;
+  try {
+    const res = await fetch(`${KV_URL}/get/${encodeURIComponent(key)}`, {
+      headers: { Authorization: `Bearer ${KV_TOKEN}` },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.result as T) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function kvSet(key: string, value: unknown, exSeconds?: number): Promise<void> {
+  if (!USE_KV) return;
+  try {
+    const url = exSeconds
+      ? `${KV_URL}/set/${encodeURIComponent(key)}?ex=${exSeconds}`
+      : `${KV_URL}/set/${encodeURIComponent(key)}`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(value),
+      signal: AbortSignal.timeout(3000),
+    });
+  } catch {
+    // best-effort
+  }
+}
+
+function rateLimitKey(keyId: string) {
+  return `ratelimit:key:${keyId}`;
+}
+
 export class ApiKeyGateway {
   private static keys: Map<string, ApiKeyRecord> = new Map([
-    [
-      "key_homepagedemo0001",
-      {
-        id: "key_homepagedemo0001",
-        keyHash: "scrypt$v1$00112233445566778899aabbccddeeff$d575c15ed084c33a26dba6800ecf32ab5fc5a0fd60dc683752c3bda6367e31685fd6a3175376b7820247ec1c752f94ad1e8ffb9949e87028a95e1c6ceeb96d1f",
-        name: "Homepage Live Demo Widget (Free Tier)",
-        tier: "free",
-        createdAt: "2026-01-01T00:00:00.000Z",
-        totalUsage: 0,
-        monthlyQuota: 1000,
-        rateLimitPerMinute: 10,
-      },
-    ],
+    // Demo key is loaded from NEXT_PUBLIC_DEMO_API_KEY env var (see seedDemoKey).
+    // No hardcoded keys in source — prevents repo-clone key theft.
   ]);
-  private static requestTimestamps: Map<string, { timestamps: number[]; expiresAt: number }> = new Map();
-  private static readonly TIMESTAMP_TTL_MS = 60_000;
+  private static seeded = false;
 
   // scrypt KDF parameters (N=16384, r=8, p=1, keylen=64)
   private static readonly SCRYPT_PARAMS = {
@@ -63,12 +91,29 @@ export class ApiKeyGateway {
     maxmem: 32 * 1024 * 1024,
   };
 
+  private static async seedDemoKey(): Promise<void> {
+    if (this.seeded) return;
+    this.seeded = true;
+    const demoRaw = process.env.NEXT_PUBLIC_DEMO_API_KEY || '';
+    if (!demoRaw.startsWith('sh_live_')) return;
+    const parts = demoRaw.split('_);
+    if (parts.length !== 4) return;
+    const keyId = parts[2];
+    const keyHash = await this.hashKey(demoRaw);
+    this.keys.set(`key_${keyId}`, {
+      id: `key_${keyId}`,
+      keyHash,
+      name: 'Homepage Live Demo Widget (Free Tier)',
+      tier: 'free',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      totalUsage: 0,
+      monthlyQuota: 1000,
+      rateLimitPerMinute: 10,
+    });
+  }
+
   private static pruneExpiredTimestamps(now: number): void {
-    for (const [id, entry] of this.requestTimestamps.entries()) {
-      if (now > entry.expiresAt) {
-        this.requestTimestamps.delete(id);
-      }
-    }
+    // no-op: rate-limit state now lives in KV with TTL
   }
 
   /**
@@ -89,13 +134,13 @@ export class ApiKeyGateway {
   public static async generateKey(
     name: string,
     tier: PricingTier = 'free'
-  ): Promise<{ rawKey: string; record: ApiKeyRecord }> {
-    const keyId = crypto.randomBytes(8).toString('hex');
-    const secret = crypto.randomBytes(16).toString('hex');
+  ): Promise<{ rawKey: string; record: ApiKeyRecord]> {
+    const keyId = crypto.randomBytes(8).toString('hex);
+    const secret = crypto.randomBytes(16).toString('hex);
     const rawKey = `sh_live_${keyId}_${secret}`;
     const keyHash = await this.hashKey(rawKey);
 
-    const quotas: Record<PricingTier, { monthly: number; rpm: number }> = {
+    const quotas: Record<PricingTier, { monthly: number; rpm: number]> = {
       free: { monthly: 1000, rpm: 10 },
       pro: { monthly: 50000, rpm: 60 },
       enterprise: { monthly: 500000, rpm: 300 },
@@ -113,23 +158,28 @@ export class ApiKeyGateway {
     };
 
     this.keys.set(record.id, record);
+    // Persist key record to KV so it survives serverless cold starts
+    await kvSet(`apikey:record:${record.id}`, record);
     return { rawKey, record };
   }
 
   public static async mintKey(
     name: string,
     tier: PricingTier = 'free'
-  ): Promise<{ rawKey: string; record: ApiKeyRecord }> {
+  ): Promise<{ rawKey: string; record: ApiKeyRecord]> {
     return this.generateKey(name, tier);
   }
 
   /**
    * Verifies incoming raw key (sh_live_<keyId>_<randomSecret>) using O(1) map lookup
    * and a single scrypt + timingSafeEqual verification call per request.
+   * Rate limits are enforced via KV-backed sliding window so they hold across
+   * all serverless instances.
    */
   public static async verifyAndConsume(rawKey: string): Promise<VerificationResult> {
+    await this.seedDemoKey();
+
     const now = Date.now();
-    this.pruneExpiredTimestamps(now);
 
     if (!rawKey || typeof rawKey !== 'string' || !rawKey.startsWith('sh_live_')) {
       return {
@@ -140,7 +190,7 @@ export class ApiKeyGateway {
       };
     }
 
-    const parts = rawKey.split('_');
+    const parts = rawKey.split('_);
     if (parts.length !== 4 || parts[0] !== 'sh' || parts[1] !== 'live' || !parts[2] || !parts[3]) {
       return {
         valid: false,
@@ -151,12 +201,16 @@ export class ApiKeyGateway {
     }
 
     const keyId = parts[2];
-    const candidate = this.keys.get(`key_${keyId}`) || this.keys.get(keyId);
+    let candidate = this.keys.get(`key_${keyId}`) || this.keys.get(keyId) || undefined;
+    if (!candidate && USE_KV) {
+      candidate = (await kvGet<ApiKeyRecord>(`apikey:record:key_${keyId}`)) || undefined;
+      if (candidate) this.keys.set(candidate.id, candidate);
+    }
     if (!candidate) {
       return {
         valid: false,
         error: 'API key not recognized or revoked.',
-        help: 'The provided API key does not match active records. Verify your key or mint a new one at /api/v1/keys.',
+        help: 'The provided key does not match active records. Verify your key or mint a new one at /api/v1/keys.',
         statusCode: 401,
       };
     }
@@ -170,20 +224,20 @@ export class ApiKeyGateway {
       };
     }
 
-    const hashParts = candidate.keyHash.split('$');
+    const hashParts = candidate.keyHash.split('$);
     const saltHex = hashParts[2];
     const expectedDerivedHex = hashParts[3];
     const computed = await scryptAsync(rawKey, Buffer.from(saltHex, 'hex'), {
       ...this.SCRYPT_PARAMS,
       keylen: 64,
     });
-    const expected = Buffer.from(expectedDerivedHex, 'hex');
+    const expected = Buffer.from(expectedDerivedHex, 'hex);
 
     if (computed.length !== expected.length || !crypto.timingSafeEqual(computed, expected)) {
       return {
         valid: false,
         error: 'API key not recognized or revoked.',
-        help: 'Cryptographic verification failed for the provided API key.',
+        help: 'Cryptographic verification failed for the provided key.',
         statusCode: 401,
       };
     }
@@ -197,13 +251,14 @@ export class ApiKeyGateway {
       };
     }
 
-    const oneMinuteAgo = now - this.TIMESTAMP_TTL_MS;
-    const existingEntry = this.requestTimestamps.get(candidate.id);
-    const activeTimestamps = (existingEntry ? existingEntry.timestamps : []).filter(
-      (t) => t > oneMinuteAgo
-    );
+    // KV-backed sliding-window rate limit (shared across all serverless instances)
+    const rlKey = rateLimitKey(candidate.id);
+    const timestamps: number[] = (await kvGet<number[]>(rlKey)) || [];
+    const oneMinuteAgo = now - 60_000;
+    const activeTimestamps = timestamps.filter((t) => t > oneMinuteAgo);
 
     if (activeTimestamps.length >= candidate.rateLimitPerMinute) {
+      await kvSet(rlKey, activeTimestamps, 60);
       return {
         valid: false,
         error: `Rate limit of ${candidate.rateLimitPerMinute} requests per minute exceeded.`,
@@ -212,11 +267,9 @@ export class ApiKeyGateway {
     }
 
     activeTimestamps.push(now);
-    this.requestTimestamps.set(candidate.id, {
-      timestamps: activeTimestamps,
-      expiresAt: now + this.TIMESTAMP_TTL_MS,
-    });
+    await kvSet(rlKey, activeTimestamps, 60);
     candidate.totalUsage += 1;
+    await kvSet(`apikey:record:${candidate.id}`, candidate);
 
     const remainingQuota = candidate.monthlyQuota - candidate.totalUsage;
 
@@ -238,7 +291,10 @@ export class ApiKeyGateway {
   }
 
   public static revokeKey(id: string): boolean {
-    this.requestTimestamps.delete(id);
+    if (USE_KV) {
+      kvSet(rateLimitKey(id), null).catch(() => {});
+      kvSet(`apikey:record:${id}`, null).catch(() => {});
+    }
     return this.keys.delete(id);
   }
 }

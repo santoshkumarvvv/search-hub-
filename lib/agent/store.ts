@@ -11,6 +11,12 @@ const KV_URL = process.env.KV_REST_API_URL || '';
 const KV_TOKEN = process.env.KV_REST_API_TOKEN || '';
 const USE_KV = KV_URL.length > 0 && KV_TOKEN.length > 0;
 
+if (!USE_KV && process.env.NODE_ENV === 'production') {
+  console.warn(
+    '[agentStore] KV_REST_API_URL / KV_REST_API_TOKEN not set in production — billing subscriptions and one-time key claims will be lost on every cold start. Configure Vercel KV.'
+  );
+}
+
 export interface SubscriptionRecord {
   paymentId: string;
   plan: string;

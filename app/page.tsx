@@ -3,8 +3,11 @@
 import { useEffect } from 'react';
 import Script from 'next/script';
 
-// Public sandbox free-tier key registered in lib/saas/apiKeyGateway.ts (key_homepagedemo0001)
-const SANDBOX_DEMO_KEY = ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_');
+// Demo key comes from NEXT_PUBLIC_DEMO_API_KEY (set in Vercel env).
+// Fallback matches the seeded demo key in apiKeyGateway.ts so local dev works out of the box.
+const SANDBOX_DEMO_KEY =
+  process.env.NEXT_PUBLIC_DEMO_API_KEY ||
+  ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_);
 
 const BENTO_FEATURES = [
   {
@@ -14,7 +17,7 @@ const BENTO_FEATURES = [
     span: 'md:col-span-7',
     icon: (
       <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+        <path strokeWidth={1.75} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
       </svg>
     ),
   },
@@ -25,7 +28,7 @@ const BENTO_FEATURES = [
     span: 'md:col-span-5',
     icon: (
       <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <path strokeWidth={1.75} d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
     ),
   },
@@ -36,7 +39,7 @@ const BENTO_FEATURES = [
     span: 'md:col-span-5',
     icon: (
       <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 6h16M4 12h16M4 18h10" />
+        <path strokeWidth={1.75} d="M4 6h16M4 12h16M4 18h10" />
       </svg>
     ),
   },
@@ -47,7 +50,7 @@ const BENTO_FEATURES = [
     span: 'md:col-span-7',
     icon: (
       <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        <path strokeWidth={1.75} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
       </svg>
     ),
   },
@@ -136,10 +139,10 @@ export default function HomePage() {
         onLoad={() => {
           const w = window as unknown as { SearchEmbed?: { init: () => void } };
           w.SearchEmbed?.init();
-        }}
+        }
       />
 
-      {/* 1. HERO — Max 8 words, outcome-first, 1 supporting sentence, 1 primary + 1 ghost CTA, zero clutter */}
+      {/* 1. HERO */}
       <section className="mx-auto max-w-[1120px] px-4 pt-20 pb-14 sm:px-6 sm:pt-28 sm:pb-16 text-center">
         <h1 className="font-display mx-auto max-w-4xl text-4xl font-extrabold leading-[1.06] tracking-tight text-white/90 sm:text-6xl md:text-7xl">
           Search that{' '}
@@ -160,7 +163,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. LIVE INTERACTIVE SANDBOX — Full width, continuous dark surface, /embed.js -> /api/search */}
+      {/* 2. LIVE INTERACTIVE SANDBOX */}
       <section
         id="sandbox"
         aria-label="Live BM25 Search Sandbox"
@@ -195,8 +198,6 @@ export default function HomePage() {
               aria-hidden="true"
             >
               <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
                 strokeWidth={1.75}
                 d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"
               />
@@ -233,7 +234,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. BENTO GRID OF FOUR CARDS — Equal height in row, icon + 1 sentence, hover lift scale(1.02) */}
+      {/* 3. BENTO GRID OF FOUR CARDS */}
       <section id="features" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6">
         <div className="mb-10 max-w-2xl">
           <h2 className="font-display text-2xl font-bold text-white/90 sm:text-4xl">
@@ -262,7 +263,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. THREE-STEP FLOW — Index your data -> Search anywhere -> Get ranked results */}
+      {/* 4. THREE-STEP FLOW */}
       <section id="how-it-works" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6">
         <div className="mb-10 max-w-2xl">
           <h2 className="font-display text-2xl font-bold text-white/90 sm:text-4xl">
@@ -286,7 +287,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. PRICING TEASER — ₹19 left, ₹99 center with Most popular for indie devs badge + who-it-fits line, ₹199 right anchor */}
+      {/* 5. PRICING TEASER */}
       <section id="pricing" className="mx-auto max-w-[1120px] px-4 py-20 sm:px-6">
         <div className="mb-12 text-center">
           <h2 className="font-display text-2xl font-bold text-white/90 sm:text-4xl">
@@ -301,9 +302,7 @@ export default function HomePage() {
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${
-                plan.featured ? 'border-white/15' : ''
-              }`}
+              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${plan.featured ? 'border-white/15' : ''}`}
             >
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-2">
