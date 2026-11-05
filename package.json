@@ -3,7 +3,7 @@
   "version": "2.4.0",
   "private": true,
   "type": "module",
-  "description": "High-speed federated query router and universal developer search hub built with TypeScript, Next.js 14, and Tailwind CSS.",
+  "description": "High-speed federated query router and universal developer search hub built with TypeScript, Next.js 15, and Tailwind CSS.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,7 +12,7 @@
     "test": "node --experimental-strip-types --test test/*.test.mjs"
   },
   "dependencies": {
-    "next": "14.2.35",
+    "next": "15.5.29",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

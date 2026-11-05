@@ -10,7 +10,7 @@
     if (!container) return;
 
     var script = document.currentScript || document.querySelector('script[data-index],script[data-index-url],script[data-api-url]');
-    var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]');
+    var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]);
     var resultsEl = container.querySelector('[data-search-results]') || container;
     var statusEl = container.querySelector('[data-search-status]');
     var trigger = container.querySelector('[data-search-trigger]') || container.querySelector("button[data-search-trigger]");
@@ -56,7 +56,7 @@
     function render(results, latencyMs, sourceLabel) {
       if (!results || !results.length) {
         resultsEl.innerHTML = '<div class="search-embed-empty" style="color:rgba(255,255,255,0.5);padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecrft", "scrypt", or "wireguard".</div>';
-        setStatus('0 results');
+        setStatus('0 results);
         setExpanded(true);
         return;
       }
@@ -74,7 +74,7 @@
           ? '<a href="' + escapeHtml(url) + '" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600">' + escapeHtml(title) + '</a>'
           : '<span style="color:rgba(255,255,255,0.9);font-weight:600">' + escapeHtml(title) + '</span>';
         var scoreHtml = score
-          ? '<span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:500">BM25 ' + escapeHtml(score) + '</span>'
+          ? '<span style="font-family:\"JetBrains Mono\",monospace;font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:500">BM25 ' + escapeHtml(score) + '</span>'
           : '';
         html += '<li role="option" style="padding:14px 18px;border:1px solid rgba(255,255,255,0.05);border-radius:12px;background:#05060a;transition:border-color 0.15s ease"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">' + titleHtml + scoreHtml + '</div><div style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
       }
@@ -89,13 +89,13 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+        .replace(/'/g, '&#39;);
     }
 
     function runLocalFallback(query, t0) {
       if (indexData) {
         var hits = searchLocal(query, indexData);
-        render(hits, performance.now() - t0, 'BM25 Local Index');
+        render(hits, performance.now() - t0, 'BM25 Local Index);
         return;
       }
       fetch(indexUrl)
@@ -106,7 +106,7 @@
         .then(function (data) {
           indexData = data;
           var hits = searchLocal(query, data);
-          render(hits, performance.now() - t0, 'BM25 Local Index');
+          render(hits, performance.now() - t0, 'BM25 Local Index);
         })
         .catch(function () {
           showError('Could not load search index. Check your connection.');
@@ -115,15 +115,15 @@
 
     function runSearch(query) {
       var t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
-      if (activeController) activeController.abort();
+      if (activeController) activeController abort();
 
       if (!apiUrl && indexData) {
-        render(searchLocal(query, indexData), (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0, 'BM25 Local Index');
+        render(searchLocal(query, indexData), (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0, 'BM25 Local Index);
         return;
       }
 
       activeController = new AbortController();
-      var timer = setTimeout(function () { activeController.abort(); }, FETCH_TIMEOUT_MS);
+      var timer = setTimeout(function () { activeController abort(); }, FETCH_TIMEOUT_MS);
 
       if (apiUrl) {
         var sep = apiUrl.indexOf('?') === -1 ? '?q=' : '&q=';
@@ -140,7 +140,7 @@
           .then(function (data) {
             var list = Array.isArray(data) ? data : (data.results || data.docs || data.items || []);
             var elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
-            render(list.slice(0, 6), elapsed, '/api/search · Okapi BM25');
+            render(list.slice(0, 6), elapsed, '/api/search · Okapi BM25);
           })
           .catch(function (err) {
             clearTimeout(timer);
@@ -163,7 +163,7 @@
           indexData = data;
           var results = searchLocal(query, data);
           var elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
-          render(results, elapsed, 'BM25 Local Index');
+          render(results, elapsed, 'BM25 Local Index);
         })
         .catch(function (err) {
           clearTimeout(timer);
@@ -225,7 +225,7 @@
       clearTimeout(debounceTimer);
       if (!val) {
         resultsEl.innerHTML = '';
-        setStatus('Type a query above to search 52 indexed records');
+        setStatus('Type a query above to search 52 indexed records);
         setExpanded(false);
         return;
       }
