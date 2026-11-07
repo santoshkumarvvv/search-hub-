@@ -8,16 +8,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink:       "#05060a",
-        panel:     "#0e1017",
-        panel2:    "#131620",
-        line:      "rgba(255, 255, 255, 0.05)",
-        muted:     "rgba(255, 255, 255, 0.50)",
+        ink:       "#0a0a0a",
+        panel:     "#ffffff",
+        panel2:    "#f8f8f8",
+        line:      "#e5e5e5",
+        muted:     "#525252",
         accent:    "#7c5cff",
         accent2:   "#00d2a0",
         highlight: "#f5c542",
         purple:    "#7c5cff",
-        danger:    "#ff6b6b",
+        danger:    "#ef4444",
         gold:      "#f5c542"
       },
       fontFamily: {
