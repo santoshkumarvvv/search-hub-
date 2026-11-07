@@ -52,6 +52,7 @@ h1, h2, h3, .font-display {
 @layer components {
   .btn-base {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold transition-all duration-200 select-none;
+    min-height: 44px;
     transform: translateY(0);
   }
 
