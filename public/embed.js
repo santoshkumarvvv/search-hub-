@@ -49,13 +49,13 @@
     }
 
     function showError(msg) {
-      resultsEl.innerHTML = '<div class="search-embed-error" style="color:#ff6b6b;padding:12px">' + escapeHtml(msg) + '</div>';
+      resultsEl.innerHTML = '<div class="search-embed-error" style="color:#d7263d;padding:12px">' + escapeHtml(msg) + '</div>';
       setExpanded(true);
     }
 
     function render(results, latencyMs, sourceLabel) {
       if (!results || !results.length) {
-        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:rgba(255,255,255,0.5);padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecrft", "scrypt", or "wireguard".</div>';
+        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:#525252;padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecrft", "scrypt", or "wireguard".</div>';
         setStatus('0 results');
         setExpanded(true);
         return;
@@ -63,20 +63,21 @@
       if (typeof latencyMs === 'number') {
         setStatus(results.length + ' results in ' + latencyMs.toFixed(1) + ' ms · ' + (sourceLabel || 'Okapi BM25'));
       }
-      var html = '<ul style="list-style:none;padding:0;margin:0;display:grid;gap:10px">';
+      var html = '<ul style="list-style:none;padding:0;margin:0">';
       for (var i = 0; i < results.length; i++) {
         var r = results[i];
         var title = r.title || r.name || '';
         var desc = r.snippet || r.description || r.summary || '';
         var url = r.url || '';
         var score = typeof r.score === 'number' ? r.score.toFixed(2) : '';
+        var urlHtml = url ? '<div style="color:#006621;font-size:0.875rem">' + escapeHtml(url) + '</div>' : '';
         var titleHtml = url
-          ? '<a href="' + escapeHtml(url) + '" style="color:rgba(255,255,255,0.9);text-decoration:none;font-weight:600">' + escapeHtml(title) + '</a>'
-          : '<span style="color:rgba(255,255,255,0.9);font-weight:600">' + escapeHtml(title) + '</span>';
+          ? '<a href="' + escapeHtml(url) + '" style="color:#1a0dab;text-decoration:none;font-size:1.125rem">' + escapeHtml(title) + '</a>'
+          : '<span style="color:#1a0dab;font-size:1.125rem">' + escapeHtml(title) + '</span>';
         var scoreHtml = score
-          ? '<span style="font-family:\"JetBrains Mono\",monospace;font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:500">BM25 ' + escapeHtml(score) + '</span>'
+          ? '<span style="font-family:ui-monospace,monospace;font-size:0.75rem;color:#525252">BM25 ' + escapeHtml(score) + '</span>'
           : '';
-        html += '<li role="option" style="padding:14px 18px;border:1px solid rgba(255,255,255,0.05);border-radius:12px;background:#05060a;transition:border-color 0.15s ease"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">' + titleHtml + scoreHtml + '</div><div style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
+        html += '<li role="option" style="padding:12px 4px 16px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">' + titleHtml + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
       }
       html += '</ul>';
       resultsEl.innerHTML = html;
