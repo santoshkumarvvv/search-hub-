@@ -240,10 +240,14 @@ export default function HomePage() {
 
       rec.onerror = () => {
         setListening(false);
+        if (statusEl) statusEl.textContent = 'Mic failed — try again or type your query';
       };
 
       rec.onend = () => {
         setListening(false);
+        if (statusEl && !statusEl.textContent?.startsWith('Mic failed') && !statusEl.textContent?.startsWith('Mic busy')) {
+          statusEl.textContent = '52 records indexed live';
+        }
         const inp =
           inputRef.current ||
           (document.querySelector('input[data-search-input]') as HTMLInputElement | null);
@@ -256,6 +260,7 @@ export default function HomePage() {
       rec.start();
     } catch {
       setListening(false);
+      if (statusEl) statusEl.textContent = 'Mic busy — try again in a moment';
     }
   };
 
@@ -270,7 +275,6 @@ export default function HomePage() {
         }}
       />
 
-      {/* HERO */}
       <section className="mx-auto max-w-[1120px] px-4 pt-14 pb-8 sm:px-6 sm:pt-20 sm:pb-10 text-center">
         <h1 className="font-display mx-auto max-w-3xl text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl md:text-6xl">
           Search that{' '}
@@ -282,13 +286,12 @@ export default function HomePage() {
         </p>
 
         <div className="mt-8 flex justify-center">
-          <a href="#sandbox" className="btn-primary px-8">
+          <a href="#sandbox" className="btn-primary min-h-12 px-8">
             Try it live
           </a>
         </div>
       </section>
 
-      {/* LIVE SANDBOX — the hero of the product */}
       <section
         id="sandbox"
         aria-label="Live BM25 Search Sandbox"
@@ -340,7 +343,7 @@ export default function HomePage() {
               aria-label={listening ? 'Stop voice search' : 'Start voice search (Hindi and English)'}
               aria-pressed={listening}
               title={listening ? 'Stop listening' : 'Voice search (Hindi / English)'}
-              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple ${
+              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple ${
                 listening
                   ? 'border-purple bg-purple text-white shadow-[0_0_18px_rgba(124,92,255,0.55)]'
                   : 'border-line bg-white text-muted hover:border-purple/50 hover:text-purple'
@@ -364,7 +367,7 @@ export default function HomePage() {
                 key={q}
                 type="button"
                 data-search-preset={q}
-                className="rounded-lg border border-line bg-white px-2.5 py-1 font-mono text-[11px] text-muted transition hover:border-purple/40 hover:text-ink"
+                className="min-h-10 rounded-full border border-line bg-white px-3 py-2 font-mono text-[11px] text-muted transition hover:border-purple/40 hover:text-ink"
               >
                 {q}
               </button>
@@ -375,7 +378,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FEATURES */}
       <section id="features" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6 sm:py-16">
         <div className="mb-9 max-w-xl">
           <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
@@ -404,7 +406,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* STEPS */}
       <section id="how-it-works" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6">
         <div className="mb-9 max-w-xl">
           <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
@@ -426,7 +427,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRICING */}
       <section id="pricing" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 sm:py-20">
         <div className="mb-10 text-center">
           <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
@@ -479,7 +479,7 @@ export default function HomePage() {
 
               <a
                 href={plan.href}
-                className={`mt-7 w-full text-center ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
+                className={`mt-7 min-h-12 w-full text-center ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
               >
                 {plan.cta}
               </a>
@@ -488,7 +488,7 @@ export default function HomePage() {
         </div>
 
         <div className="mt-8">
-          <a href="/pricing.html" className="btn-cta-yellow block text-center py-4 text-base">
+          <a href="/pricing.html" className="btn-cta-yellow block min-h-14 w-full text-center py-4 text-base">
             View full pricing & subscribe
           </a>
         </div>
