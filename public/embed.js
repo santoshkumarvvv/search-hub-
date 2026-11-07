@@ -117,7 +117,32 @@
         var scoreHtml = score
           ? '<span style="font-family:ui-monospace,monospace;font-size:0.75rem;color:#525252">BM25 ' + escapeHtml(score) + '</span>'
           : '';
-        html += '<li role="option" style="padding:12px 4px 16px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div>' + titleHtml + editHtml + '</div>' + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
+        
+        var topTerms = [];
+        if (Array.isArray(r.matchedTerms) && r.matchedTerms.length) {
+          topTerms = r.matchedTerms.slice(0, 2);
+        } else if (input.value) {
+          var allTerms = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+          var docFull = ((r.title || '') + ' ' + (r.snippet || '') + ' ' + (r.description || '')).toLowerCase();
+          for (var ti = 0; ti < allTerms.length; ti++) {
+            var termStr = allTerms[ti];
+            if (termStr.length >= 2 && docFull.indexOf(termStr) !== -1) {
+              if (topTerms.indexOf(termStr) === -1) topTerms.push(termStr);
+            }
+          }
+          if (topTerms.length < 2) {
+            for (var ti2 = 0; ti2 < allTerms.length; ti2++) {
+              var termStr2 = allTerms[ti2];
+              if (topTerms.indexOf(termStr2) === -1) topTerms.push(termStr2);
+              if (topTerms.length >= 2) break;
+            }
+          }
+        }
+        var explanationHtml = topTerms.length > 0
+          ? '<div style="font-size:0.75rem;color:#71717a;margin-top:4px">Ranked high for: ' + escapeHtml(topTerms.slice(0, 2).join(', ')) + '</div>'
+          : '';
+
+        html += '<li role="option" style="padding:12px 4px 16px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div>' + titleHtml + editHtml + '</div>' + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div>' + explanationHtml + '</li>';
       }
       html += '</ul>';
       resultsEl.innerHTML = html;

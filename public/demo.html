@@ -97,32 +97,42 @@ function run(){
     const bag=tok(d.title+" "+d.title+" "+d.body);
     let score=0;
     let edits=0;
+    const termContrib = [];
     terms.forEach(t=>{
       const f=bag.filter(x=>x===t).length;
       if(f) {
-        score += 1 + Math.log(1+f);
+        const contrib = 1 + Math.log(1+f);
+        score += contrib;
+        termContrib.push({ term: t, contrib: contrib });
       } else if(t.length >= 3) {
         let best = 3;
+        let matchedWord = "";
         for(let k=0; k<bag.length; k++) {
           const dist = levDist(bag[k], t);
           if (dist < best) {
             best = dist;
+            matchedWord = bag[k];
             if (dist <= 1) break;
           }
         }
         if (best <= 2) {
-          score += 1.4 / best;
+          const contrib = 1.4 / best;
+          score += contrib;
           if (edits === 0 || best < edits) edits = best;
+          termContrib.push({ term: t, contrib: contrib });
         }
       }
     });
-    return {...d, score, edits};
+    termContrib.sort((a,b)=>b.contrib - a.contrib);
+    const topTerms = termContrib.slice(0, 2).map(x=>x.term);
+    return {...d, score, edits, topTerms};
   }).filter(d=>d.score>0).sort((a,b)=>b.score-a.score);
   meta.textContent=scored.length+" results · "+(performance.now()-t0).toFixed(1)+" ms";
   scored.forEach(d=>{
     const li=document.createElement("li");li.className="result";
     const editBadge = d.edits > 0 ? '<div class="edit-badge" style="font-size:0.75rem;color:#71717a;margin-top:2px;">matched with ' + d.edits + ' edit' + (d.edits > 1 ? 's' : '') + '</div>' : '';
-    li.innerHTML='<div class="url">'+d.url+'</div><div><a class="title-link" href="#">'+d.title+'</a>' + editBadge + '</div><p class="snippet">'+d.body+'</p>';
+    const explanation = d.topTerms && d.topTerms.length > 0 ? '<div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: ' + d.topTerms.join(', ') + '</div>' : '';
+    li.innerHTML='<div class="url">'+d.url+'</div><div><a class="title-link" href="#">'+d.title+'</a>' + editBadge + '</div><p class="snippet">'+d.body+'</p>' + explanation;
     results.appendChild(li);
   });
 }
