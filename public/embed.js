@@ -258,23 +258,7 @@
       return dp[n][m];
     }
 
-    function levenshtein1(a, b) {
-      if (Math.abs(a.length - b.length) > 1) return false;
-      var m = a.length, n = b.length;
-      var dp = [];
-      for (var i = 0; i <= n; i++) dp[i] = [i];
-      for (var j = 0; j <= m; j++) dp[0][j] = j;
-      for (var r = 1; r <= n; r++) {
-        for (var c = 1; c <= m; c++) {
-          dp[r][c] = b.charAt(r - 1) === a.charAt(c - 1)
-            ? dp[r - 1][c - 1]
-            : Math.min(dp[r - 1][c - 1] + 1, dp[r][c - 1] + 1, dp[r - 1][c] + 1);
-        }
-      }
-      return dp[n][m] <= 1;
-    }
-
-    function searchLocal(query, data) {
+function searchLocal(query, data) {
       var docs = Array.isArray(data) ? data : (data.docs || data.items || data.results || []);
       if (!query) return docs.slice(0, 6);
       var q = query.toLowerCase().split(/\s+/).filter(Boolean);
