@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 
-// Demo key comes from NEXT_PUBLIC_DEMO_API_KEY (set in Vercel env).
-// Fallback matches the seeded demo key in apiKeyGateway.ts so local dev works out of the box.
 const SANDBOX_DEMO_KEY =
   process.env.NEXT_PUBLIC_DEMO_API_KEY ||
   ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_');
@@ -47,7 +45,7 @@ const BENTO_FEATURES = [
       'Scores every document by term frequency saturation and field-length normalization so the sharpest match always ranks first.',
     span: 'md:col-span-7',
     icon: (
-      <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <svg className="h-5 w-5 text-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path strokeWidth={1.75} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
       </svg>
     ),
@@ -58,7 +56,7 @@ const BENTO_FEATURES = [
       'Recovers misspelled queries automatically using single-edit Damerau-Levenshtein matching across Latin and Devanagari text.',
     span: 'md:col-span-5',
     icon: (
-      <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <svg className="h-5 w-5 text-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path strokeWidth={1.75} d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
     ),
@@ -69,7 +67,7 @@ const BENTO_FEATURES = [
       'Blends lexical relevance with recency and popularity weights across multiple indices without round-trip network latency.',
     span: 'md:col-span-5',
     icon: (
-      <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <svg className="h-5 w-5 text-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path strokeWidth={1.75} d="M4 6h16M4 12h16M4 18h10" />
       </svg>
     ),
@@ -80,7 +78,7 @@ const BENTO_FEATURES = [
       'Authenticates scrypt-hashed API keys in O(1) time with sliding-window rate limits and enforced monthly quotas.',
     span: 'md:col-span-7',
     icon: (
-      <svg className="h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <svg className="h-5 w-5 text-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path strokeWidth={1.75} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
       </svg>
     ),
@@ -108,9 +106,9 @@ const STEPS = [
 const PLANS = [
   {
     id: 'starter',
-    name: 'Solo Dev',
+    name: 'Starter',
     price: '₹19',
-    whoItFits: 'Fits personal sites, portfolios, and technical blogs.',
+    whoItFits: 'Personal sites, portfolios, and technical blogs.',
     features: [
       '1 search widget (<2 KB gzip)',
       'Up to 5,000 indexed documents',
@@ -120,37 +118,39 @@ const PLANS = [
     cta: 'Start at ₹19/mo',
     href: '/pricing.html#razorpay-starter',
     featured: false,
+    discount: 'Save 20%',
   },
   {
     id: 'pro',
-    name: 'Team',
-    badge: 'Most popular for indie devs',
+    name: 'Pro',
+    badge: 'Most popular',
     price: '₹99',
-    whoItFits: 'Fits indie SaaS products, documentation hubs, and production web apps.',
+    whoItFits: 'Indie SaaS, documentation hubs, and production apps.',
     features: [
       'Unlimited widgets & indexed documents',
       '50,000 hosted API searches / month',
       'Scrypt API key gateway + rate quotas',
       'Custom ranking boosts & JSON/CSV export',
     ],
-    cta: 'Choose Team — ₹99/mo',
+    cta: 'Choose Pro — ₹99/mo',
     href: '/pricing.html#razorpay-pro',
     featured: true,
   },
   {
     id: 'ultra',
-    name: 'Platform',
+    name: 'Ultra',
     price: '₹199',
-    whoItFits: 'Fits high-volume platforms running autonomous scheduled search agents.',
+    whoItFits: 'High-volume platforms with autonomous search agents.',
     features: [
       '500,000 hosted API searches / month',
       'Scheduled autonomous agent runs (3/day)',
       'Semantic drift & contradiction alerts',
       'Dedicated priority routing & SLA',
     ],
-    cta: 'Choose Platform — ₹199/mo',
+    cta: 'Choose Ultra — ₹199/mo',
     href: '/pricing.html#razorpay-ultra',
     featured: false,
+    discount: 'Save 15%',
   },
 ];
 
@@ -270,65 +270,60 @@ export default function HomePage() {
         }}
       />
 
-      {/* 1. HERO */}
-      <section className="mx-auto max-w-[1120px] px-4 pt-20 pb-14 sm:px-6 sm:pt-28 sm:pb-16 text-center">
-        <h1 className="font-display mx-auto max-w-4xl text-4xl font-extrabold leading-[1.06] tracking-tight text-white/90 sm:text-6xl md:text-7xl">
+      {/* HERO */}
+      <section className="mx-auto max-w-[1120px] px-4 pt-14 pb-8 sm:px-6 sm:pt-20 sm:pb-10 text-center">
+        <h1 className="font-display mx-auto max-w-3xl text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl md:text-6xl">
           Search that{' '}
           <span className="hero-underline">ships in seconds.</span>
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/50 sm:text-lg">
-          Drop one script tag to index, rank, and typo-correct your entire catalog in under a millisecond—with zero server bill.
+        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
+          Drop one script tag to index, rank, and typo-correct your entire catalog in under a millisecond — with zero server bill.
         </p>
 
-        <div className="mt-9 flex flex-col items-center justify-center gap-3.5 sm:flex-row sm:gap-4">
-          <a href="#sandbox" className="btn-primary w-full sm:w-auto">
+        <div className="mt-8 flex justify-center">
+          <a href="#sandbox" className="btn-primary px-8">
             Try it live
-          </a>
-          <a href="/pricing.html" className="btn-secondary w-full sm:w-auto">
-            See pricing
           </a>
         </div>
       </section>
 
-      {/* 2. LIVE INTERACTIVE SANDBOX */}
+      {/* LIVE SANDBOX — the hero of the product */}
       <section
         id="sandbox"
         aria-label="Live BM25 Search Sandbox"
-        className="mx-auto max-w-[1120px] px-4 pb-20 sm:px-6"
+        className="mx-auto max-w-[720px] px-4 pb-16 sm:px-6"
       >
         <div
           data-search-embed
           data-api-url="/api/search"
           data-api-key={SANDBOX_DEMO_KEY}
           data-index-url="/data/index.json"
-          className="rounded-2xl border border-white/5 bg-panel p-5 sm:p-8"
+          className="rounded-2xl border border-line bg-white p-5 sm:p-7 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]"
         >
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-white/50">
-            <span className="font-mono">
-              Interactive Sandbox · /api/search · Okapi BM25 (k1=1.2, b=0.75)
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <span className="font-mono text-[11px] text-muted tracking-wide">
+              Live sandbox · Okapi BM25
             </span>
             <span
               data-search-status
               aria-live="polite"
-              className="font-mono text-xs text-white/50"
+              className="inline-flex items-center gap-1.5 rounded-full bg-purple/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-purple"
             >
-              Ready · 52 records indexed
+              <span className="h-1.5 w-1.5 rounded-full bg-purple animate-pulse" aria-hidden="true" />
+              52 records indexed live
             </span>
           </div>
 
-          <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-ink px-4 py-3.5 focus-within:border-white/20">
+          <div className="search-box flex items-center gap-2 pl-4 pr-2 py-2">
             <svg
-              className="h-5 w-5 shrink-0 text-white/50"
+              className="h-5 w-5 shrink-0 text-muted"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               aria-hidden="true"
             >
-              <path
-                strokeWidth={1.75}
-                d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"
-              />
+              <path strokeWidth={1.75} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
             </svg>
             <input
               ref={inputRef}
@@ -336,8 +331,8 @@ export default function HomePage() {
               type="search"
               defaultValue="bm25 algorithm"
               aria-label="Live BM25 search input"
-              placeholder="Type or speak in Hindi / English (e.g. bm25 algorithm, minecrft, scrypt kdf)..."
-              className="w-full bg-transparent text-sm text-white/90 placeholder:text-white/50 focus:outline-none sm:text-base"
+              placeholder="Type or speak in Hindi / English…"
+              className="w-full bg-transparent text-[15px] text-ink placeholder:text-muted focus:outline-none"
             />
             <button
               type="button"
@@ -345,19 +340,13 @@ export default function HomePage() {
               aria-label={listening ? 'Stop voice search' : 'Start voice search (Hindi and English)'}
               aria-pressed={listening}
               title={listening ? 'Stop listening' : 'Voice search (Hindi / English)'}
-              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold ${
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple ${
                 listening
-                  ? 'border-purple bg-purple text-white shadow-[0_0_20px_rgba(124,92,255,0.65)]'
-                  : 'border-white/10 bg-panel text-white/70 hover:border-purple/60 hover:text-white'
+                  ? 'border-purple bg-purple text-white shadow-[0_0_18px_rgba(124,92,255,0.55)]'
+                  : 'border-line bg-white text-muted hover:border-purple/50 hover:text-purple'
               }`}
             >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -369,122 +358,119 @@ export default function HomePage() {
           </div>
 
           <div className="mt-3.5 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-white/50">Try query:</span>
+            <span className="text-[11px] text-muted">Try:</span>
             {['bm25 algorithm', 'minecrft', 'scrypt kdf', 'wireguard vpn'].map((q) => (
               <button
                 key={q}
                 type="button"
                 data-search-preset={q}
-                className="rounded-lg border border-white/5 bg-ink px-3 py-1 font-mono text-xs text-white/50 transition hover:border-white/15 hover:text-white/90"
+                className="rounded-lg border border-line bg-white px-2.5 py-1 font-mono text-[11px] text-muted transition hover:border-purple/40 hover:text-ink"
               >
                 {q}
               </button>
             ))}
           </div>
 
-          <div
-            id="homepage-embed-results"
-            data-search-results
-            className="mt-5"
-          />
+          <div id="homepage-embed-results" data-search-results className="mt-5" />
         </div>
       </section>
 
-      {/* 3. BENTO GRID OF FOUR CARDS */}
-      <section id="features" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6">
-        <div className="mb-10 max-w-2xl">
-          <h2 className="font-display text-2xl font-bold text-white/90 sm:text-4xl">
+      {/* FEATURES */}
+      <section id="features" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6 sm:py-16">
+        <div className="mb-9 max-w-xl">
+          <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
             Engineered for sub-millisecond retrieval.
           </h2>
-          <p className="mt-2.5 text-sm text-white/50 sm:text-base">
+          <p className="mt-2.5 text-sm text-muted sm:text-[15px]">
             Every primitive needed for production search, shipped in a single zero-dependency runtime.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
           {BENTO_FEATURES.map((f) => (
             <article
               key={f.title}
-              className={`card-surface ${f.span} flex h-full flex-col justify-between p-6 sm:p-8`}
+              className={`card-surface ${f.span} flex h-full flex-col justify-between p-5 sm:p-6`}
             >
               <div>
-                <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-ink">
+                <div className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-panel2">
                   {f.icon}
                 </div>
-                <h3 className="font-display text-xl font-bold text-white/90">{f.title}</h3>
-                <p className="mt-2.5 text-sm leading-relaxed text-white/50">{f.sentence}</p>
+                <h3 className="font-display text-lg font-bold text-ink">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{f.sentence}</p>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      {/* 4. THREE-STEP FLOW */}
-      <section id="how-it-works" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6">
-        <div className="mb-10 max-w-2xl">
-          <h2 className="font-display text-2xl font-bold text-white/90 sm:text-4xl">
+      {/* STEPS */}
+      <section id="how-it-works" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6">
+        <div className="mb-9 max-w-xl">
+          <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
             Live in three steps.
           </h2>
-          <p className="mt-2.5 text-sm text-white/50 sm:text-base">
-            No cluster provisioning, no Docker containers, and no recurring cloud egress charges.
+          <p className="mt-2.5 text-sm text-muted sm:text-[15px]">
+            No cluster, no Docker, no cloud egress bill.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {STEPS.map((s) => (
-            <div key={s.step} className="card-surface flex h-full flex-col justify-between p-6 sm:p-8">
-              <div>
-                <span className="font-mono text-xs font-semibold text-white/50">{s.step}</span>
-                <h3 className="font-display mt-3 text-lg font-bold text-white/90">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">{s.desc}</p>
-              </div>
+            <div key={s.step} className="card-surface flex h-full flex-col p-5 sm:p-6">
+              <span className="font-mono text-xs font-semibold text-purple">{s.step}</span>
+              <h3 className="font-display mt-2.5 text-base font-bold text-ink">{s.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{s.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 5. PRICING TEASER */}
-      <section id="pricing" className="mx-auto max-w-[1120px] px-4 py-20 sm:px-6">
-        <div className="mb-12 text-center">
-          <h2 className="font-display text-2xl font-bold text-white/90 sm:text-4xl">
+      {/* PRICING */}
+      <section id="pricing" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mb-10 text-center">
+          <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
             Predictable Rupee pricing.
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-white/50 sm:text-base">
-            Compared to ₹199/month for autonomous platform agents, indie teams get full hosted API gateways and unlimited widgets for ₹99/month.
+          <p className="mx-auto mt-2.5 max-w-md text-sm text-muted">
+            Clean tiers. No surprises. Pro is the sweet spot for most teams.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3 items-start">
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${
-                plan.featured ? 'border-white/15' : ''
+              className={`flex h-full flex-col justify-between p-6 rounded-2xl ${
+                plan.featured
+                  ? 'card-pro scale-[1.03] z-10 relative'
+                  : plan.id === 'ultra'
+                    ? 'card-ultra card-surface'
+                    : 'card-surface'
               }`}
             >
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-display text-xl font-bold text-white/90">{plan.name}</h3>
-                  {plan.badge && (
-                    <span className="badge-recommended">
-                      {plan.badge}
-                    </span>
-                  )}
+                  <h3 className="font-display text-xl font-bold text-ink">{plan.name}</h3>
+                  <div className="flex items-center gap-1.5">
+                    {plan.discount && <span className="badge-discount">{plan.discount}</span>}
+                    {plan.badge && <span className="badge-recommended">{plan.badge}</span>}
+                  </div>
                 </div>
 
-                <p className="mt-2.5 text-xs leading-relaxed text-white/50">{plan.whoItFits}</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted">{plan.whoItFits}</p>
 
-                <div className="mt-6 flex items-baseline gap-1.5">
-                  <span className="font-display text-4xl font-extrabold text-white/90 tabular-nums">
+                <div className="mt-5 flex items-baseline gap-1">
+                  <span className="font-display text-3xl font-extrabold text-ink tabular-nums">
                     {plan.price}
                   </span>
-                  <span className="text-xs text-white/50">/month</span>
+                  <span className="text-xs text-muted">/month</span>
                 </div>
 
-                <ul className="mt-6 space-y-3 text-xs sm:text-sm text-white/50">
+                <ul className="mt-5 space-y-2.5 text-sm text-muted">
                   {plan.features.map((feat) => (
-                    <li key={feat} className="flex items-start gap-2.5">
-                      <span className="text-white/90 font-semibold" aria-hidden="true">✓</span>
+                    <li key={feat} className="flex items-start gap-2">
+                      <span className="text-purple font-semibold mt-0.5" aria-hidden="true">✓</span>
                       <span>{feat}</span>
                     </li>
                   ))}
@@ -493,12 +479,18 @@ export default function HomePage() {
 
               <a
                 href={plan.href}
-                className={`mt-8 w-full ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
+                className={`mt-7 w-full text-center ${plan.featured ? 'btn-primary' : 'btn-secondary'}`}
               >
                 {plan.cta}
               </a>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8">
+          <a href="/pricing.html" className="btn-cta-yellow block text-center py-4 text-base">
+            View full pricing & subscribe
+          </a>
         </div>
       </section>
     </main>
