@@ -35,6 +35,8 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
 .result .title-link{color:var(--blue);font-size:1.125rem}
 .result .title-link:hover{text-decoration:underline}
 .result .snippet{color:var(--muted);font-size:.875rem;margin-top:4px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.shimmer-box{background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:shimmer 1.2s infinite ease-in-out;}
 </style>
 </head>
 <body>
@@ -88,7 +90,28 @@ function run(){
     results.appendChild(li);
   });
 }
-q.addEventListener("input",run);
+let debounceTimer = null;
+let searchSeq = 0;
+function showShimmer() {
+  meta.textContent = "Searching…";
+  results.innerHTML = '<li class="result" aria-busy="true"><div class="shimmer-box" style="height:14px;width:28%;margin-bottom:8px"></div><div class="shimmer-box" style="height:20px;width:65%;margin-bottom:8px"></div><div class="shimmer-box" style="height:14px;width:90%"></div></li>';
+}
+q.addEventListener("input", function() {
+  clearTimeout(debounceTimer);
+  searchSeq++;
+  const thisSeq = searchSeq;
+  const val = q.value.trim();
+  if (!val) {
+    results.innerHTML = "";
+    meta.textContent = "Ready · " + DOCS.length + " docs";
+    return;
+  }
+  showShimmer();
+  debounceTimer = setTimeout(function() {
+    if (thisSeq !== searchSeq) return;
+    run();
+  }, 120);
+});
 document.getElementById("mic").onclick=()=>{
   const C=window.SpeechRecognition||window.webkitSpeechRecognition;
   const btn=document.getElementById("mic");

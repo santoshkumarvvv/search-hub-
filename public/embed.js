@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var DEBOUNCE_MS = 150;
+  var DEBOUNCE_MS = 120;
   var FETCH_TIMEOUT_MS = 5000;
 
   function init(options) {
@@ -19,6 +19,14 @@
     var apiKey = options.apiKey || container.getAttribute('data-api-key') || (script && script.getAttribute('data-api-key')) || '';
 
     if (!input) return;
+
+    if (!document.getElementById("se-shimmer-styles")) {
+      var s = document.createElement("style");
+      s.id = "se-shimmer-styles";
+      s.textContent = "@keyframes seShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }";
+      document.head.appendChild(s);
+    }
+
 
     var indexData = null;
     var debounceTimer = null;
@@ -42,6 +50,17 @@
       var val = state ? "true" : "false";
       input.setAttribute("aria-expanded", val);
       if (trigger) trigger.setAttribute("aria-expanded", val);
+    }
+
+    
+    function showShimmer() {
+      setStatus("Searching…");
+      resultsEl.innerHTML = '<div class="search-embed-shimmer" style="padding:12px 4px;display:flex;flex-direction:column;gap:10px;" aria-busy="true">' +
+        '<div style="height:14px;width:30%;background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:seShimmer 1.2s infinite ease-in-out;"></div>' +
+        '<div style="height:18px;width:65%;background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:seShimmer 1.2s infinite ease-in-out;"></div>' +
+        '<div style="height:14px;width:88%;background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:seShimmer 1.2s infinite ease-in-out;"></div>' +
+        '</div>';
+      setExpanded(true);
     }
 
     function setStatus(text) {
@@ -224,12 +243,17 @@
     input.addEventListener('input', function () {
       var val = input.value.trim();
       clearTimeout(debounceTimer);
+      if (activeController) {
+        activeController.abort();
+        activeController = null;
+      }
       if (!val) {
         resultsEl.innerHTML = '';
         setStatus('Type a query above to search 52 indexed records');
         setExpanded(false);
         return;
       }
+      showShimmer();
       debounceTimer = setTimeout(function () { runSearch(val); }, DEBOUNCE_MS);
     });
 
