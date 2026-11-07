@@ -92,55 +92,65 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
   <section class="faq-wrap" aria-labelledby="faq-heading">
     <h2 id="faq-heading" class="faq-title">Frequently Asked Questions</h2>
     <p class="faq-sub">Everything you need to know about pricing, UPI billing, and widget integration.</p>
-    <div class="accordion" id="pricing-faq" data-slot="accordion">
-      <div class="accordion-item" data-slot="accordion-item" data-state="closed">
-        <button type="button" class="accordion-trigger" aria-expanded="false">
+    <div class="accordion" id="pricing-faq" data-slot="accordion" data-orientation="vertical">
+      <div class="accordion-item open" data-slot="accordion-item" data-state="open">
+        <button type="button" class="accordion-trigger" id="faq-trigger-1" aria-expanded="true" aria-controls="faq-content-1" data-slot="accordion-trigger" data-state="open">
           <span>How does SearchEmbed pricing work?</span>
           <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div class="accordion-content">
+        <div class="accordion-content" id="faq-content-1" role="region" aria-labelledby="faq-trigger-1" data-slot="accordion-content" data-state="open">
           Our pricing is transparent and predictable in Indian Rupees: Starter at &#8377;19/month for blogs and personal portfolios, Pro at &#8377;99/month for SaaS and docs hubs, and Ultra at &#8377;199/month for high-volume platforms. There are zero hidden fees, setup costs, or surprise charges.
         </div>
       </div>
       <div class="accordion-item" data-slot="accordion-item" data-state="closed">
-        <button type="button" class="accordion-trigger" aria-expanded="false">
+        <button type="button" class="accordion-trigger" id="faq-trigger-2" aria-expanded="false" aria-controls="faq-content-2" data-slot="accordion-trigger" data-state="closed">
           <span>How do UPI payments and subscriptions work?</span>
           <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div class="accordion-content">
+        <div class="accordion-content" id="faq-content-2" role="region" aria-labelledby="faq-trigger-2" data-slot="accordion-content" data-state="closed">
           We natively support all Indian UPI payment apps including Google Pay, PhonePe, Paytm, BHIM, and bank UPI handles. Subscriptions activate instantly once you send payment or email <a href="mailto:kumasantosh947@gmail.com" style="color:var(--purple);text-decoration:underline;">kumasantosh947@gmail.com</a> with your UPI transaction ID.
         </div>
       </div>
       <div class="accordion-item" data-slot="accordion-item" data-state="closed">
-        <button type="button" class="accordion-trigger" aria-expanded="false">
+        <button type="button" class="accordion-trigger" id="faq-trigger-3" aria-expanded="false" aria-controls="faq-content-3" data-slot="accordion-trigger" data-state="closed">
           <span>Is there a 7-day guarantee?</span>
           <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div class="accordion-content">
+        <div class="accordion-content" id="faq-content-3" role="region" aria-labelledby="faq-trigger-3" data-slot="accordion-content" data-state="closed">
           Yes! We offer an unconditional, 7-day no-questions-asked 100% money-back guarantee on all plans. If SearchEmbed does not meet your speed, relevance, or developer experience standards, simply contact us within 7 days for an immediate refund.
         </div>
       </div>
       <div class="accordion-item" data-slot="accordion-item" data-state="closed">
-        <button type="button" class="accordion-trigger" aria-expanded="false">
+        <button type="button" class="accordion-trigger" id="faq-trigger-4" aria-expanded="false" aria-controls="faq-content-4" data-slot="accordion-trigger" data-state="closed">
           <span>What are the widget limits and how do I embed it?</span>
           <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div class="accordion-content">
+        <div class="accordion-content" id="faq-content-4" role="region" aria-labelledby="faq-trigger-4" data-slot="accordion-content" data-state="closed">
           Starter provides 1 search widget for up to 5,000 documents; Pro and Ultra offer unlimited widgets and documents. Embedding takes under 30 seconds by adding the lightweight script tag to your site: <code>&lt;script src="https://search-hub-live.vercel.app/embed.js" data-api-url="https://search-hub-live.vercel.app/api/search"&gt;&lt;/script&gt;</code>.
         </div>
       </div>
       <div class="accordion-item" data-slot="accordion-item" data-state="closed">
-        <button type="button" class="accordion-trigger" aria-expanded="false">
+        <button type="button" class="accordion-trigger" id="faq-trigger-5" aria-expanded="false" aria-controls="faq-content-5" data-slot="accordion-trigger" data-state="closed">
           <span>How are API keys managed and authenticated?</span>
           <svg class="accordion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <div class="accordion-content">
+        <div class="accordion-content" id="faq-content-5" role="region" aria-labelledby="faq-trigger-5" data-slot="accordion-content" data-state="closed">
           All API keys are derived using scrypt memory-hard hashing for cryptographic protection. Tiered rate quotas ensure predictable latency and guard against abuse, with origin allowlists restricting browser usage strictly to your authorized domains.
         </div>
       </div>
     </div>
   </section>
   <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(reg) { reg.unregister(); });
+      }).catch(function() {});
+    }
+    if (typeof caches !== 'undefined' && caches.keys) {
+      caches.keys().then(function(keys) {
+        keys.forEach(function(k) { caches.delete(k); });
+      }).catch(function() {});
+    }
     document.querySelectorAll(".accordion-trigger").forEach(function(btn) {
       btn.addEventListener("click", function() {
         var item = btn.closest(".accordion-item");
@@ -149,12 +159,20 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
           el.classList.remove("open");
           el.setAttribute("data-state", "closed");
           var t = el.querySelector(".accordion-trigger");
-          if (t) t.setAttribute("aria-expanded", "false");
+          var c = el.querySelector(".accordion-content");
+          if (t) {
+            t.setAttribute("aria-expanded", "false");
+            t.setAttribute("data-state", "closed");
+          }
+          if (c) c.setAttribute("data-state", "closed");
         });
         if (!isOpen) {
           item.classList.add("open");
           item.setAttribute("data-state", "open");
           btn.setAttribute("aria-expanded", "true");
+          btn.setAttribute("data-state", "open");
+          var panel = item.querySelector(".accordion-content");
+          if (panel) panel.setAttribute("data-state", "open");
         }
       });
     });
