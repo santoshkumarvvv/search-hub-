@@ -106,12 +106,10 @@ function run(){
         termContrib.push({ term: t, contrib: contrib });
       } else if(t.length >= 3) {
         let best = 3;
-        let matchedWord = "";
         for(let k=0; k<bag.length; k++) {
           const dist = levDist(bag[k], t);
           if (dist < best) {
             best = dist;
-            matchedWord = bag[k];
             if (dist <= 1) break;
           }
         }
