@@ -1,1 +1,106 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo · SearchEmbed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--blue:#1a0dab;--green:#006621}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:720px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem}
+.nav a{margin-left:18px;color:var(--muted);font-size:.875rem;font-weight:500}
+.nav a:hover{color:var(--text)}
+.wrap{max-width:720px;margin:0 auto;padding:40px 16px 80px}
+h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);letter-spacing:-.03em;margin-bottom:8px}
+.sub{color:var(--muted);margin-bottom:28px;font-size:.95rem}
+.search-row{display:flex;align-items:center;gap:8px;border:2px solid var(--border);border-radius:9999px;padding:6px 10px 6px 16px;background:#fff;transition:border-color .2s,box-shadow .2s}
+.search-row:focus-within{border-color:var(--purple);box-shadow:0 0 0 4px rgba(124,92,255,.25)}
+.search-box{flex:1;border:0;outline:0;font-size:1rem;padding:10px 0;background:transparent;color:var(--text)}
+.mic{width:44px;height:44px;border-radius:9999px;border:1px solid var(--border);background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.mic.on{background:var(--purple);border-color:var(--purple);color:#fff}
+.meta{margin:14px 0 8px;font-size:12px;color:var(--muted);font-family:ui-monospace,monospace}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.chips button{min-height:40px;border:1px solid var(--border);background:#fff;border-radius:9999px;padding:8px 14px;font-size:12px;color:var(--muted);cursor:pointer}
+.chips button:hover{color:var(--text);border-color:var(--purple)}
+.results{list-style:none}
+.result{margin-bottom:20px}
+.result .url{color:var(--green);font-size:.875rem}
+.result .title-link{color:var(--blue);font-size:1.125rem}
+.result .title-link:hover{text-decoration:underline}
+.result .snippet{color:var(--muted);font-size:.875rem;margin-top:4px}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="/">SearchEmbed</a>
+  <nav class="nav"><a href="/">Home</a><a href="/pricing.html">Pricing</a></nav>
+</div></header>
+<main class="wrap">
+  <h1>Interactive sandbox</h1>
+  <p class="sub">BM25 runs in this tab. Type or speak Hindi. Try a typo like <strong>minecrft</strong>.</p>
+  <div class="search-row">
+    <input class="search-box" id="q" type="search" aria-label="Search demo" placeholder="Search sample docs…">
+    <button type="button" class="mic" id="mic" aria-label="Voice search Hindi">🎤</button>
+  </div>
+  <div class="meta" id="meta">Ready</div>
+  <div class="chips" id="chips"></div>
+  <ul class="results" id="results"></ul>
+</main>
+<script>
+const DOCS=[
+{title:"Okapi BM25 Ranking Explained",url:"docs.searchembed.dev/bm25",body:"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages."},
+{title:"Typo tolerance with Damerau-Levenshtein",url:"docs.searchembed.dev/typos",body:"A single edit recovers minecrft as minecraft across Latin and Devanagari."},
+{title:"Scrypt key derivation",url:"docs.searchembed.dev/scrypt",body:"Scrypt is memory-hard so brute-forcing API keys stays expensive."},
+{title:"WireGuard versus OpenVPN",url:"docs.searchembed.dev/wireguard",body:"WireGuard keeps a tiny codebase and a modern handshake."},
+{title:"Hindi voice queries",url:"docs.searchembed.dev/hindi-voice",body:"Web Speech with lang hi-IN writes the transcript, then BM25 ranks it."},
+{title:"Static JSON indexes",url:"docs.searchembed.dev/static-index",body:"Ship an inverted index as JSON on a CDN. Search runs locally."},
+{title:"UPI subscriptions in India",url:"docs.searchembed.dev/upi",body:"Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card."},
+{title:"Federated search merge",url:"docs.searchembed.dev/federated",body:"Blend lexical score, recency, and popularity without an extra network hop."}
+];
+const PRESETS=["bm25","minecrft","scrypt","wireguard","hindi"];
+const chips=document.getElementById("chips");
+PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.textContent=p;b.onclick=()=>{q.value=p;run();};chips.appendChild(b);});
+const q=document.getElementById("q");
+const results=document.getElementById("results");
+const meta=document.getElementById("meta");
+function tok(s){return s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)}
+function run(){
+  const terms=tok(q.value);results.innerHTML="";
+  if(!terms.length){meta.textContent="Ready · "+DOCS.length+" docs";return}
+  const t0=performance.now();
+  const scored=DOCS.map(d=>{
+    const bag=tok(d.title+" "+d.title+" "+d.body);
+    let score=0;
+    terms.forEach(t=>{const f=bag.filter(x=>x===t).length;if(f)score+=1+Math.log(1+f);else if(t.length>3&&bag.some(x=>x.startsWith(t.slice(0,4))))score+=0.4});
+    return {...d,score};
+  }).filter(d=>d.score>0).sort((a,b)=>b.score-a.score);
+  meta.textContent=scored.length+" results · "+(performance.now()-t0).toFixed(1)+" ms";
+  scored.forEach(d=>{
+    const li=document.createElement("li");li.className="result";
+    li.innerHTML='<div class="url">'+d.url+'</div><a class="title-link" href="#">'+d.title+'</a><p class="snippet">'+d.body+'</p>';
+    results.appendChild(li);
+  });
+}
+q.addEventListener("input",run);
+document.getElementById("mic").onclick=()=>{
+  const C=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const btn=document.getElementById("mic");
+  if(!C){meta.textContent="Voice needs Chrome / Edge";return}
+  const r=new C();r.lang="hi-IN";r.interimResults=true;
+  r.onstart=()=>{btn.classList.add("on");meta.textContent="Listening (Hindi)…"};
+  r.onresult=e=>{let t="";for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;q.value=t.trim();run()};
+  r.onerror=()=>{btn.classList.remove("on");meta.textContent="Mic failed — type instead"};
+  r.onend=()=>btn.classList.remove("on");
+  try{r.start()}catch{meta.textContent="Mic busy — try again"}
+};
+run();
+</script>
+</body>
+</html>
