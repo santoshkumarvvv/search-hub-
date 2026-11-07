@@ -68,7 +68,7 @@ const DOCS=[
 ];
 const PRESETS=["bm25","minecrft","scrypt","wireguard","hindi"];
 const chips=document.getElementById("chips");
-PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.textContent=p;b.onclick=()=>{q.value=p;run();};chips.appendChild(b);});
+PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.textContent=p;b.onclick=()=>{q.value=p;executeSearch();};chips.appendChild(b);});
 const q=document.getElementById("q");
 const results=document.getElementById("results");
 const meta=document.getElementById("meta");
@@ -127,14 +127,78 @@ function run(){
     const topTerms = termContrib.slice(0, 2).map(x=>x.term);
     return {...d, score, edits, topTerms};
   }).filter(d=>d.score>0).sort((a,b)=>b.score-a.score);
-  meta.textContent=scored.length+" results · "+(performance.now()-t0).toFixed(1)+" ms";
-  scored.forEach(d=>{
+  renderResults(scored, (performance.now()-t0).toFixed(1));
+}
+function renderResults(list, elapsedMs) {
+  results.innerHTML="";
+  meta.textContent=list.length+" results · "+elapsedMs+" ms";
+  list.forEach(d=>{
     const li=document.createElement("li");li.className="result";
-    const editBadge = d.edits > 0 ? '<div class="edit-badge" style="font-size:0.75rem;color:#71717a;margin-top:2px;">matched with ' + d.edits + ' edit' + (d.edits > 1 ? 's' : '') + '</div>' : '';
-    const explanation = d.topTerms && d.topTerms.length > 0 ? '<div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: ' + d.topTerms.join(', ') + '</div>' : '';
+    const edits = d.edits || 0;
+    const topTerms = d.topTerms || d.matchedTerms || [];
+    const editBadge = edits > 0 ? '<div class="edit-badge" style="font-size:0.75rem;color:#71717a;margin-top:2px;">matched with ' + edits + ' edit' + (edits > 1 ? 's' : '') + '</div>' : '';
+    const explanation = topTerms.length > 0 ? '<div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: ' + topTerms.join(', ') + '</div>' : '';
     li.innerHTML='<div class="url">'+d.url+'</div><div><a class="title-link" href="#">'+d.title+'</a>' + editBadge + '</div><p class="snippet">'+d.body+'</p>' + explanation;
     results.appendChild(li);
   });
+}
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(reg) { reg.unregister(); });
+  }).catch(function() {});
+}
+let searchWorker = null;
+let workerReady = false;
+let workerQueryId = 0;
+function executeSearch() {
+  const raw = q.value.trim();
+  if (!raw) {
+    results.innerHTML = "";
+    meta.textContent = "Ready · " + DOCS.length + " docs";
+    return;
+  }
+  if (searchWorker && workerReady) {
+    const qid = ++workerQueryId;
+    searchWorker.postMessage({ type: "SEARCH", payload: { query: raw }, queryId: qid });
+  } else {
+    run();
+  }
+}
+try {
+  if (typeof Worker !== "undefined") {
+    searchWorker = new Worker("/workers/searchWorker.js");
+    searchWorker.onmessage = function(e) {
+      const msg = e.data;
+      if (!msg || typeof msg !== "object") return;
+      if (msg.type === "INDEXED") {
+        workerReady = true;
+        if (!q.value.trim()) {
+          meta.textContent = "Ready · " + msg.count + " docs";
+        } else {
+          executeSearch();
+        }
+      } else if (msg.type === "RESULTS") {
+        if (msg.queryId !== workerQueryId) return;
+        const mapped = (msg.results || []).map(function(r) {
+          return Object.assign({}, r.item, {
+            score: r.score,
+            edits: r.edits || 0,
+            topTerms: r.matchedTerms || []
+          });
+        });
+        renderResults(mapped, Number(msg.durationMs || 0).toFixed(1));
+      }
+    };
+    searchWorker.onerror = function() {
+      workerReady = false;
+      searchWorker = null;
+      run();
+    };
+    searchWorker.postMessage({ type: "INDEX_CATALOG", payload: DOCS });
+  }
+} catch (err) {
+  workerReady = false;
+  searchWorker = null;
 }
 let debounceTimer = null;
 let searchSeq = 0;
@@ -155,7 +219,7 @@ q.addEventListener("input", function() {
   showShimmer();
   debounceTimer = setTimeout(function() {
     if (thisSeq !== searchSeq) return;
-    run();
+    executeSearch();
   }, 120);
 });
 document.getElementById("mic").onclick=()=>{
@@ -164,12 +228,12 @@ document.getElementById("mic").onclick=()=>{
   if(!C){meta.textContent="Voice needs Chrome / Edge";return}
   const r=new C();r.lang="hi-IN";r.interimResults=true;
   r.onstart=()=>{btn.classList.add("on");meta.textContent="Listening (Hindi)…"};
-  r.onresult=e=>{let t="";for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;q.value=t.trim();run()};
+  r.onresult=e=>{let t="";for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;q.value=t.trim();executeSearch()};
   r.onerror=()=>{btn.classList.remove("on");meta.textContent="Mic failed — type instead"};
   r.onend=()=>btn.classList.remove("on");
   try{r.start()}catch{meta.textContent="Mic busy — try again"}
 };
-run();
+executeSearch();
 </script>
 </body>
 </html>

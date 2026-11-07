@@ -38,6 +38,7 @@ function docToText(d) {
     d.name || '',
     d.category || '',
     d.developer || '',
+    d.body || '',
     d.description || '',
     d.snippet || '',
     d.content || '',
