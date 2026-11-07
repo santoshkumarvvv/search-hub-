@@ -1,1 +1,78 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing · SearchEmbed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--gold:#f5c542;--cta:#facc15;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.topbar{position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:1040px;margin:0 auto;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem}
+.nav a{margin-left:18px;color:var(--muted);font-size:.875rem;font-weight:500}
+.wrap{max-width:1040px;margin:0 auto;padding:48px 16px 96px}
+h1{font-family:Syne,system-ui,sans-serif;text-align:center;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.03em}
+.lead{text-align:center;color:var(--muted);margin:12px auto 40px;max-width:420px}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:800px){.grid{grid-template-columns:1fr 1fr 1fr;align-items:start}.pro{transform:translateY(-8px)}.ultra{transform:scale(.97);transform-origin:top}}
+.card{border:1px solid var(--border);border-radius:16px;padding:24px;background:#fff;display:flex;flex-direction:column;min-height:100%}
+.pro{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,var(--purple),var(--gold)) border-box;box-shadow:0 0 32px -10px rgba(124,92,255,.35)}
+.ultra{border:2px solid var(--gold)}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.name{font-family:Syne,system-ui,sans-serif;font-size:1.25rem;font-weight:800}
+.badge{font-size:11px;font-weight:700;border-radius:9999px;padding:4px 10px;background:var(--purple);color:#fff}
+.disc{font-size:11px;font-weight:700;border-radius:9999px;padding:4px 10px;background:var(--danger);color:#fff}
+.fit{color:var(--muted);font-size:.85rem;margin-top:8px}
+.price{font-family:Syne,system-ui,sans-serif;font-size:2.25rem;font-weight:800;margin:16px 0}
+.price span{font-size:.85rem;font-weight:500;color:var(--muted)}
+ul{list-style:none;flex:1;margin-bottom:20px}
+li{display:flex;gap:8px;font-size:.9rem;color:var(--muted);margin-bottom:10px}
+li::before{content:"✓";color:var(--purple);font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;border-radius:9999px;font-weight:700;font-size:.9rem;width:100%;border:1px solid var(--border);background:#fff;cursor:pointer}
+.btn.primary{background:var(--purple);color:#fff;border-color:var(--purple)}
+.cta{margin-top:28px;display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:9999px;background:var(--cta);color:#1a1400;font-weight:800;font-size:1rem;width:100%}
+.note{text-align:center;color:var(--muted);font-size:12px;margin-top:12px}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="/">SearchEmbed</a>
+  <nav class="nav"><a href="/">Home</a><a href="/demo.html">Demo</a></nav>
+</div></header>
+<main class="wrap">
+  <h1>Predictable Rupee pricing</h1>
+  <p class="lead">Pro is the default for shipping teams. Starter and Ultra stay quieter so the choice is obvious.</p>
+  <div class="grid">
+    <article class="card" id="razorpay-starter">
+      <div class="row"><div class="name">Starter</div><span class="disc">Save 20%</span></div>
+      <p class="fit">Personal sites, portfolios, and technical blogs.</p>
+      <div class="price">₹19<span>/month</span></div>
+      <ul><li>1 search widget (<2 KB)</li><li>Up to 5,000 documents</li><li>BM25 + 1-edit typos</li><li>Web Worker offload</li></ul>
+      <a class="btn" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Starter">Start at ₹19</a>
+    </article>
+    <article class="card pro" id="razorpay-pro">
+      <div class="row"><div class="name">Pro</div><span class="badge">Most popular</span></div>
+      <p class="fit">Indie SaaS, docs hubs, and production apps.</p>
+      <div class="price">₹99<span>/month</span></div>
+      <ul><li>Unlimited widgets & docs</li><li>50,000 API searches / month</li><li>Scrypt keys + rate quotas</li><li>JSON / CSV export</li></ul>
+      <a class="btn primary" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Pro">Choose Pro — ₹99</a>
+    </article>
+    <article class="card ultra" id="razorpay-ultra">
+      <div class="row"><div class="name">Ultra</div><span class="disc">Save 15%</span></div>
+      <p class="fit">High-volume platforms with autonomous agents.</p>
+      <div class="price">₹199<span>/month</span></div>
+      <ul><li>500,000 API searches / month</li><li>3 agent runs / day</li><li>Drift & contradiction alerts</li><li>Priority routing & SLA</li></ul>
+      <a class="btn" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Ultra">Choose Ultra — ₹199</a>
+    </article>
+  </div>
+  <a class="cta" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Subscribe">Subscribe via UPI — email to activate</a>
+  <p class="note">Live Razorpay checkout hooks stay on the production payment path. This page routes you to activate by email.</p>
+</main>
+</body>
+</html>
