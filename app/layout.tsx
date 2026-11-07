@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#05060a",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -53,31 +53,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="bg-ink font-sans text-white/90 antialiased selection:bg-white/15 selection:text-white min-h-screen">
+      <body className="bg-white font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen">
         <a className="skip-link" href="#main">
           Skip to content
         </a>
 
-        <header className="sticky top-0 z-40 border-b border-white/5 bg-ink/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-4 sm:px-6">
+        <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur-md">
+          <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3.5 sm:px-6">
             <Link
               href="/"
-              className="font-display text-lg font-extrabold tracking-tight text-white/90 transition hover:text-white"
+              className="font-display text-lg font-extrabold tracking-tight text-ink transition hover:text-purple"
             >
               SearchEmbed
             </Link>
 
             <nav
               aria-label="Primary navigation"
-              className="flex items-center gap-6 text-xs sm:text-sm font-medium text-white/50"
+              className="flex items-center gap-5 text-sm font-medium text-muted"
             >
-              <a href="/demo.html" className="transition hover:text-white/90">
+              <a href="/demo.html" className="transition hover:text-ink">
                 Demo
               </a>
-              <a href="/pricing.html" className="transition hover:text-white/90">
+              <a href="/pricing.html" className="transition hover:text-ink">
                 Pricing
               </a>
-              <Link href="/catalog" className="transition hover:text-white/90">
+              <Link href="/catalog" className="transition hover:text-ink">
                 Catalog
               </Link>
             </nav>
@@ -86,37 +86,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {children}
 
-        <footer className="border-t border-white/5 bg-ink px-4 py-12 sm:px-6">
-          <div className="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-3 text-xs text-white/50">
-              <span className="font-display text-sm font-bold text-white/90">SearchEmbed</span>
+        <footer className="border-t border-line bg-white px-4 py-10 sm:px-6">
+          <div className="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-2.5 text-xs text-muted">
+              <span className="font-display text-sm font-bold text-ink">SearchEmbed</span>
               <span aria-hidden="true">·</span>
               <span>Okapi BM25 Search Infrastructure</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-xs text-white/50">
-              <a href="/demo.html" className="transition hover:text-white/90">
-                Demo
-              </a>
-              <a href="/pricing.html" className="transition hover:text-white/90">
-                Pricing
-              </a>
-              <Link href="/catalog" className="transition hover:text-white/90">
-                Catalog
-              </Link>
+            <div className="flex flex-wrap items-center gap-5 text-xs text-muted">
+              <a href="/demo.html" className="transition hover:text-ink">Demo</a>
+              <a href="/pricing.html" className="transition hover:text-ink">Pricing</a>
+              <Link href="/catalog" className="transition hover:text-ink">Catalog</Link>
               <a
                 href="https://github.com/santoshkumarvvv/search-hub-"
                 target="_blank"
                 rel="noreferrer"
-                className="transition hover:text-white/90"
+                className="transition hover:text-ink"
               >
                 GitHub
               </a>
-              <a
-                href="mailto:kumasantosh947@gmail.com"
-                className="transition hover:text-white/90"
-              >
-                kumasantosh947@gmail.com
+              <a href="mailto:kumasantosh947@gmail.com" className="transition hover:text-ink">
+                Contact
               </a>
             </div>
           </div>
