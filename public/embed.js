@@ -93,10 +93,31 @@
         var titleHtml = url
           ? '<a href="' + escapeHtml(url) + '" style="color:#1a0dab;text-decoration:none;font-size:1.125rem">' + escapeHtml(title) + '</a>'
           : '<span style="color:#1a0dab;font-size:1.125rem">' + escapeHtml(title) + '</span>';
+        var edits = typeof r.edits === 'number' ? r.edits : 0;
+        if (!edits && input.value) {
+          var qTerms = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+          var fullText = ((r.title || '') + ' ' + (r.snippet || '') + ' ' + (r.description || '')).toLowerCase();
+          var wordsList = fullText.split(/\W+/).filter(Boolean);
+          for (var qi = 0; qi < qTerms.length; qi++) {
+            var qt = qTerms[qi];
+            if (qt.length >= 3 && fullText.indexOf(qt) === -1) {
+              for (var wi = 0; wi < wordsList.length; wi++) {
+                var dist = levDist(wordsList[wi], qt);
+                if (dist <= 2) {
+                  if (edits === 0 || dist < edits) edits = dist;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        var editHtml = edits > 0
+          ? '<div style="font-size:0.75rem;color:#71717a;margin-top:2px">matched with ' + edits + ' edit' + (edits > 1 ? 's' : '') + '</div>'
+          : '';
         var scoreHtml = score
           ? '<span style="font-family:ui-monospace,monospace;font-size:0.75rem;color:#525252">BM25 ' + escapeHtml(score) + '</span>'
           : '';
-        html += '<li role="option" style="padding:12px 4px 16px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">' + titleHtml + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
+        html += '<li role="option" style="padding:12px 4px 16px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div>' + titleHtml + editHtml + '</div>' + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div></li>';
       }
       html += '</ul>';
       resultsEl.innerHTML = html;
@@ -195,6 +216,23 @@
         });
     }
 
+    
+    function levDist(a, b) {
+      if (Math.abs(a.length - b.length) > 2) return 3;
+      var m = a.length, n = b.length;
+      var dp = [];
+      for (var i = 0; i <= n; i++) dp[i] = [i];
+      for (var j = 0; j <= m; j++) dp[0][j] = j;
+      for (var r = 1; r <= n; r++) {
+        for (var c = 1; c <= m; c++) {
+          dp[r][c] = b.charAt(r - 1) === a.charAt(c - 1)
+            ? dp[r - 1][c - 1]
+            : Math.min(dp[r - 1][c - 1] + 1, dp[r][c - 1] + 1, dp[r - 1][c] + 1);
+        }
+      }
+      return dp[n][m];
+    }
+
     function levenshtein1(a, b) {
       if (Math.abs(a.length - b.length) > 1) return false;
       var m = a.length, n = b.length;
@@ -221,20 +259,23 @@
         var text = ((d.title || '') + ' ' + (d.name || '') + ' ' + (d.description || '') + ' ' + (d.snippet || '') + ' ' + (d.summary || '') + ' ' + (d.content || '') + ' ' + (d.tags || []).join(' ')).toLowerCase();
         var words = text.split(/\W+/).filter(Boolean);
         var score = 0;
+        var edits = 0;
         for (var j = 0; j < q.length; j++) {
           var term = q[j];
           if (text.indexOf(term) !== -1) {
             score += 2.4;
-          } else if (term.length >= 4) {
+          } else if (term.length >= 3) {
             for (var k = 0; k < words.length; k++) {
-              if (levenshtein1(words[k], term)) {
-                score += 1.4;
+              var dDist = levDist(words[k], term);
+              if (dDist <= 2) {
+                score += 1.4 / dDist;
+                if (edits === 0 || dDist < edits) edits = dDist;
                 break;
               }
             }
           }
         }
-        if (score > 0) scored.push({ doc: Object.assign({}, d, { score: score }), score: score });
+        if (score > 0) scored.push({ doc: Object.assign({}, d, { score: score, edits: edits }), score: score, edits: edits });
       }
       scored.sort(function (a, b) { return b.score - a.score; });
       return scored.slice(0, 6).map(function (s) { return s.doc; });

@@ -72,6 +72,22 @@ PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.t
 const q=document.getElementById("q");
 const results=document.getElementById("results");
 const meta=document.getElementById("meta");
+
+function levDist(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 3;
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: n + 1 }, (_, i) => [i]);
+  for (let j = 0; j <= m; j++) dp[0][j] = j;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      dp[i][j] = b.charAt(i - 1) === a.charAt(j - 1)
+        ? dp[i - 1][j - 1]
+        : Math.min(dp[i - 1][j - 1] + 1, dp[i][j - 1] + 1, dp[i - 1][j] + 1);
+    }
+  }
+  return dp[n][m];
+}
+
 function tok(s){return s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)}
 function run(){
   const terms=tok(q.value);results.innerHTML="";
@@ -80,13 +96,33 @@ function run(){
   const scored=DOCS.map(d=>{
     const bag=tok(d.title+" "+d.title+" "+d.body);
     let score=0;
-    terms.forEach(t=>{const f=bag.filter(x=>x===t).length;if(f)score+=1+Math.log(1+f);else if(t.length>3&&bag.some(x=>x.startsWith(t.slice(0,4))))score+=0.4});
-    return {...d,score};
+    let edits=0;
+    terms.forEach(t=>{
+      const f=bag.filter(x=>x===t).length;
+      if(f) {
+        score += 1 + Math.log(1+f);
+      } else if(t.length >= 3) {
+        let best = 3;
+        for(let k=0; k<bag.length; k++) {
+          const dist = levDist(bag[k], t);
+          if (dist < best) {
+            best = dist;
+            if (dist <= 1) break;
+          }
+        }
+        if (best <= 2) {
+          score += 1.4 / best;
+          if (edits === 0 || best < edits) edits = best;
+        }
+      }
+    });
+    return {...d, score, edits};
   }).filter(d=>d.score>0).sort((a,b)=>b.score-a.score);
   meta.textContent=scored.length+" results · "+(performance.now()-t0).toFixed(1)+" ms";
   scored.forEach(d=>{
     const li=document.createElement("li");li.className="result";
-    li.innerHTML='<div class="url">'+d.url+'</div><a class="title-link" href="#">'+d.title+'</a><p class="snippet">'+d.body+'</p>';
+    const editBadge = d.edits > 0 ? '<div class="edit-badge" style="font-size:0.75rem;color:#71717a;margin-top:2px;">matched with ' + d.edits + ' edit' + (d.edits > 1 ? 's' : '') + '</div>' : '';
+    li.innerHTML='<div class="url">'+d.url+'</div><div><a class="title-link" href="#">'+d.title+'</a>' + editBadge + '</div><p class="snippet">'+d.body+'</p>';
     results.appendChild(li);
   });
 }
