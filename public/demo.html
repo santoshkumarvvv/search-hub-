@@ -145,14 +145,19 @@ if ('serviceWorker' in navigator) {
     regs.forEach(function(reg) { reg.unregister(); });
   }).catch(function() {});
 }
+if (typeof caches !== "undefined" && caches.keys) {
+  caches.keys().then(function(keys) {
+    keys.forEach(function(k) { caches.delete(k); });
+  }).catch(function() {});
+}
 let searchWorker = null;
 let workerReady = false;
 let workerQueryId = 0;
 function executeSearch() {
   const raw = q.value.trim();
   if (!raw) {
-    results.innerHTML = "";
-    meta.textContent = "Ready · " + DOCS.length + " docs";
+    renderResults(DOCS, "0.2");
+    meta.textContent = "Ready · " + DOCS.length + " docs" + (workerReady ? " indexed in Web Worker" : "");
     return;
   }
   if (searchWorker && workerReady) {
@@ -170,10 +175,12 @@ try {
       if (!msg || typeof msg !== "object") return;
       if (msg.type === "INDEXED") {
         workerReady = true;
-        if (!q.value.trim()) {
-          meta.textContent = "Ready · " + msg.count + " docs";
-        } else {
+        meta.textContent = "Ready · " + msg.count + " docs indexed in Web Worker";
+        if (q.value.trim()) {
           executeSearch();
+        } else {
+          renderResults(DOCS, "0.2");
+          meta.textContent = "Ready · " + msg.count + " docs indexed in Web Worker";
         }
       } else if (msg.type === "RESULTS") {
         if (msg.queryId !== workerQueryId) return;

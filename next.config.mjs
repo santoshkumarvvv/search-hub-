@@ -2,18 +2,33 @@
 const isStaticExport = process.env.STATIC_EXPORT === 'true';
 
 const nextConfig = {
-  // Default build = server mode so the live API monitors
-  // (/api/status, /api/github-stats) stay dynamic and real-time.
-  // For a GitHub Pages static export, build with STATIC_EXPORT=true
-  // (e.g. `npm run build:static`).
   ...(isStaticExport
     ? { output: 'export', basePath: '/search-hub-', trailingSlash: true }
-    : {}),
+    : {
+        async headers() {
+          return [
+            {
+              source: '/workers/:path*',
+              headers: [
+                { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+                { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+              ],
+            },
+            {
+              source: '/sw.js',
+              headers: [
+                { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+                { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
+                { key: 'Clear-Site-Data', value: '"cache", "storage"' },
+              ],
+            },
+          ];
+        },
+      }),
   reactStrictMode: true,
-
   images: {
-    unoptimized: true
-  }
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
