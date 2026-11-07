@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 
 // Demo key comes from NEXT_PUBLIC_DEMO_API_KEY (set in Vercel env).
@@ -8,6 +8,37 @@ import Script from 'next/script';
 const SANDBOX_DEMO_KEY =
   process.env.NEXT_PUBLIC_DEMO_API_KEY ||
   ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_');
+
+interface SpeechRecognitionResultItem {
+  transcript: string;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  0: SpeechRecognitionResultItem;
+  length: number;
+}
+
+interface SpeechRecognitionEvent {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: SpeechRecognitionResult;
+  };
+}
+
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  start: () => void;
+  stop: () => void;
+}
 
 const BENTO_FEATURES = [
   {
@@ -124,12 +155,109 @@ const PLANS = [
 ];
 
 export default function HomePage() {
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   useEffect(() => {
     const w = window as unknown as { SearchEmbed?: { init: () => void } };
     if (w.SearchEmbed && typeof w.SearchEmbed.init === 'function') {
       w.SearchEmbed.init();
     }
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
+      }
+    };
   }, []);
+
+  const toggleVoiceSearch = () => {
+    if (typeof window === 'undefined') return;
+
+    if (listening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // ignore
+      }
+      setListening(false);
+      return;
+    }
+
+    const w = window as unknown as {
+      SpeechRecognition?: new () => SpeechRecognitionInstance;
+      webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+    };
+    const SpeechRec = w.SpeechRecognition || w.webkitSpeechRecognition;
+    const statusEl = document.querySelector('[data-search-status]');
+
+    if (!SpeechRec) {
+      if (statusEl) {
+        statusEl.textContent = 'Voice search is not supported in this browser';
+      }
+      return;
+    }
+
+    try {
+      const rec = new SpeechRec();
+      rec.lang = 'hi-IN';
+      rec.interimResults = true;
+      rec.continuous = false;
+      rec.maxAlternatives = 1;
+
+      rec.onstart = () => {
+        setListening(true);
+        if (statusEl) statusEl.textContent = 'Listening (Hindi / English)… speak now';
+      };
+
+      rec.onresult = (event: SpeechRecognitionEvent) => {
+        let interim = '';
+        let finalText = '';
+        for (let i = 0; i < event.results.length; i++) {
+          const res = event.results[i];
+          const text = res[0]?.transcript || '';
+          if (res.isFinal) {
+            finalText += text;
+          } else {
+            interim += text;
+          }
+        }
+        const combined = (finalText || interim).trim();
+        const inp =
+          inputRef.current ||
+          (document.querySelector('input[data-search-input]') as HTMLInputElement | null);
+        if (inp) {
+          inp.value = combined;
+          if (finalText.trim()) {
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+      };
+
+      rec.onerror = () => {
+        setListening(false);
+      };
+
+      rec.onend = () => {
+        setListening(false);
+        const inp =
+          inputRef.current ||
+          (document.querySelector('input[data-search-input]') as HTMLInputElement | null);
+        if (inp && inp.value.trim()) {
+          inp.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      };
+
+      recognitionRef.current = rec;
+      rec.start();
+    } catch {
+      setListening(false);
+    }
+  };
 
   return (
     <main id="main" className="animate-fade-in">
@@ -189,7 +317,7 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3.5 rounded-xl border border-white/5 bg-ink px-4 py-4 focus-within:border-white/20">
+          <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-ink px-4 py-3.5 focus-within:border-white/20">
             <svg
               className="h-5 w-5 shrink-0 text-white/50"
               fill="none"
@@ -203,13 +331,41 @@ export default function HomePage() {
               />
             </svg>
             <input
+              ref={inputRef}
               data-search-input
               type="search"
               defaultValue="bm25 algorithm"
               aria-label="Live BM25 search input"
-              placeholder="Type a query or test a typo (e.g. bm25 algorithm, minecrft, scrypt kdf, wireguard)..."
+              placeholder="Type or speak in Hindi / English (e.g. bm25 algorithm, minecrft, scrypt kdf)..."
               className="w-full bg-transparent text-sm text-white/90 placeholder:text-white/50 focus:outline-none sm:text-base"
             />
+            <button
+              type="button"
+              onClick={toggleVoiceSearch}
+              aria-label={listening ? 'Stop voice search' : 'Start voice search (Hindi and English)'}
+              aria-pressed={listening}
+              title={listening ? 'Stop listening' : 'Voice search (Hindi / English)'}
+              className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold ${
+                listening
+                  ? 'border-purple bg-purple text-white shadow-[0_0_20px_rgba(124,92,255,0.65)]'
+                  : 'border-white/10 bg-panel text-white/70 hover:border-purple/60 hover:text-white'
+              }`}
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.8}
+                  d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zm7 11a7 7 0 01-14 0m7 7v4m-4 0h8"
+                />
+              </svg>
+            </button>
           </div>
 
           <div className="mt-3.5 flex flex-wrap items-center gap-2">
@@ -302,7 +458,9 @@ export default function HomePage() {
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${plan.featured ? 'border-white/15' : ''}`}
+              className={`card-surface flex h-full flex-col justify-between p-6 sm:p-8 ${
+                plan.featured ? 'border-white/15' : ''
+              }`}
             >
               <div>
                 <div className="flex flex-wrap items-center justify-between gap-2">
