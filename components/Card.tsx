@@ -26,7 +26,7 @@ export default function Card({ item }: { item: AppItem }) {
     >
       <div>
         <div className="flex items-start gap-3.5">
-          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/5 bg-ink text-xs font-bold text-white/50">
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-panel2 text-xs font-bold text-muted">
             <span>{initials(item.name)}</span>
             {item.icon && !failed && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -46,21 +46,21 @@ export default function Card({ item }: { item: AppItem }) {
           </div>
 
           <div className="min-w-0 flex-1">
-            <h3 className="truncate font-display text-base font-bold text-white/90 group-hover:text-white">
+            <h3 className="truncate font-display text-base font-bold text-ink group-hover:text-purple">
               {item.name}
             </h3>
-            <p className="mt-0.5 truncate text-xs text-white/50">
+            <p className="mt-0.5 truncate text-xs text-muted">
               {item.developer} · {item.genre}
             </p>
           </div>
         </div>
 
-        <p className="mt-3.5 line-clamp-2 text-xs leading-relaxed text-white/50">
+        <p className="mt-3.5 line-clamp-2 text-xs leading-relaxed text-muted">
           {item.description}
         </p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3 font-mono text-[11px] text-white/50 tabular-nums">
+      <div className="mt-4 flex items-center justify-between border-t border-line pt-3 font-mono text-[11px] text-muted tabular-nums">
         <span>★ {item.rating.toFixed(1)} · {item.size}</span>
         <span>v{item.version}</span>
       </div>
