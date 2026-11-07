@@ -7,11 +7,6 @@ import { APPS } from '@/lib/apps';
 import { BM25Engine, IndexDocument } from '@/lib/search/bm25';
 import type { AppItem, AppCategory, SortKey } from '@/lib/types';
 
-/**
- * Client-side APK catalog browser powered by Web Worker BM25 (searchWorker.js)
- * with synchronous BM25Engine fallback before worker initialization completes.
- */
-
 interface AppIndexDoc extends IndexDocument {
   app: AppItem;
 }
@@ -76,7 +71,6 @@ export default function Browser() {
   const workerRef = useRef<Worker | null>(null);
   const queryIdRef = useRef(0);
 
-  // Read URL params and initialize Web Worker on mount
   useEffect(() => {
     const p = readParams();
     setQ(p.q);
@@ -113,7 +107,6 @@ export default function Browser() {
     }
   }, []);
 
-  // Dispatch BM25 search to Web Worker when query changes
   useEffect(() => {
     const trimmed = q.trim();
     if (!trimmed) {
@@ -132,7 +125,6 @@ export default function Browser() {
     }
   }, [q, workerReady]);
 
-  // Sync filters to URL
   useEffect(() => {
     if (!mounted) return;
     const sp = new URLSearchParams();
@@ -146,7 +138,6 @@ export default function Browser() {
     window.history.replaceState(null, '', url);
   }, [q, category, genre, sort, mounted]);
 
-  // Filter & sort using BM25 (Web Worker results when available, synchronous BM25Engine fallback otherwise)
   const items = useMemo(() => {
     const trimmed = q.trim();
     let list: AppItem[];
@@ -216,8 +207,8 @@ export default function Browser() {
       <main id="main" className="mx-auto max-w-[1120px] px-4 py-10 sm:px-6 animate-fade-in">
         {q ? (
           <div className="mb-4">
-            <h2 className="text-lg font-extrabold text-white">
-              Search results for &quot;{q}&quot;
+            <h2 className="text-lg font-extrabold text-ink">
+              Search results for "{q}"
             </h2>
             <p className="text-xs text-muted mt-0.5">
               {items.length} apps found · Okapi BM25 + Typo Tolerance
@@ -225,7 +216,7 @@ export default function Browser() {
           </div>
         ) : (
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-extrabold text-white">
+            <h2 className="text-lg font-extrabold text-ink">
               {category === 'all' && 'All Indexed Records'}
               {category === 'game' && 'Games'}
               {category === 'app' && 'Applications'}
@@ -236,8 +227,7 @@ export default function Browser() {
 
         {items.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <span className="text-5xl mb-4">🔍</span>
-            <p className="text-sm font-semibold text-white">No apps found</p>
+            <p className="text-sm font-semibold text-ink">No apps found</p>
             <p className="text-xs text-muted mt-1">
               Try a different search term or change the category filter.
             </p>
