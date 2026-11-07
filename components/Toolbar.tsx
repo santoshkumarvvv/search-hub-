@@ -30,23 +30,22 @@ export default function Toolbar({
   onSort,
 }: ToolbarProps) {
   return (
-    <section aria-label="Catalog search and filters" className="border-b border-white/5 bg-ink">
+    <section aria-label="Catalog search and filters" className="border-b border-line bg-white">
       <div className="mx-auto max-w-[1120px] px-4 pt-10 pb-8 sm:px-6">
         <div className="mb-6 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
-            <h1 className="font-display text-2xl font-extrabold text-white/90 sm:text-4xl">
+            <h1 className="font-display text-2xl font-extrabold text-ink sm:text-4xl">
               Indexed Catalog
             </h1>
-            <p className="mt-1.5 text-sm text-white/50">
+            <p className="mt-1.5 text-sm text-muted">
               Client-side Web Worker BM25 index · {count} records matched{loading ? ' · indexing…' : ''}
             </p>
           </div>
         </div>
 
-        {/* Prominent search input */}
-        <div className="flex items-center gap-3.5 rounded-2xl border border-white/5 bg-panel px-4 py-4 focus-within:border-white/20">
+        <div className="search-box flex items-center gap-3.5 px-4 py-3.5">
           <svg
-            className="h-5 w-5 shrink-0 text-white/50"
+            className="h-5 w-5 shrink-0 text-muted"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -64,23 +63,22 @@ export default function Toolbar({
             value={q}
             onChange={(e) => onQ(e.target.value)}
             aria-label="Search catalog apps, games, and developer tools"
-            placeholder="Search indexed records (try: termux, wireguard, fdroid,vlc, k9)..."
-            className="w-full bg-transparent text-sm text-white/90 placeholder:text-white/50 focus:outline-none sm:text-base"
+            placeholder="Search indexed records (try: termux, wireguard, fdroid)..."
+            className="w-full bg-transparent text-sm text-ink placeholder:text-muted focus:outline-none sm:text-base"
           />
         </div>
 
-        {/* Filter bar */}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-white/5 bg-panel p-1">
+          <div className="inline-flex flex-wrap items-center gap-1 rounded-xl border border-line bg-white p-1">
             {(['all', 'game', 'app', 'tool'] as const).map((c) => (
               <button
                 key={c}
                 type="button"
                 onClick={() => onCategory(c)}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+                className={`min-h-11 rounded-lg px-3.5 py-2 text-xs font-semibold transition ${
                   category === c
-                    ? 'bg-white/10 text-white/90'
-                    : 'text-white/50 hover:text-white/90'
+                    ? 'bg-purple text-white'
+                    : 'text-muted hover:text-ink'
                 }`}
               >
                 {c === 'all' ? 'All' : c === 'game' ? 'Games' : c === 'app' ? 'Apps' : 'Tools'}
@@ -93,7 +91,7 @@ export default function Toolbar({
               aria-label="Filter by genre"
               value={genre}
               onChange={(e) => onGenre(e.target.value)}
-              className="rounded-xl border border-white/5 bg-panel px-3 py-2 text-xs text-white/90 focus:outline-none"
+              className="min-h-11 rounded-xl border border-line bg-white px-3 py-2 text-xs text-ink focus:outline-none"
             >
               <option value="all">All genres</option>
               {genres.map((g) => (
@@ -107,7 +105,7 @@ export default function Toolbar({
               aria-label="Sort catalog"
               value={sort}
               onChange={(e) => onSort(e.target.value as SortKey)}
-              className="rounded-xl border border-white/5 bg-panel px-3 py-2 text-xs text-white/90 focus:outline-none"
+              className="min-h-11 rounded-xl border border-line bg-white px-3 py-2 text-xs text-ink focus:outline-none"
             >
               <option value="popular">Sort: Popular</option>
               <option value="rating">Sort: Rating</option>
