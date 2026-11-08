@@ -74,7 +74,7 @@
 
     function render(results, latencyMs, sourceLabel) {
       if (!results || !results.length) {
-        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:#525252;padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecrft", "scrypt", or "wireguard".</div>';
+        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:#525252;padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecraft", "scrypt", or "wireguard".</div>';
         setStatus('0 results');
         setExpanded(true);
         return;

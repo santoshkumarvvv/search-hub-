@@ -52,7 +52,7 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
 </div></header>
 <main class="wrap">
   <h1>Interactive sandbox</h1>
-  <p class="sub">BM25 runs in this tab. Type or speak Hindi. Try a typo like <strong>minecrft</strong>.</p>
+  <p class="sub">BM25 runs in this tab. Type or speak Hindi. Try a query like <strong>minecraft</strong>.</p>
   <div class="search-row">
     <input class="search-box" id="q" type="search" aria-label="Search demo" placeholder="Search in Hindi or English">
     <button type="button" class="mic" id="mic" aria-label="Voice search Hindi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
@@ -74,7 +74,7 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
 <script>
 const DOCS=[
 {title:"Okapi BM25 Ranking Explained",url:"https://search-hub-live.vercel.app/demo.html#bm25",body:"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages."},
-{title:"Typo tolerance with Damerau-Levenshtein",url:"https://search-hub-live.vercel.app/demo.html#typos",body:"A single edit recovers minecrft as minecraft across Latin and Devanagari."},
+{title:"Typo tolerance with Damerau-Levenshtein",url:"https://search-hub-live.vercel.app/demo.html#typos",body:"A single edit recovers a misspelled query as minecraft across Latin and Devanagari."},
 {title:"Scrypt key derivation",url:"https://search-hub-live.vercel.app/demo.html#scrypt",body:"Scrypt is memory-hard so brute-forcing API keys stays expensive."},
 {title:"WireGuard versus OpenVPN",url:"https://search-hub-live.vercel.app/catalog?q=WireGuard",body:"WireGuard keeps a tiny codebase and a modern handshake."},
 {title:"Hindi voice queries",url:"https://search-hub-live.vercel.app/demo.html#hindi-voice",body:"Web Speech with lang hi-IN writes the transcript, then BM25 ranks it."},
@@ -82,7 +82,7 @@ const DOCS=[
 {title:"UPI subscriptions in India",url:"https://search-hub-live.vercel.app/pricing.html",body:"Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card."},
 {title:"Federated search merge",url:"https://search-hub-live.vercel.app/#features",body:"Blend lexical score, recency, and popularity without an extra network hop."}
 ];
-const PRESETS=["bm25","minecrft","scrypt","wireguard","hindi"];
+const PRESETS=["bm25","minecraft","scrypt","wireguard","hindi"];
 const chips=document.getElementById("chips");
 PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.textContent=p;b.onclick=()=>{q.value=p;executeSearch();};chips.appendChild(b);});
 const q=document.getElementById("q");
