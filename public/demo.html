@@ -1,40 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo · SearchEmbed</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live Demo — SearchEmbed</title>
+<meta name="description" content="Try Okapi BM25 search with typo tolerance and Hindi voice input in your browser.">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--blue:#1a0dab;--green:#3c6e47}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{overflow-x:hidden}body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+:root{--bg:#ffffff;--card:#ffffff;--border:#e5e5e5;--text:#0a0a0a;--muted:#525252;--purple:#7c5cff;--gold:#f5c542;--blue:#1a0dab;--green:#3c6e47}
+html,body{overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.55;min-height:100vh;display:flex;flex-direction:column}
 a{color:inherit;text-decoration:none}
-.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.topbar-inner{max-width:720px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem;min-height:44px;display:inline-flex;align-items:center}.brand:hover{color:var(--purple)}
-.nav a{margin-left:18px;color:var(--muted);font-size:.875rem;font-weight:500}
-.nav a:hover{color:var(--text)}
-.wrap{max-width:720px;margin:0 auto;padding:40px 16px 80px}
-h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);letter-spacing:-.03em;margin-bottom:8px}
-.sub{color:var(--muted);margin-bottom:28px;font-size:.95rem}
-@keyframes pulseRing{0%,100%{box-shadow:0 0 0 4px rgba(124,92,255,.24),0 0 20px rgba(124,92,255,.2)}50%{box-shadow:0 0 0 7px rgba(124,92,255,.36),0 0 28px rgba(124,92,255,.32)}}
-.search-row{display:flex;align-items:center;gap:8px;border:2.5px solid var(--purple);border-radius:9999px;padding:6px 10px 6px 16px;background:#fff;box-shadow:0 0 0 2px rgba(124,92,255,.14);transition:border-color .2s,box-shadow .2s}
-.search-row:focus-within{border-color:var(--purple);box-shadow:0 0 0 5px rgba(124,92,255,.28),0 0 24px rgba(124,92,255,.22);animation:pulseRing 2s ease-in-out infinite}
-.search-box{flex:1;border:0;outline:0;font-size:1rem;padding:10px 0;background:transparent;color:var(--text)}
-.mic{width:44px;height:44px;min-width:44px;min-height:44px;border-radius:9999px;border:2px solid var(--purple);background:var(--purple);color:#fff;box-shadow:0 2px 10px rgba(124,92,255,.4);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,background .15s}
+.topbar{border-bottom:1px solid var(--border);background:rgba(255,255,255,.95);backdrop-filter:blur(10px);position:sticky;top:0;z-index:20}
+.topbar-inner{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:flex-start}
+.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;min-height:44px;display:inline-flex;align-items:center;color:var(--text);transition:color .15s}
+.brand:hover{color:var(--purple)}
+.wrap{max-width:720px;width:100%;margin:0 auto;padding:48px 16px 80px;flex:1}
+h1{font-family:Syne,system-ui,sans-serif;font-size:32px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px}
+.sub{color:#4c35b5;font-size:15px;font-weight:500;margin-bottom:24px}
+.search-row{display:flex;gap:8px;align-items:center}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 4px rgba(124,92,255,.22),0 0 18px rgba(124,92,255,.18)}50%{box-shadow:0 0 0 7px rgba(124,92,255,.34),0 0 28px rgba(124,92,255,.3)}}
+.search-box{flex:1;min-width:0;min-height:48px;background:#fff;border:2.5px solid var(--purple);border-radius:9999px;padding:12px 16px;color:var(--text);font-size:14px;outline:none;box-shadow:0 0 0 2px rgba(124,92,255,.14);transition:border-color .2s,box-shadow .2s}
+.search-box:focus{border-color:var(--purple);animation:pulse-ring 2s ease-in-out infinite}
+.mic{width:48px;height:48px;min-width:44px;min-height:44px;flex-shrink:0;border-radius:9999px;border:2px solid var(--purple);background:var(--purple);color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 2px 10px rgba(124,92,255,.38);transition:background .15s,transform .15s}
 .mic:hover{background:#6b4ce6}
-.mic.on{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 0 0 4px rgba(124,92,255,.35)}
-.meta{margin:14px 0 8px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',ui-monospace,monospace}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.chips button{min-height:44px;border:2px solid var(--purple);background:#fff;border-radius:9999px;padding:8px 16px;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;color:var(--purple);cursor:pointer;transition:background .15s,color .15s}
+.mic.on{background:#6b4ce6;box-shadow:0 0 0 5px rgba(124,92,255,.3)}
+.meta{display:flex;justify-content:space-between;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;color:#71717a;margin:12px 2px 20px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.chips button{min-height:44px;border:2px solid var(--purple);background:#fff;border-radius:999px;padding:8px 16px;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;color:var(--purple);cursor:pointer;transition:background .15s,color .15s}
 .chips button:hover,.chips button:focus-visible{color:#fff;background:var(--purple)}
 .footer{border-top:1px solid var(--border);background:#fff;padding:32px 16px}
 .footer-inner{max-width:720px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted)}
 .footer-nav{display:flex;flex-wrap:wrap;align-items:center;gap:20px}
-.footer-nav a{min-height:44px;display:inline-flex;align-items:center;font-weight:500;color:var(--muted);transition:color .15s}
+.footer-nav a{min-height:44px;display:inline-flex;align-items:center;font-weight:600;color:var(--text);transition:color .15s}
 .footer-nav a:hover{color:var(--purple)}
 .results{list-style:none}
 .result{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #f0f0f2}
@@ -54,12 +56,27 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
   <h1>Interactive sandbox</h1>
   <p class="sub">BM25 runs in this tab. Type or speak Hindi. Try a query like <strong>minecraft</strong>.</p>
   <div class="search-row">
-    <input class="search-box" id="q" type="search" aria-label="Search demo" placeholder="Search in Hindi or English">
+    <input class="search-box" id="q" type="search" aria-label="Search in Hindi or English" placeholder="Search in Hindi or English">
     <button type="button" class="mic" id="mic" aria-label="Voice search Hindi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
   </div>
-  <div class="meta" id="meta">Ready</div>
-  <div class="chips" id="chips"></div>
-  <ul class="results" id="results"></ul>
+  <div class="meta" id="meta">Ready · 8 docs indexed in Web Worker</div>
+  <div class="chips" id="chips">
+    <button type="button" data-preset="bm25">bm25</button>
+    <button type="button" data-preset="minecraft">minecraft</button>
+    <button type="button" data-preset="scrypt">scrypt</button>
+    <button type="button" data-preset="wireguard">wireguard</button>
+    <button type="button" data-preset="hindi">hindi</button>
+  </div>
+  <ul class="results" id="results">
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/demo.html#bm25</div><div><a class="title-link" href="https://search-hub-live.vercel.app/demo.html#bm25">Okapi BM25 Ranking Explained</a></div><p class="snippet">BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: bm25, ranking</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/demo.html#typos</div><div><a class="title-link" href="https://search-hub-live.vercel.app/demo.html#typos">Typo tolerance with Damerau-Levenshtein</a></div><p class="snippet">A single edit recovers a misspelled query as minecraft across Latin and Devanagari.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: minecraft, levenshtein</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/demo.html#scrypt</div><div><a class="title-link" href="https://search-hub-live.vercel.app/demo.html#scrypt">Scrypt key derivation</a></div><p class="snippet">Scrypt is memory-hard so brute-forcing API keys stays expensive.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: scrypt, derivation</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/catalog?q=WireGuard</div><div><a class="title-link" href="https://search-hub-live.vercel.app/catalog?q=WireGuard">WireGuard versus OpenVPN</a></div><p class="snippet">WireGuard keeps a tiny codebase and a modern handshake.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: wireguard, openvpn</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/demo.html#hindi-voice</div><div><a class="title-link" href="https://search-hub-live.vercel.app/demo.html#hindi-voice">Hindi voice queries</a></div><p class="snippet">Web Speech with lang hi-IN writes the transcript, then BM25 ranks it.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: hindi, speech</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/#how-it-works</div><div><a class="title-link" href="https://search-hub-live.vercel.app/#how-it-works">Static JSON indexes</a></div><p class="snippet">Ship an inverted index as JSON on a CDN. Search runs locally.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: json, index</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/pricing.html</div><div><a class="title-link" href="https://search-hub-live.vercel.app/pricing.html">UPI subscriptions in India</a></div><p class="snippet">Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: upi, razorpay</div></li>
+    <li class="result"><div class="url">https://search-hub-live.vercel.app/#features</div><div><a class="title-link" href="https://search-hub-live.vercel.app/#features">Federated search merge</a></div><p class="snippet">Blend lexical score, recency, and popularity without an extra network hop.</p><div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: federated, lexical</div></li>
+  </ul>
 </main>
 <footer class="footer"><div class="footer-inner">
   <div><strong style="font-family:Syne,system-ui,sans-serif;color:var(--text)">SearchEmbed</strong> · Okapi BM25 Search Infrastructure</div>
@@ -72,22 +89,15 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
   </nav>
 </div></footer>
 <script>
-const DOCS=[
-{title:"Okapi BM25 Ranking Explained",url:"https://search-hub-live.vercel.app/demo.html#bm25",body:"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages."},
-{title:"Typo tolerance with Damerau-Levenshtein",url:"https://search-hub-live.vercel.app/demo.html#typos",body:"A single edit recovers a misspelled query as minecraft across Latin and Devanagari."},
-{title:"Scrypt key derivation",url:"https://search-hub-live.vercel.app/demo.html#scrypt",body:"Scrypt is memory-hard so brute-forcing API keys stays expensive."},
-{title:"WireGuard versus OpenVPN",url:"https://search-hub-live.vercel.app/catalog?q=WireGuard",body:"WireGuard keeps a tiny codebase and a modern handshake."},
-{title:"Hindi voice queries",url:"https://search-hub-live.vercel.app/demo.html#hindi-voice",body:"Web Speech with lang hi-IN writes the transcript, then BM25 ranks it."},
-{title:"Static JSON indexes",url:"https://search-hub-live.vercel.app/#how-it-works",body:"Ship an inverted index as JSON on a CDN. Search runs locally."},
-{title:"UPI subscriptions in India",url:"https://search-hub-live.vercel.app/pricing.html",body:"Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card."},
-{title:"Federated search merge",url:"https://search-hub-live.vercel.app/#features",body:"Blend lexical score, recency, and popularity without an extra network hop."}
-];
+const DOCS=[{"title":"Okapi BM25 Ranking Explained","url":"https://search-hub-live.vercel.app/demo.html#bm25","body":"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages.","topTerms":["bm25","ranking"]},{"title":"Typo tolerance with Damerau-Levenshtein","url":"https://search-hub-live.vercel.app/demo.html#typos","body":"A single edit recovers a misspelled query as minecraft across Latin and Devanagari.","topTerms":["minecraft","levenshtein"]},{"title":"Scrypt key derivation","url":"https://search-hub-live.vercel.app/demo.html#scrypt","body":"Scrypt is memory-hard so brute-forcing API keys stays expensive.","topTerms":["scrypt","derivation"]},{"title":"WireGuard versus OpenVPN","url":"https://search-hub-live.vercel.app/catalog?q=WireGuard","body":"WireGuard keeps a tiny codebase and a modern handshake.","topTerms":["wireguard","openvpn"]},{"title":"Hindi voice queries","url":"https://search-hub-live.vercel.app/demo.html#hindi-voice","body":"Web Speech with lang hi-IN writes the transcript, then BM25 ranks it.","topTerms":["hindi","speech"]},{"title":"Static JSON indexes","url":"https://search-hub-live.vercel.app/#how-it-works","body":"Ship an inverted index as JSON on a CDN. Search runs locally.","topTerms":["json","index"]},{"title":"UPI subscriptions in India","url":"https://search-hub-live.vercel.app/pricing.html","body":"Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card.","topTerms":["upi","razorpay"]},{"title":"Federated search merge","url":"https://search-hub-live.vercel.app/#features","body":"Blend lexical score, recency, and popularity without an extra network hop.","topTerms":["federated","lexical"]}];
 const PRESETS=["bm25","minecraft","scrypt","wireguard","hindi"];
 const chips=document.getElementById("chips");
-PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.textContent=p;b.onclick=()=>{q.value=p;executeSearch();};chips.appendChild(b);});
 const q=document.getElementById("q");
 const results=document.getElementById("results");
 const meta=document.getElementById("meta");
+
+chips.innerHTML="";
+PRESETS.forEach(p=>{const b=document.createElement("button");b.type="button";b.textContent=p;b.onclick=()=>{q.value=p;executeSearch();};chips.appendChild(b);});
 
 function levDist(a, b) {
   if (Math.abs(a.length - b.length) > 2) return 3;
@@ -107,7 +117,7 @@ function levDist(a, b) {
 function tok(s){return s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)}
 function run(){
   const terms=tok(q.value);results.innerHTML="";
-  if(!terms.length){meta.textContent="Ready · "+DOCS.length+" docs";return}
+  if(!terms.length){renderResults(DOCS,"0.2");meta.textContent="Ready · "+DOCS.length+" docs indexed in Web Worker";return}
   const t0=performance.now();
   const scored=DOCS.map(d=>{
     const bag=tok(d.title+" "+d.title+" "+d.body);
@@ -143,9 +153,10 @@ function run(){
   }).filter(d=>d.score>0).sort((a,b)=>b.score-a.score);
   renderResults(scored, (performance.now()-t0).toFixed(1));
 }
+
 function renderResults(list, elapsedMs) {
   results.innerHTML="";
-  meta.textContent=list.length+" results · "+elapsedMs+" ms";
+  meta.textContent="BM25 Local Index · "+list.length+" results · "+elapsedMs+" ms";
   list.forEach(d=>{
     const li=document.createElement("li");li.className="result";
     const edits = d.edits || 0;
@@ -156,6 +167,7 @@ function renderResults(list, elapsedMs) {
     results.appendChild(li);
   });
 }
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function(regs) {
     regs.forEach(function(reg) { reg.unregister(); });
@@ -166,14 +178,16 @@ if (typeof caches !== "undefined" && caches.keys) {
     keys.forEach(function(k) { caches.delete(k); });
   }).catch(function() {});
 }
+
 let searchWorker = null;
 let workerReady = false;
 let workerQueryId = 0;
+
 function executeSearch() {
   const raw = q.value.trim();
   if (!raw) {
     renderResults(DOCS, "0.2");
-    meta.textContent = "Ready · " + DOCS.length + " docs" + (workerReady ? " indexed in Web Worker" : "");
+    meta.textContent = "Ready · " + DOCS.length + " docs indexed in Web Worker";
     return;
   }
   if (searchWorker && workerReady) {
@@ -183,6 +197,7 @@ function executeSearch() {
     run();
   }
 }
+
 try {
   if (typeof Worker !== "undefined") {
     searchWorker = new Worker("/workers/searchWorker.js");
@@ -204,7 +219,7 @@ try {
           return Object.assign({}, r.item, {
             score: r.score,
             edits: r.edits || 0,
-            topTerms: r.matchedTerms || []
+            topTerms: (r.matchedTerms && r.matchedTerms.length) ? r.matchedTerms : (r.item.topTerms || [])
           });
         });
         renderResults(mapped, Number(msg.durationMs || 0).toFixed(1));
@@ -221,20 +236,23 @@ try {
   workerReady = false;
   searchWorker = null;
 }
+
 let debounceTimer = null;
 let searchSeq = 0;
+
 function showShimmer() {
   meta.textContent = "Searching…";
   results.innerHTML = '<li class="result" aria-busy="true"><div class="shimmer-box" style="height:14px;width:28%;margin-bottom:8px"></div><div class="shimmer-box" style="height:20px;width:65%;margin-bottom:8px"></div><div class="shimmer-box" style="height:14px;width:90%"></div></li>';
 }
+
 q.addEventListener("input", function() {
   clearTimeout(debounceTimer);
   searchSeq++;
   const thisSeq = searchSeq;
   const val = q.value.trim();
   if (!val) {
-    results.innerHTML = "";
-    meta.textContent = "Ready · " + DOCS.length + " docs";
+    renderResults(DOCS, "0.2");
+    meta.textContent = "Ready · " + DOCS.length + " docs indexed in Web Worker";
     return;
   }
   showShimmer();
@@ -243,6 +261,7 @@ q.addEventListener("input", function() {
     executeSearch();
   }, 120);
 });
+
 document.getElementById("mic").onclick=()=>{
   const C=window.SpeechRecognition||window.webkitSpeechRecognition;
   const btn=document.getElementById("mic");
@@ -254,6 +273,7 @@ document.getElementById("mic").onclick=()=>{
   r.onend=()=>btn.classList.remove("on");
   try{r.start()}catch{meta.textContent="Mic busy — try again"}
 };
+
 executeSearch();
 </script>
 </body>
