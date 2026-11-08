@@ -53,67 +53,61 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="bg-white font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen">
+      <body className="bg-white font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen overflow-x-hidden">
         <a className="skip-link" href="#main">
           Skip to content
         </a>
 
         <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur-md">
-          <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3.5 sm:px-6">
+          <div className="mx-auto flex max-w-[1120px] items-center justify-start px-4 py-3 sm:px-6">
             <Link
               href="/"
-              className="font-display text-lg font-extrabold tracking-tight text-ink transition hover:text-purple"
+              className="inline-flex min-h-[44px] items-center font-display text-lg font-extrabold tracking-tight text-ink transition hover:text-purple"
             >
               SearchEmbed
             </Link>
-
-            <nav
-              aria-label="Primary navigation"
-              className="flex items-center gap-5 text-sm font-medium text-muted"
-            >
-              <a href="/demo.html" className="transition hover:text-ink">
-                Demo
-              </a>
-              <a href="/pricing.html" className="transition hover:text-ink">
-                Pricing
-              </a>
-              <Link href="/catalog" className="transition hover:text-ink">
-                Catalog
-              </Link>
-            </nav>
           </div>
         </header>
 
         {children}
 
         <footer className="border-t border-line bg-white px-4 py-10 sm:px-6">
-          <div className="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+          <div className="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2.5 text-xs text-muted">
               <span className="font-display text-sm font-bold text-ink">SearchEmbed</span>
               <span aria-hidden="true">·</span>
               <span>Okapi BM25 Search Infrastructure</span>
             </div>
-
-            <div className="flex flex-wrap items-center gap-5 text-xs text-muted">
-              <a href="/demo.html" className="transition hover:text-ink">Demo</a>
-              <a href="/pricing.html" className="transition hover:text-ink">Pricing</a>
-              <Link href="/catalog" className="transition hover:text-ink">Catalog</Link>
+            <nav
+              aria-label="Footer navigation"
+              className="flex flex-wrap items-center gap-6 text-xs font-medium text-muted"
+            >
+              <a href="/demo.html" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
+                Demo
+              </a>
+              <a href="/pricing.html" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
+                Pricing
+              </a>
+              <Link href="/catalog" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
+                Catalog
+              </Link>
               <a
                 href="https://github.com/santoshkumarvvv/search-hub-"
                 target="_blank"
                 rel="noreferrer"
-                className="transition hover:text-ink"
+                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
               >
                 GitHub
               </a>
-              <a href="mailto:kumasantosh947@gmail.com" className="transition hover:text-ink">
+              <a
+                href="mailto:kumasantosh947@gmail.com"
+                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+              >
                 Contact
               </a>
-            </div>
+            </nav>
           </div>
         </footer>
-
-        
       </body>
     </html>
   );
