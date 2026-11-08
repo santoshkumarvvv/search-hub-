@@ -12,6 +12,8 @@ const nextConfig = {
               headers: [
                 { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
                 { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+                { key: 'Access-Control-Allow-Origin', value: '*' },
+                { key: 'X-Content-Type-Options', value: 'nosniff' },
               ],
             },
             {
