@@ -88,9 +88,9 @@
         var r = results[i];
         var title = r.title || r.name || '';
         var desc = r.snippet || r.description || r.summary || '';
-        var url = r.url || '';
+        var url = String(r.url || '').replace(/^https?:\/\/santoshkumarvvv\.github\.io\/(search-hub-\/)?/, 'https://search-hub-live.vercel.app/');
         var score = typeof r.score === 'number' ? r.score.toFixed(2) : '';
-        var urlHtml = url ? '<div style="color:#006621;font-size:0.875rem">' + escapeHtml(url) + '</div>' : '';
+        var urlHtml = url ? '<div style="color:#3c6e47;font-size:0.825rem;margin-bottom:2px">' + escapeHtml(url) + '</div>' : '';
         var titleHtml = url
           ? '<a href="' + escapeHtml(url) + '" style="color:#1a0dab;text-decoration:none;font-size:1.125rem">' + escapeHtml(title) + '</a>'
           : '<span style="color:#1a0dab;font-size:1.125rem">' + escapeHtml(title) + '</span>';
@@ -143,7 +143,7 @@
           ? '<div style="font-size:0.75rem;color:#71717a;margin-top:4px">Ranked high for: ' + escapeHtml(topTerms.slice(0, 2).join(', ')) + '</div>'
           : '';
 
-        html += '<li role="option" style="padding:12px 4px 16px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div>' + titleHtml + editHtml + '</div>' + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div>' + explanationHtml + '</li>';
+        html += '<li role="option" style="padding:18px 4px 20px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div>' + titleHtml + editHtml + '</div>' + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div>' + explanationHtml + '</li>';
       }
       html += '</ul>';
       resultsEl.innerHTML = html;

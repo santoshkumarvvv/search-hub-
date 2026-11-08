@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--blue:#1a0dab;--green:#006621}
+:root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--blue:#1a0dab;--green:#3c6e47}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
@@ -30,7 +30,7 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
 .chips button{min-height:40px;border:1px solid var(--border);background:#fff;border-radius:9999px;padding:8px 14px;font-size:12px;color:var(--muted);cursor:pointer}
 .chips button:hover{color:var(--text);border-color:var(--purple)}
 .results{list-style:none}
-.result{margin-bottom:20px}
+.result{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #f0f0f2}
 .result .url{color:var(--green);font-size:.875rem}
 .result .title-link{color:var(--blue);font-size:1.125rem}
 .result .title-link:hover{text-decoration:underline}
@@ -57,14 +57,14 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
 </main>
 <script>
 const DOCS=[
-{title:"Okapi BM25 Ranking Explained",url:"docs.searchembed.dev/bm25",body:"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages."},
-{title:"Typo tolerance with Damerau-Levenshtein",url:"docs.searchembed.dev/typos",body:"A single edit recovers minecrft as minecraft across Latin and Devanagari."},
-{title:"Scrypt key derivation",url:"docs.searchembed.dev/scrypt",body:"Scrypt is memory-hard so brute-forcing API keys stays expensive."},
-{title:"WireGuard versus OpenVPN",url:"docs.searchembed.dev/wireguard",body:"WireGuard keeps a tiny codebase and a modern handshake."},
-{title:"Hindi voice queries",url:"docs.searchembed.dev/hindi-voice",body:"Web Speech with lang hi-IN writes the transcript, then BM25 ranks it."},
-{title:"Static JSON indexes",url:"docs.searchembed.dev/static-index",body:"Ship an inverted index as JSON on a CDN. Search runs locally."},
-{title:"UPI subscriptions in India",url:"docs.searchembed.dev/upi",body:"Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card."},
-{title:"Federated search merge",url:"docs.searchembed.dev/federated",body:"Blend lexical score, recency, and popularity without an extra network hop."}
+{title:"Okapi BM25 Ranking Explained",url:"https://search-hub-live.vercel.app/demo.html#bm25",body:"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages."},
+{title:"Typo tolerance with Damerau-Levenshtein",url:"https://search-hub-live.vercel.app/demo.html#typos",body:"A single edit recovers minecrft as minecraft across Latin and Devanagari."},
+{title:"Scrypt key derivation",url:"https://search-hub-live.vercel.app/demo.html#scrypt",body:"Scrypt is memory-hard so brute-forcing API keys stays expensive."},
+{title:"WireGuard versus OpenVPN",url:"https://search-hub-live.vercel.app/catalog?q=WireGuard",body:"WireGuard keeps a tiny codebase and a modern handshake."},
+{title:"Hindi voice queries",url:"https://search-hub-live.vercel.app/demo.html#hindi-voice",body:"Web Speech with lang hi-IN writes the transcript, then BM25 ranks it."},
+{title:"Static JSON indexes",url:"https://search-hub-live.vercel.app/#how-it-works",body:"Ship an inverted index as JSON on a CDN. Search runs locally."},
+{title:"UPI subscriptions in India",url:"https://search-hub-live.vercel.app/pricing.html",body:"Razorpay AutoPay collects ₹19, ₹99, and ₹199 without storing a card."},
+{title:"Federated search merge",url:"https://search-hub-live.vercel.app/#features",body:"Blend lexical score, recency, and popularity without an extra network hop."}
 ];
 const PRESETS=["bm25","minecrft","scrypt","wireguard","hindi"];
 const chips=document.getElementById("chips");
@@ -136,7 +136,7 @@ function renderResults(list, elapsedMs) {
     const topTerms = d.topTerms || d.matchedTerms || [];
     const editBadge = edits > 0 ? '<div class="edit-badge" style="font-size:0.75rem;color:#71717a;margin-top:2px;">matched with ' + edits + ' edit' + (edits > 1 ? 's' : '') + '</div>' : '';
     const explanation = topTerms.length > 0 ? '<div class="explanation" style="font-size:0.75rem;color:#71717a;margin-top:4px;">Ranked high for: ' + topTerms.join(', ') + '</div>' : '';
-    li.innerHTML='<div class="url">'+d.url+'</div><div><a class="title-link" href="#">'+d.title+'</a>' + editBadge + '</div><p class="snippet">'+d.body+'</p>' + explanation;
+    li.innerHTML='<div class="url">'+d.url+'</div><div><a class="title-link" href="'+d.url+'">'+d.title+'</a>' + editBadge + '</div><p class="snippet">'+d.body+'</p>' + explanation;
     results.appendChild(li);
   });
 }
