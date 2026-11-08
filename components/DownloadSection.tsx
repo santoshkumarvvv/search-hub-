@@ -1,14 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import type { AppItem } from '@/lib/types';
 
 export default function DownloadSection({ app }: { app: AppItem }) {
+  const [started, setStarted] = useState(false);
+
   return (
     <div className="shrink-0 w-full sm:w-auto">
       <button
         type="button"
-        onClick={() => alert(`Download started: ${app.name} v${app.version}`)}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent2 px-8 py-3.5 text-sm font-extrabold text-ink transition hover:brightness-110 hover:shadow-lg hover:shadow-accent/20 active:scale-[0.97]"
+        onClick={() => setStarted(true)}
+        className="btn-cta-gradient flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-8 py-3.5 text-sm font-extrabold text-white transition"
       >
         <svg
           width="18"
@@ -25,7 +28,7 @@ export default function DownloadSection({ app }: { app: AppItem }) {
           <polyline points="7 10 12 15 17 10" />
           <line x1="12" y1="15" x2="12" y2="3" />
         </svg>
-        Download APK
+        {started ? `Downloading ${app.name} v${app.version}…` : 'Download Package'}
       </button>
       <p className="mt-2 text-center text-[10px] text-muted">
         v{app.version} · {app.size} · Safe &amp; Verified

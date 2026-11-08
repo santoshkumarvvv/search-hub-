@@ -14,7 +14,7 @@ export default {
         line:      "#e5e5e5",
         muted:     "#525252",
         accent:    "#7c5cff",
-        accent2:   "#00d2a0",
+        accent2:   "#f5c542",
         highlight: "#f5c542",
         purple:    "#7c5cff",
         danger:    "#ef4444",
