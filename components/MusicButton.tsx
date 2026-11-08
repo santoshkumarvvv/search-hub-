@@ -2,23 +2,35 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/** Free-license tracks only: Free Music Archive (CC) + Pixabay Content License. */
+/** Free-license tracks: Mixkit (website use allowed, no attribution required). */
 const TRACKS = [
   {
-    title: 'Night Owl',
-    url: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/WFMU/Broke_For_Free/Directionless_EP/Broke_For_Free_-_01_-_Night_Owl.mp3',
+    title: 'Trap Electro Vibes',
+    url: 'https://assets.mixkit.co/music/126/126.mp3',
   },
   {
-    title: 'Enthusiast',
-    url: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tours/Enthusiast/Tours_-_01_-_Enthusiast.mp3',
+    title: 'Rising Sun',
+    url: 'https://assets.mixkit.co/music/523/523.mp3',
   },
   {
-    title: 'Algorithms',
-    url: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/ccCommunity/Chad_Crouch/Arps/Chad_Crouch_-_Algorithms.mp3',
+    title: 'Uplifting Bass',
+    url: 'https://assets.mixkit.co/music/726/726.mp3',
   },
   {
-    title: 'Ambient Calm',
-    url: 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3',
+    title: 'Deep Techno',
+    url: 'https://assets.mixkit.co/music/106/106.mp3',
+  },
+  {
+    title: 'Esperanza',
+    url: 'https://assets.mixkit.co/music/991/991.mp3',
+  },
+  {
+    title: 'Villa Penthouse',
+    url: 'https://assets.mixkit.co/music/339/339.mp3',
+  },
+  {
+    title: 'Reggaeton Vibes',
+    url: 'https://assets.mixkit.co/music/274/274.mp3',
   },
 ] as const;
 
@@ -123,7 +135,7 @@ export default function MusicButton() {
   if (!visible) return null;
 
   return (
-    <div className="ml-2 inline-flex items-center gap-1.5" role="group" aria-label="Music player">
+    <div className="inline-flex items-center justify-center gap-1.5" role="group" aria-label="Music player">
       <button
         type="button"
         onClick={() => skip(-1)}

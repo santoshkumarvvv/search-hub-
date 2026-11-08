@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur-md">
-          <div className="mx-auto flex max-w-[1120px] items-center justify-start gap-2 px-4 py-3 sm:px-6">
+          <div className="mx-auto flex max-w-[1120px] flex-col items-center justify-center gap-2 px-4 py-3 sm:px-6">
             <Link
               href="/"
               className="inline-flex min-h-[44px] items-center font-display text-lg font-extrabold tracking-tight text-ink transition hover:text-purple"
