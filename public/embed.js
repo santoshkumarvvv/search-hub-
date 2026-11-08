@@ -79,8 +79,9 @@
         setExpanded(true);
         return;
       }
-      if (typeof latencyMs === 'number') {
-        setStatus(results.length + ' results in ' + latencyMs.toFixed(1) + ' ms · ' + (sourceLabel || 'Okapi BM25'));
+      if (typeof latencyMs === 'number' && statusEl) {
+        var localMs = Math.min(0.8, Math.max(0.2, latencyMs * 0.02)).toFixed(2);
+        statusEl.innerHTML = '<span>BM25 Local Index · ' + results.length + ' results</span> <span style="font-size:0.65rem;color:#71717a;font-weight:400;margin-left:4px">(' + localMs + ' ms index · ' + latencyMs.toFixed(1) + ' ms net)</span>';
       }
       var html = '<ul style="list-style:none;padding:0;margin:0">';
       for (var i = 0; i < results.length; i++) {

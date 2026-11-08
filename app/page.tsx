@@ -118,7 +118,7 @@ export default function HomePage() {
       rec.onend = () => {
         setListening(false);
         if (statusEl && !statusEl.textContent?.startsWith('Mic failed') && !statusEl.textContent?.startsWith('Mic busy')) {
-          statusEl.textContent = '52 records indexed live';
+          statusEl.textContent = 'BM25 Local Index · 52 records';
         }
       };
       recognitionRef.current = rec;
@@ -139,7 +139,7 @@ export default function HomePage() {
         <h1 className="font-display mx-auto max-w-3xl text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl md:text-6xl">
           Search that <span className="hero-underline">ships in seconds.</span>
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
+        <p className="mx-auto mt-5 max-w-xl text-[15px] font-medium leading-relaxed text-[#4c35b5] sm:text-base">
           Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond — then search together with friends.
         </p>
         <div className="mt-8 flex justify-center">
@@ -172,7 +172,7 @@ export default function HomePage() {
               type="search"
               defaultValue="bm25 algorithm"
               aria-label="Live BM25 search input"
-              placeholder="Type or speak in Hindi / English…"
+              placeholder="Search in Hindi or English"
               onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
               className="w-full bg-transparent text-[15px] text-ink placeholder:text-muted focus:outline-none"
             />
@@ -181,10 +181,8 @@ export default function HomePage() {
               onClick={toggleVoiceSearch}
               aria-label={listening ? 'Stop voice search' : 'Start voice search (Hindi and English)'}
               aria-pressed={listening}
-              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition ${
-                listening
-                  ? 'border-purple bg-purple text-white'
-                  : 'border-line bg-white text-muted hover:border-purple/50 hover:text-purple'
+              className={`inline-flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full border-2 border-purple bg-purple text-white shadow-[0_2px_10px_rgba(124,92,255,0.4)] transition hover:bg-[#6b4ce6] ${
+                listening ? 'ring-4 ring-purple/30 scale-105' : ''
               }`}
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -193,9 +191,14 @@ export default function HomePage() {
             </button>
           </div>
           <div className="mt-3.5 flex flex-wrap items-center gap-2">
-            <span className="text-[11px] text-muted">Try:</span>
-            {['bm25 algorithm', 'minecrft', 'scrypt kdf', 'wireguard vpn'].map((q) => (
-              <button key={q} type="button" data-search-preset={q} className="min-h-10 rounded-full border border-line bg-white px-3 py-2 font-mono text-[11px] text-muted hover:text-ink">
+            <span className="text-xs font-semibold text-purple">Try:</span>
+            {['bm25 algorithm', 'minecraft', 'scrypt kdf', 'wireguard vpn'].map((q) => (
+              <button
+                key={q}
+                type="button"
+                data-search-preset={q}
+                className="inline-flex min-h-[44px] items-center rounded-full border-2 border-purple bg-white px-4 py-2 font-mono text-xs font-semibold text-purple transition-colors hover:bg-purple hover:text-white focus-visible:bg-purple focus-visible:text-white"
+              >
                 {q}
               </button>
             ))}

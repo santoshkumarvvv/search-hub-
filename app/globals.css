@@ -115,7 +115,7 @@ h1, h2, h3, .font-display {
     bottom: -6px;
     height: 4px;
     border-radius: 9999px;
-    background: var(--purple);
+    background: linear-gradient(90deg, #7c5cff 0%, #f5c542 100%);
     box-shadow: 0 0 16px var(--purple-glow);
   }
 
@@ -183,20 +183,21 @@ h1, h2, h3, .font-display {
 
   .search-box {
     background: #ffffff;
-    border: 2px solid var(--line);
+    border: 2.5px solid var(--purple);
     border-radius: 9999px;
+    box-shadow: 0 0 0 2px rgba(124, 92, 255, 0.14);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .search-box:focus-within {
     border-color: var(--purple);
-    box-shadow: 0 0 0 4px var(--purple-glow), 0 0 24px rgba(124, 92, 255, 0.25);
+    box-shadow: 0 0 0 5px rgba(124, 92, 255, 0.28), 0 0 24px rgba(124, 92, 255, 0.22);
     animation: pulse-border 2s ease-in-out infinite;
   }
 
   @keyframes pulse-border {
-    0%, 100% { box-shadow: 0 0 0 4px var(--purple-glow), 0 0 24px rgba(124, 92, 255, 0.25); }
-    50% { box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.2), 0 0 32px rgba(124, 92, 255, 0.35); }
+    0%, 100% { box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.24), 0 0 20px rgba(124, 92, 255, 0.2); }
+    50% { box-shadow: 0 0 0 7px rgba(124, 92, 255, 0.36), 0 0 30px rgba(124, 92, 255, 0.32); }
   }
 
   .glass {
