@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/** Free-license tracks only: Pixabay Content License + Free Music Archive (CC). */
+/** Free-license tracks only: Free Music Archive (CC) + Pixabay Content License. */
 const TRACKS = [
   {
     title: 'Night Owl',
@@ -22,12 +22,13 @@ const TRACKS = [
   },
 ] as const;
 
-const btnClass =
+const btnClass +
   'inline-flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full bg-[#7c5cff] text-white shadow-[0_2px_10px_rgba(124,92,255,0.4)] transition hover:bg-[#6b4ce6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50';
 
 export default function MusicButton() {
   const [playing, setPlaying] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const indexRef = useRef(0);
   const wantPlayRef = useRef(false);
@@ -102,12 +103,38 @@ export default function MusicButton() {
     }
   };
 
-  const skip = () => {
-    loadTrack(indexRef.current + 1, true);
+  const skip = (dir: 1 | -1) => {
+    loadTrack(indexRef.current + dir, true);
   };
 
+  const close = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      try {
+        audio.pause();
+        audioRef.current = null;
+      } catch {
+        /* ignore */
+      }
+    }
+    setVisible(false);
+  };
+
+  if (!visible) return null;
+
   return (
-    <div className="ml-2 inline-flex items-center gap-1.5">
+    <div className="ml-2 inline-flex items-center gap-1.5" role="group" aria-label="Music player">
+      <button
+        type="button"
+        onClick={() => skip(-1)}
+        aria-label="Skip to previous free track"
+        title="Previous"
+        className={btnClass}
+      >
+        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" />
+        </svg>
+      </button>
       <button
         type="button"
         onClick={toggle}
@@ -128,7 +155,18 @@ export default function MusicButton() {
       </button>
       <button
         type="button"
-        onClick={skip}
+        onClick={close}
+        aria-label="Close music player"
+        title="Close"
+        className={btnClass}
+      >
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+          <path strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onClick={() => skip(1)}
         aria-label="Skip to next free track"
         title="Skip"
         className={btnClass}
