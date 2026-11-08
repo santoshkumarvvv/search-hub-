@@ -78,7 +78,6 @@ search-hub-/
 │   ├── apps.ts               # Legal app catalogue (no pirated/mod content)
 │   └── types.ts              # Strict TypeScript domain contracts
 ├── public/
-│   ├── sw.js                 # Service worker with same-origin cache policy
 │   └── workers/
 │       └── searchWorker.js   # Hardened Web Worker with trusted origin allow-list
 ├── test/

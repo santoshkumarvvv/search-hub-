@@ -14,14 +14,6 @@ const nextConfig = {
                 { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
               ],
             },
-            {
-              source: '/sw.js',
-              headers: [
-                { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
-                { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
-                { key: 'Clear-Site-Data', value: '"cache", "storage"' },
-              ],
-            },
           ];
         },
       }),

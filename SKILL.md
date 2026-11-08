@@ -10,7 +10,7 @@ India's first client-side federated search widget. BM25 ranking runs entirely in
 ## Quick Start
 
 1. Add the script tag to any HTML page:
-   `<script src="https://santoshkumarvvv.github.io/search-hub-/embed.js"></script>`
+   `<script src="https://search-hub-live.vercel.app/embed.js"></script>`
 2. Add a container: `<div id="search-hub"></div>`
 3. Search is live in twenty seconds. No account, no server, no config.
 
@@ -49,4 +49,4 @@ India's first client-side federated search widget. BM25 ranking runs entirely in
 
 https://github.com/santoshkumarvvv/search-hub-
 Branch: feat/searchembed-product
-Live demo: https://santoshkumarvvv.github.io/search-hub-/
+Live demo: https://search-hub-live.vercel.app/

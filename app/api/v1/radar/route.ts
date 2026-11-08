@@ -8,7 +8,7 @@ const ALLOWED_CATEGORIES = new Set(['languages', 'frameworks', 'cloud-infrastruc
 
 // Strict CORS allowlist — never reflect arbitrary origins
 const ALLOWED_ORIGINS = new Set([
-  'https://santoshkumarvvv.github.io',
+  'https://search-hub-live.vercel.app',
   'http://localhost:3000'
 ]);
 

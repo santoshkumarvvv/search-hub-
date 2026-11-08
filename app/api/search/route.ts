@@ -12,7 +12,6 @@ searchEngine.addDocuments(CATALOG_CORPUS);
 
 /** Exact hostname allowlist — never use includes/endsWith on the raw Origin string (CWE-20). */
 const ALLOWED_HOSTNAMES = new Set([
-  'santoshkumarvvv.github.io',
   'search-hub-live.vercel.app',
   'localhost',
   '127.0.0.1',
@@ -32,7 +31,7 @@ function getCorsHeaders(request: NextRequest): Record<string, string> {
   }
 
   return {
-    'Access-Control-Allow-Origin': allowed ? origin : 'https://santoshkumarvvv.github.io',
+    'Access-Control-Allow-Origin': allowed ? origin : 'https://search-hub-live.vercel.app',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
     'Access-Control-Allow-Max-Age': '86400',
