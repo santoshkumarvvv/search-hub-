@@ -38,7 +38,7 @@ const PLANS = [
   {
     id: 'starter', name: 'Starter', price: '₹19', who: 'Personal sites and blogs.',
     features: ['1 widget under 2 KB', '5,000 documents', 'BM25 + 1-edit typos', 'Worker offload'],
-    cta: 'Start at ₹19/mo', href: '/pricing.html#razorpay-starter', featured: false, discount: 'Save 20%',
+    cta: 'Start at ₹19', href: '/pricing.html#razorpay-starter', featured: false, discount: 'Save 20%',
   },
   {
     id: 'pro', name: 'Pro', price: '₹99', who: 'Indie SaaS and production docs.',
@@ -352,7 +352,7 @@ export default function HomePage() {
           ))}
         </div>
         <div className="mt-8">
-          <a href="/pricing.html" className="btn-cta-gradient inline-flex min-h-[56px] w-full items-center justify-center text-center py-4 text-base">View full pricing & subscribe</a>
+          <a href="/pricing.html" className="btn-cta-gradient inline-flex min-h-[56px] w-full items-center justify-center text-center py-4 text-base">View full pricing and subscribe</a>
         </div>
       </section>
     </main>

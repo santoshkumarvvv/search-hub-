@@ -69,25 +69,25 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
       <p class="fit">Personal sites, portfolios, and technical blogs.</p>
       <div class="price">₹19<span>/month</span></div>
       <ul><li>1 search widget (<2 KB)</li><li>Up to 5,000 documents</li><li>BM25 + 1-edit typos</li><li>Web Worker offload</li></ul>
-      <a class="btn" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Starter">Start at ₹19</a>
+      <button type="button" class="btn razorpay-trigger" data-razorpay-plan="Starter" data-amount="1900">Start at ₹19</button>
     </article>
     <article class="card pro" id="razorpay-pro">
       <div class="row"><div class="name">Pro</div><span class="badge">Most popular</span></div>
       <p class="fit">Indie SaaS, docs hubs, and production apps.</p>
       <div class="price">₹99<span>/month</span></div>
       <ul><li>Unlimited widgets & docs</li><li>50,000 API searches / month</li><li>Scrypt keys + rate quotas</li><li>JSON / CSV export</li></ul>
-      <a class="btn primary" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Pro">Choose Pro — ₹99</a>
+      <button type="button" class="btn primary razorpay-trigger" data-razorpay-plan="Pro" data-amount="9900">Choose Pro — ₹99</button>
     </article>
     <article class="card ultra" id="razorpay-ultra">
       <div class="row"><div class="name">Ultra</div><span class="disc">Save 15%</span></div>
       <p class="fit">High-volume platforms with autonomous agents.</p>
       <div class="price">₹199<span>/month</span></div>
       <ul><li>500,000 API searches / month</li><li>3 agent runs / day</li><li>Drift & contradiction alerts</li><li>Priority routing & SLA</li></ul>
-      <a class="btn" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Ultra">Choose Ultra — ₹199</a>
+      <button type="button" class="btn razorpay-trigger" data-razorpay-plan="Ultra" data-amount="19900">Choose Ultra — ₹199</button>
     </article>
   </div>
-  <a class="cta" href="mailto:kumasantosh947@gmail.com?subject=SearchEmbed%20Subscribe">Subscribe via UPI — email to activate</a>
-  <p class="note">Live Razorpay checkout hooks stay on the production payment path. This page routes you to activate by email.</p>
+  <button type="button" class="cta razorpay-trigger" data-razorpay-plan="Pro" data-amount="9900" style="border:none;cursor:pointer">View full pricing and subscribe</button>
+  <div id="razorpay-status-banner" role="status" aria-live="polite" style="margin-top:14px;padding:12px 16px;border-radius:12px;border:1px solid #e5e5e5;background:#fafafa;color:#525252;font-size:13px;text-align:center">Razorpay UPI AutoPay ready — select a plan above to launch checkout (shows test-mode status when live Razorpay keys are empty).</div>
 
   <section class="faq-wrap" aria-labelledby="faq-heading">
     <h2 id="faq-heading" class="faq-title">Frequently Asked Questions</h2>
@@ -177,7 +177,51 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
       });
     });
   </script>
-\n</main>
+\n
+    <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
+    <script>
+    (function() {
+      var rzpKey = window.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+      var banner = document.getElementById("razorpay-status-banner");
+      function openRazorpayCheckout(planName, amountPaise, btnEl) {
+        if (rzpKey && typeof window.Razorpay === "function") {
+          var rzp = new window.Razorpay({
+            key: rzpKey,
+            amount: Number(amountPaise),
+            currency: "INR",
+            name: "SearchEmbed",
+            description: planName + " Monthly Plan (UPI AutoPay)",
+            handler: function(response) {
+              if (banner) {
+                banner.style.borderColor = "#7c5cff";
+                banner.style.color = "#0a0a0a";
+                banner.textContent = "Payment authorized (" + (response.razorpay_payment_id || "live") + ") — provisioning your scrypt API key.";
+              }
+            }
+          });
+          rzp.open();
+          return;
+        }
+        if (banner) {
+          banner.style.borderColor = "#7c5cff";
+          banner.style.background = "rgba(124,92,255,0.06)";
+          banner.style.color = "#0a0a0a";
+          banner.textContent = "Razorpay Checkout (Disabled / Test Mode — live RAZORPAY_KEY_ID is empty): Selected " + planName + " plan (₹" + (Number(amountPaise) / 100) + "/month). Configure NEXT_PUBLIC_RAZORPAY_KEY_ID to enable live UPI payment.";
+        }
+        if (btnEl) {
+          btnEl.setAttribute("data-checkout-state", "disabled-missing-key");
+        }
+      }
+      document.querySelectorAll(".razorpay-trigger").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          var plan = btn.getAttribute("data-razorpay-plan") || "Pro";
+          var amt = btn.getAttribute("data-amount") || "9900";
+          openRazorpayCheckout(plan, amt, btn);
+        });
+      });
+    })();
+    </script>
+</main>
 <footer class="footer"><div class="footer-inner">
   <div><strong style="font-family:Syne,system-ui,sans-serif;color:var(--text)">SearchEmbed</strong> · Okapi BM25 Search Infrastructure</div>
   <nav class="footer-nav" aria-label="Footer navigation">
