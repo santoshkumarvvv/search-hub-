@@ -6,15 +6,15 @@
 <title>Pricing · SearchEmbed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--gold:#f5c542;--danger:#ef4444}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+html,body{overflow-x:hidden}body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .topbar{position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
 .topbar-inner{max-width:1040px;margin:0 auto;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem}
+.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem;min-height:44px;display:inline-flex;align-items:center}.brand:hover{color:var(--purple)}
 .nav a{margin-left:18px;color:var(--muted);font-size:.875rem;font-weight:500}
 .wrap{max-width:1040px;margin:0 auto;padding:48px 16px 96px}
 h1{font-family:Syne,system-ui,sans-serif;text-align:center;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.03em}
@@ -53,12 +53,12 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
 .accordion-item.open .accordion-content { display: block; animation: accordionDown 0.2s ease-out; }
 @keyframes accordionDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 .accordion-content code { background: #f4f4f5; color: #18181b; padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.825rem; word-break: break-all; }
-\n</style>
+\n.footer{border-top:1px solid var(--border);background:#fff;padding:32px 16px}.footer-inner{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted)}.footer-nav{display:flex;flex-wrap:wrap;align-items:center;gap:20px}.footer-nav a{min-height:44px;display:inline-flex;align-items:center;font-weight:500;color:var(--muted);transition:color .15s}.footer-nav a:hover{color:var(--purple)}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="topbar-inner">
   <a class="brand" href="/">SearchEmbed</a>
-  <nav class="nav"><a href="/">Home</a><a href="/demo.html">Demo</a></nav>
 </div></header>
 <main class="wrap">
   <h1>Predictable Rupee pricing</h1>
@@ -178,5 +178,15 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
     });
   </script>
 \n</main>
+<footer class="footer"><div class="footer-inner">
+  <div><strong style="font-family:Syne,system-ui,sans-serif;color:var(--text)">SearchEmbed</strong> · Okapi BM25 Search Infrastructure</div>
+  <nav class="footer-nav" aria-label="Footer navigation">
+    <a href="/demo.html">Demo</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/catalog">Catalog</a>
+    <a href="https://github.com/santoshkumarvvv/search-hub-" target="_blank" rel="noreferrer">GitHub</a>
+    <a href="mailto:kumasantosh947@gmail.com">Contact</a>
+  </nav>
+</div></footer>
 </body>
 </html>

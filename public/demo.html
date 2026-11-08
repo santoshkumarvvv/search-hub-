@@ -6,29 +6,36 @@
 <title>Demo · SearchEmbed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#fff;--text:#0a0a0a;--muted:#525252;--border:#e5e5e5;--purple:#7c5cff;--blue:#1a0dab;--green:#3c6e47}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+html,body{overflow-x:hidden}body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 .topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
 .topbar-inner{max-width:720px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem}
+.brand{font-family:Syne,system-ui,sans-serif;font-weight:800;font-size:1.1rem;min-height:44px;display:inline-flex;align-items:center}.brand:hover{color:var(--purple)}
 .nav a{margin-left:18px;color:var(--muted);font-size:.875rem;font-weight:500}
 .nav a:hover{color:var(--text)}
 .wrap{max-width:720px;margin:0 auto;padding:40px 16px 80px}
 h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);letter-spacing:-.03em;margin-bottom:8px}
 .sub{color:var(--muted);margin-bottom:28px;font-size:.95rem}
-.search-row{display:flex;align-items:center;gap:8px;border:2px solid var(--border);border-radius:9999px;padding:6px 10px 6px 16px;background:#fff;transition:border-color .2s,box-shadow .2s}
-.search-row:focus-within{border-color:var(--purple);box-shadow:0 0 0 4px rgba(124,92,255,.25)}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 4px rgba(124,92,255,.24),0 0 20px rgba(124,92,255,.2)}50%{box-shadow:0 0 0 7px rgba(124,92,255,.36),0 0 28px rgba(124,92,255,.32)}}
+.search-row{display:flex;align-items:center;gap:8px;border:2.5px solid var(--purple);border-radius:9999px;padding:6px 10px 6px 16px;background:#fff;box-shadow:0 0 0 2px rgba(124,92,255,.14);transition:border-color .2s,box-shadow .2s}
+.search-row:focus-within{border-color:var(--purple);box-shadow:0 0 0 5px rgba(124,92,255,.28),0 0 24px rgba(124,92,255,.22);animation:pulseRing 2s ease-in-out infinite}
 .search-box{flex:1;border:0;outline:0;font-size:1rem;padding:10px 0;background:transparent;color:var(--text)}
-.mic{width:44px;height:44px;border-radius:9999px;border:1px solid var(--border);background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-.mic.on{background:var(--purple);border-color:var(--purple);color:#fff}
-.meta{margin:14px 0 8px;font-size:12px;color:var(--muted);font-family:ui-monospace,monospace}
+.mic{width:44px;height:44px;min-width:44px;min-height:44px;border-radius:9999px;border:2px solid var(--purple);background:var(--purple);color:#fff;box-shadow:0 2px 10px rgba(124,92,255,.4);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,background .15s}
+.mic:hover{background:#6b4ce6}
+.mic.on{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 0 0 4px rgba(124,92,255,.35)}
+.meta{margin:14px 0 8px;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',ui-monospace,monospace}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.chips button{min-height:40px;border:1px solid var(--border);background:#fff;border-radius:9999px;padding:8px 14px;font-size:12px;color:var(--muted);cursor:pointer}
-.chips button:hover{color:var(--text);border-color:var(--purple)}
+.chips button{min-height:44px;border:2px solid var(--purple);background:#fff;border-radius:9999px;padding:8px 16px;font-size:12px;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:600;color:var(--purple);cursor:pointer;transition:background .15s,color .15s}
+.chips button:hover,.chips button:focus-visible{color:#fff;background:var(--purple)}
+.footer{border-top:1px solid var(--border);background:#fff;padding:32px 16px}
+.footer-inner{max-width:720px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted)}
+.footer-nav{display:flex;flex-wrap:wrap;align-items:center;gap:20px}
+.footer-nav a{min-height:44px;display:inline-flex;align-items:center;font-weight:500;color:var(--muted);transition:color .15s}
+.footer-nav a:hover{color:var(--purple)}
 .results{list-style:none}
 .result{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #f0f0f2}
 .result .url{color:var(--green);font-size:.875rem}
@@ -42,19 +49,28 @@ h1{font-family:Syne,system-ui,sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);let
 <body>
 <header class="topbar"><div class="topbar-inner">
   <a class="brand" href="/">SearchEmbed</a>
-  <nav class="nav"><a href="/">Home</a><a href="/pricing.html">Pricing</a></nav>
 </div></header>
 <main class="wrap">
   <h1>Interactive sandbox</h1>
   <p class="sub">BM25 runs in this tab. Type or speak Hindi. Try a typo like <strong>minecrft</strong>.</p>
   <div class="search-row">
-    <input class="search-box" id="q" type="search" aria-label="Search demo" placeholder="Search sample docs…">
-    <button type="button" class="mic" id="mic" aria-label="Voice search Hindi">🎤</button>
+    <input class="search-box" id="q" type="search" aria-label="Search demo" placeholder="Search in Hindi or English">
+    <button type="button" class="mic" id="mic" aria-label="Voice search Hindi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
   </div>
   <div class="meta" id="meta">Ready</div>
   <div class="chips" id="chips"></div>
   <ul class="results" id="results"></ul>
 </main>
+<footer class="footer"><div class="footer-inner">
+  <div><strong style="font-family:Syne,system-ui,sans-serif;color:var(--text)">SearchEmbed</strong> · Okapi BM25 Search Infrastructure</div>
+  <nav class="footer-nav" aria-label="Footer navigation">
+    <a href="/demo.html">Demo</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/catalog">Catalog</a>
+    <a href="https://github.com/santoshkumarvvv/search-hub-" target="_blank" rel="noreferrer">GitHub</a>
+    <a href="mailto:kumasantosh947@gmail.com">Contact</a>
+  </nav>
+</div></footer>
 <script>
 const DOCS=[
 {title:"Okapi BM25 Ranking Explained",url:"https://search-hub-live.vercel.app/demo.html#bm25",body:"BM25 scores by term frequency, IDF, and length normalization. k1 saturates repeats; b penalizes long pages."},
