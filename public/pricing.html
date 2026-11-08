@@ -64,7 +64,7 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
 <main class="wrap">
   <h1>Predictable Rupee pricing</h1>
   <p class="lead">Pro is the default for shipping teams. Starter and Ultra stay quieter so the choice is obvious.</p>
-  <div class="grid">
+  <div id="pricing" class="grid">
     <article class="card" id="razorpay-starter">
       <div class="row"><div class="name">Starter</div><span class="disc">Save 20%</span></div>
       <p class="fit">Personal sites, portfolios, and technical blogs.</p>
@@ -87,7 +87,7 @@ li::before{content:"✓";color:var(--purple);font-weight:700}
       <button type="button" class="btn razorpay-trigger" data-razorpay-plan="Ultra" data-amount="19900">Choose Ultra — ₹199</button>
     </article>
   </div>
-  <button type="button" class="cta razorpay-trigger" data-razorpay-plan="Pro" data-amount="9900" style="border:none;cursor:pointer">View full pricing and subscribe</button>
+  <a href="#pricing" role="button" class="cta btn-cta-gradient" style="margin-top:28px;display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;border-radius:9999px;background:linear-gradient(135deg,#7c5cff 0%,#9b6bff 55%,#f5c542 100%);color:#ffffff;font-weight:800;font-size:1rem;text-decoration:none;cursor:pointer">View full pricing and subscribe</a>
   <div id="razorpay-status-banner" role="status" aria-live="polite" style="margin-top:14px;padding:12px 16px;border-radius:12px;border:1px solid #e5e5e5;background:#fafafa;color:#525252;font-size:13px;text-align:center">Razorpay UPI AutoPay ready — select a plan above to launch checkout (shows test-mode status when live Razorpay keys are empty).</div>
 
   <section class="faq-wrap" id="faq" aria-labelledby="faq-heading">
