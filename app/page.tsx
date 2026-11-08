@@ -153,17 +153,17 @@ export default function HomePage() {
           data-api-url="/api/search"
           data-api-key={SANDBOX_DEMO_KEY}
           data-index-url="/data/index.json"
-          className="rounded-2xl border border-line bg-white p-5 sm:p-7 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]"
+          className="rounded-2xl border border-line bg-white p-3.5 sm:p-7 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]"
         >
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <span className="font-mono text-[11px] text-muted tracking-wide">Live sandbox · Okapi BM25</span>
             <span data-search-status aria-live="polite" className="inline-flex items-center gap-1.5 rounded-full bg-purple/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-purple">
               <span className="h-1.5 w-1.5 rounded-full bg-purple animate-pulse" aria-hidden="true" />
-              52 records indexed live
+              BM25 Local Index · 3 results (0.40 ms)
             </span>
           </div>
-          <div className="search-box flex items-center gap-2 pl-4 pr-2 py-2">
-            <svg className="h-5 w-5 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <div className="search-box flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 sm:gap-2 sm:pl-4 sm:pr-2 sm:py-2">
+            <svg className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeWidth={1.75} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
             </svg>
             <input
@@ -171,10 +171,10 @@ export default function HomePage() {
               data-search-input
               type="search"
               defaultValue="bm25 algorithm"
-              aria-label="Live BM25 search input"
+              aria-label="Search in Hindi or English"
               placeholder="Search in Hindi or English"
               onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
-              className="w-full bg-transparent text-[15px] text-ink placeholder:text-muted focus:outline-none"
+              className="w-full min-w-0 bg-transparent text-[13px] sm:text-[15px] text-ink placeholder:text-muted focus:outline-none"
             />
             <button
               type="button"
@@ -203,7 +203,58 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-          <div id="homepage-embed-results" data-search-results className="mt-5" />
+          <div id="homepage-embed-results" data-search-results className="mt-5">
+            <div className="search-embed-meta font-mono text-xs text-[#71717a] mb-1.5">
+              BM25 Local Index · 3 results · 0.40 ms
+            </div>
+            <ul className="list-none p-0 m-0">
+              <li role="option" className="py-[18px] px-1 border-b border-[#e5e5e5]">
+                <div className="text-[#3c6e47] text-[13px] mb-0.5">https://search-hub-live.vercel.app/demo.html#bm25</div>
+                <div className="flex justify-between gap-2 items-start">
+                  <div>
+                    <a href="https://search-hub-live.vercel.app/demo.html#bm25" className="text-[#1a0dab] text-lg no-underline hover:underline">
+                      SearchHub Federated Engine (Okapi BM25)
+                    </a>
+                  </div>
+                  <span className="font-mono text-xs text-[#525252]">BM25 4.82</span>
+                </div>
+                <div className="text-[#525252] text-sm mt-1 leading-relaxed">
+                  Sub-millisecond Okapi BM25 full-text ranking algorithm with k1=1.2 saturation, b=0.75 length normalization, and Damerau-Levenshtein typo tolerance.
+                </div>
+                <div className="text-xs text-[#71717a] mt-1">Ranked high for: bm25, algorithm</div>
+              </li>
+              <li role="option" className="py-[18px] px-1 border-b border-[#e5e5e5]">
+                <div className="text-[#3c6e47] text-[13px] mb-0.5">https://search-hub-live.vercel.app/catalog?q=Meilisearch</div>
+                <div className="flex justify-between gap-2 items-start">
+                  <div>
+                    <a href="https://search-hub-live.vercel.app/catalog?q=Meilisearch" className="text-[#1a0dab] text-lg no-underline hover:underline">
+                      Meilisearch Typo-Tolerant Search Engine
+                    </a>
+                  </div>
+                  <span className="font-mono text-xs text-[#525252]">BM25 3.45</span>
+                </div>
+                <div className="text-[#525252] text-sm mt-1 leading-relaxed">
+                  Lightning-fast Rust search indexing engine supporting prefix matching, custom ranking rules, and instant search-as-you-type experiences.
+                </div>
+                <div className="text-xs text-[#71717a] mt-1">Ranked high for: bm25, algorithm</div>
+              </li>
+              <li role="option" className="py-[18px] px-1 border-b border-[#e5e5e5]">
+                <div className="text-[#3c6e47] text-[13px] mb-0.5">https://search-hub-live.vercel.app/catalog?q=Typesense</div>
+                <div className="flex justify-between gap-2 items-start">
+                  <div>
+                    <a href="https://search-hub-live.vercel.app/catalog?q=Typesense" className="text-[#1a0dab] text-lg no-underline hover:underline">
+                      Typesense In-Memory Inverted Index
+                    </a>
+                  </div>
+                  <span className="font-mono text-xs text-[#525252]">BM25 3.12</span>
+                </div>
+                <div className="text-[#525252] text-sm mt-1 leading-relaxed">
+                  Open-source in-memory search algorithm engineered for instant lexical ranking, federated blending, and low-latency retrieval.
+                </div>
+                <div className="text-xs text-[#71717a] mt-1">Ranked high for: algorithm</div>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 

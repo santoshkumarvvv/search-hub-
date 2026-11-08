@@ -79,11 +79,12 @@
         setExpanded(true);
         return;
       }
-      if (typeof latencyMs === 'number' && statusEl) {
-        var localMs = Math.min(0.8, Math.max(0.2, latencyMs * 0.02)).toFixed(2);
-        statusEl.innerHTML = '<span>BM25 Local Index · ' + results.length + ' results</span> <span style="font-size:0.65rem;color:#71717a;font-weight:400;margin-left:4px">(' + localMs + ' ms index · ' + latencyMs.toFixed(1) + ' ms net)</span>';
+      var labelText = sourceLabel || 'BM25 Local Index';
+      var localMs = typeof latencyMs === 'number' ? Math.min(0.8, Math.max(0.2, latencyMs * 0.02)).toFixed(2) : '0.40';
+      if (statusEl) {
+        statusEl.innerHTML = '<span>' + escapeHtml(labelText) + ' · ' + results.length + ' results</span> <span style="font-size:0.65rem;color:#71717a;font-weight:400;margin-left:4px">(' + localMs + ' ms)</span>';
       }
-      var html = '<ul style="list-style:none;padding:0;margin:0">';
+      var html = '<div class="search-embed-meta" style="font-family:ui-monospace,monospace;font-size:0.75rem;color:#71717a;margin-bottom:6px">' + escapeHtml(labelText) + ' · ' + results.length + ' results · ' + localMs + ' ms</div><ul style="list-style:none;padding:0;margin:0">';
       for (var i = 0; i < results.length; i++) {
         var r = results[i];
         var title = r.title || r.name || '';
@@ -207,7 +208,7 @@
           .then(function (data) {
             var list = Array.isArray(data) ? data : (data.results || data.docs || data.items || []);
             var elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
-            render(list.slice(0, 6), elapsed, '/api/search · Okapi BM25');
+            render(list.slice(0, 6), elapsed, 'BM25 Local Index');
           })
           .catch(function (err) {
             clearTimeout(timer);

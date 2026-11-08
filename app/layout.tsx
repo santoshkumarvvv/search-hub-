@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="bg-white font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen overflow-x-hidden">
+      <body className="bg-white font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen overflow-x-hidden flex flex-col">
         <a className="skip-link" href="#main">
           Skip to content
         </a>
@@ -69,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
 
-        {children}
+        <div className="flex-1">{children}</div>
 
         <footer className="border-t border-line bg-white px-4 py-10 sm:px-6">
           <div className="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -80,7 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <nav
               aria-label="Footer navigation"
-              className="flex flex-wrap items-center gap-6 text-xs font-medium text-muted"
+              className="flex flex-row flex-wrap items-center gap-5 sm:gap-6 text-sm font-semibold text-ink"
             >
               <a href="/demo.html" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
                 Demo
@@ -88,9 +88,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/pricing.html" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
                 Pricing
               </a>
-              <Link href="/catalog" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
+              <a href="/catalog" className="inline-flex min-h-[44px] items-center transition hover:text-purple">
                 Catalog
-              </Link>
+              </a>
               <a
                 href="https://github.com/santoshkumarvvv/search-hub-"
                 target="_blank"
