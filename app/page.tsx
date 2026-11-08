@@ -301,7 +301,7 @@ export default function HomePage() {
           ))}
         </div>
         <div className="mt-8">
-          <a href="/pricing.html" className="btn-cta-yellow block min-h-14 w-full text-center py-4 text-base">View full pricing & subscribe</a>
+          <a href="/pricing.html" className="btn-cta-gradient inline-flex min-h-[56px] w-full items-center justify-center text-center py-4 text-base">View full pricing & subscribe</a>
         </div>
       </section>
     </main>

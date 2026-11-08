@@ -17,7 +17,6 @@
   --purple-glow: rgba(124, 92, 255, 0.35);
   --gold: #f5c542;
   --gold-soft: rgba(245, 197, 66, 0.18);
-  --yellow-cta: #facc15;
 }
 
 html,
@@ -90,16 +89,19 @@ h1, h2, h3, .font-display {
     background-color: var(--bg-soft);
   }
 
+  .btn-cta-gradient,
   .btn-cta-yellow {
     @apply btn-base font-bold w-full;
-    color: #0a0a0a;
-    background: var(--yellow-cta);
-    box-shadow: 0 8px 24px -6px rgba(250, 204, 21, 0.45);
+    color: #ffffff;
+    background: linear-gradient(135deg, #7c5cff 0%, #9b6bff 55%, #f5c542 100%);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 10px 28px -6px rgba(124, 92, 255, 0.45);
   }
 
+  .btn-cta-gradient:hover,
   .btn-cta-yellow:hover {
-    background: #eab308;
-    box-shadow: 0 12px 32px -6px rgba(250, 204, 21, 0.55);
+    background: linear-gradient(135deg, #6b4ce6 0%, #8c5cf0 50%, #eab308 100%);
+    box-shadow: 0 14px 34px -6px rgba(124, 92, 255, 0.55);
   }
 
   .hero-underline {
