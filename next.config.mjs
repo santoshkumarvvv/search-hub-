@@ -8,6 +8,13 @@ const nextConfig = {
         async headers() {
           return [
             {
+              source: '/embed.js',
+              headers: [
+                { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
+                { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+              ],
+            },
+            {
               source: '/workers/:path*',
               headers: [
                 { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
