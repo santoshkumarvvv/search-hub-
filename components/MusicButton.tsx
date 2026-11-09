@@ -1,87 +1,115 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
-/** Free-license Brazilian funk, phonk, and reggaeton energy tracks (>= 2 min each, website playback allowed). */
-const TRACKS = [
+/**
+ * Famous Brazilian Funk playlist — 16 recognizable anthems, each >= 2 minutes.
+ * Hosted locally in /public/music/ and served from https://search-hub-live.vercel.app/music/...
+ * for guaranteed HTTP 200 playback with zero external instability.
+ */
+export const TRACKS = [
   {
-    title: 'Baile Funk Rio Bounce',
-    url: 'https://assets.mixkit.co/music/275/275.mp3',
+    title: "Desenrola Bate Joga de Ladin",
+    artist: "Os Hawaianos & L7NNON",
+    duration: "2:38",
+    url: "/music/01-os-hawaianos-desenrola-bate-joga-de-ladin.mp3",
   },
   {
-    title: 'Favela Phonk Drift',
-    url: 'https://assets.mixkit.co/music/276/276.mp3',
+    title: "Olha a Explosão",
+    artist: "MC Kevinho",
+    duration: "3:07",
+    url: "/music/02-mc-kevinho-olha-a-explosao.mp3",
   },
   {
-    title: 'Sao Paulo Montagem Pulse',
-    url: 'https://assets.mixkit.co/music/279/279.mp3',
+    title: "Terremoto",
+    artist: "Anitta & MC Kevinho",
+    duration: "2:36",
+    url: "/music/03-anitta-mc-kevinho-terremoto.mp3",
   },
   {
-    title: 'Reggaeton Dembow Heat',
-    url: 'https://assets.mixkit.co/music/280/280.mp3',
+    title: "Mega Mandelão dos Fluxos",
+    artist: "MC GW",
+    duration: "3:30",
+    url: "/music/04-mc-gw-mega-mandelao-dos-fluxos.mp3",
   },
   {
-    title: 'Carioca Bass Tamborzao',
-    url: 'https://assets.mixkit.co/music/282/282.mp3',
+    title: "Montagem Coral",
+    artist: "DJ Holanda, MC GW, MC TH & MC Cyclope",
+    duration: "2:25",
+    url: "/music/05-mc-gw-montagem-coral.mp3",
   },
   {
-    title: 'Midnight Phonk Cowbell',
-    url: 'https://assets.mixkit.co/music/283/283.mp3',
+    title: "Maçã Verde",
+    artist: "MC Hariel",
+    duration: "3:21",
+    url: "/music/06-mc-hariel-maca-verde.mp3",
   },
   {
-    title: 'Perreo Sub-Bass Rhythm',
-    url: 'https://assets.mixkit.co/music/285/285.mp3',
+    title: "Câmera Lenta",
+    artist: "MC Hariel",
+    duration: "4:05",
+    url: "/music/07-mc-hariel-camera-lenta.mp3",
   },
   {
-    title: 'Mandelao Street Beat',
-    url: 'https://assets.mixkit.co/music/130/130.mp3',
+    title: "Cupido",
+    artist: "MC Hariel",
+    duration: "3:06",
+    url: "/music/08-mc-hariel-cupido.mp3",
   },
   {
-    title: 'Belo Horizonte Funk Groove',
-    url: 'https://assets.mixkit.co/music/131/131.mp3',
+    title: "De História em História",
+    artist: "MC Hariel",
+    duration: "2:34",
+    url: "/music/09-mc-hariel-de-historia-em-historia.mp3",
   },
   {
-    title: 'Drift Phonk Overdrive',
-    url: 'https://assets.mixkit.co/music/132/132.mp3',
+    title: "Baile de Favela (KondZilla)",
+    artist: "MC João",
+    duration: "3:08",
+    url: "/music/10-mc-joao-baile-de-favela.mp3",
   },
   {
-    title: 'Copacabana Night Dembow',
-    url: 'https://assets.mixkit.co/music/138/138.mp3',
+    title: "Dançarina (Funk Remix)",
+    artist: "Pedro Sampaio, Anitta & MC Pedrinho",
+    duration: "3:34",
+    url: "/music/11-pedro-sampaio-anitta-mc-pedrinho-dancarina.mp3",
   },
   {
-    title: 'Automotivo Bassline',
-    url: 'https://assets.mixkit.co/music/140/140.mp3',
+    title: "Luz do Luar (KondZilla)",
+    artist: "MC Fioti",
+    duration: "4:03",
+    url: "/music/12-mc-fioti-luz-do-luar.mp3",
   },
   {
-    title: 'Latin Trap Reggaeton Flow',
-    url: 'https://assets.mixkit.co/music/146/146.mp3',
+    title: "Joga Pra Frente",
+    artist: "MC Kevinho",
+    duration: "3:08",
+    url: "/music/13-mc-kevinho-joga-pra-frente.mp3",
   },
   {
-    title: 'Neon Phonk Distortion',
-    url: 'https://assets.mixkit.co/music/159/159.mp3',
+    title: "Cabelo Voa",
+    artist: "Mr. Catra & MC G3",
+    duration: "2:16",
+    url: "/music/14-mr-catra-cabelo-voa.mp3",
   },
   {
-    title: 'Recife Brega Funk Surge',
-    url: 'https://assets.mixkit.co/music/171/171.mp3',
+    title: "Desce Glamourosa",
+    artist: "Verônica Costa (Furacão 2000)",
+    duration: "2:33",
+    url: "/music/15-veronica-costa-desce-glamourosa.mp3",
   },
   {
-    title: 'Medellin Reggaeton Knock',
-    url: 'https://assets.mixkit.co/music/246/246.mp3',
-  },
-  {
-    title: 'Zona Sul Funk Bass',
-    url: 'https://assets.mixkit.co/music/225/225.mp3',
-  },
-  {
-    title: 'Turbo Phonk Finale',
-    url: 'https://assets.mixkit.co/music/231/231.mp3',
+    title: "Tócame",
+    artist: "Anitta",
+    duration: "2:48",
+    url: "/music/16-anitta-tocame.mp3",
   },
 ] as const;
 
 const MODERATE_VOLUME = 0.45;
 
 const btnClass =
-  'inline-flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full bg-[#7c5cff] text-white shadow-[0_2px_10px_rgba(124,92,255,0.4)] transition hover:bg-[#6b4ce6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50';
+  "inline-flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full bg-[#7c5cff] text-white shadow-[0_2px_10px_rgba(124,92,255,0.4)] transition hover:bg-[#6b4ce6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50";
 
 export default function MusicButton() {
   const [playing, setPlaying] = useState(false);
@@ -90,20 +118,41 @@ export default function MusicButton() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const indexRef = useRef(0);
   const wantPlayRef = useRef(true);
+  const unlockedRef = useRef(false);
   const errorCountRef = useRef(0);
 
   const attemptPlayWithFallback = useCallback((audio: HTMLAudioElement) => {
     try {
+      audio.volume = MODERATE_VOLUME;
+      if (!unlockedRef.current) {
+        // Start muted on initial page load so browser autoplay always succeeds,
+        // then unmute to 0.45 on first user interaction (or try unmuted if allowed).
+        audio.muted = true;
+      }
       const p = audio.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {
-          // Muted-then-unmute fallback when browser blocks unmuted autoplay
+      if (p && typeof p.then === "function") {
+        p.then(() => {
+          // If not yet unlocked via gesture, test if browser allows unmuted autoplay
+          if (!unlockedRef.current) {
+            try {
+              audio.muted = false;
+              audio.volume = MODERATE_VOLUME;
+              if (audio.paused) {
+                audio.muted = true;
+                const retry = audio.play();
+                if (retry && typeof retry.catch === "function") retry.catch(() => {});
+              }
+            } catch {
+              audio.muted = true;
+            }
+          }
+        }).catch(() => {
           try {
             audio.muted = true;
             const mutedPromise = audio.play();
-            if (mutedPromise && typeof mutedPromise.catch === 'function') {
+            if (mutedPromise && typeof mutedPromise.catch === "function") {
               mutedPromise.catch(() => {
-                /* silent — will resume on first user interaction */
+                /* silent — resumes on first user interaction */
               });
             }
           } catch {
@@ -141,7 +190,8 @@ export default function MusicButton() {
   useEffect(() => {
     const audio = new Audio(TRACKS[0].url);
     audio.volume = MODERATE_VOLUME;
-    audio.preload = 'auto';
+    audio.muted = true;
+    audio.preload = "auto";
     audio.loop = false;
     audioRef.current = audio;
     wantPlayRef.current = true;
@@ -152,27 +202,28 @@ export default function MusicButton() {
     };
     const onPause = () => setPlaying(false);
     const onEnded = () => {
-      // Auto-advance to next track; loops back to 0 when playlist ends
+      // Auto-advance to next track; wrap-around loop from last track back to first (0)
       loadTrack(indexRef.current + 1, true);
     };
     const onError = () => {
-      // Silently skip to next track if audio fails
+      // Silently advance to next track on any audio error with zero error UI
       errorCountRef.current += 1;
       if (errorCountRef.current < TRACKS.length) {
         loadTrack(indexRef.current + 1, wantPlayRef.current);
       }
     };
 
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('error', onError);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("error", onError);
 
-    // Start continuous autoplay on mount
+    // Autoplay on page load with muted-then-unmute fallback
     attemptPlayWithFallback(audio);
 
-    // Restore moderate unmuted volume on first user interaction
+    // Restore volume to 0.45 unmuted on first user interaction
     const unlockAudio = () => {
+      unlockedRef.current = true;
       const current = audioRef.current;
       if (!current) return;
       try {
@@ -180,29 +231,29 @@ export default function MusicButton() {
         current.volume = MODERATE_VOLUME;
         if (wantPlayRef.current && current.paused) {
           const p = current.play();
-          if (p && typeof p.catch === 'function') p.catch(() => { /* silent */ });
+          if (p && typeof p.catch === "function") p.catch(() => { /* silent */ });
         }
       } catch {
         /* silent */
       }
     };
 
-    window.addEventListener('pointerdown', unlockAudio, { once: true, passive: true });
-    window.addEventListener('keydown', unlockAudio, { once: true, passive: true });
-    window.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
-    window.addEventListener('click', unlockAudio, { once: true, passive: true });
+    window.addEventListener("pointerdown", unlockAudio, { once: true, passive: true });
+    window.addEventListener("keydown", unlockAudio, { once: true, passive: true });
+    window.addEventListener("touchstart", unlockAudio, { once: true, passive: true });
+    window.addEventListener("click", unlockAudio, { once: true, passive: true });
 
     return () => {
-      window.removeEventListener('pointerdown', unlockAudio);
-      window.removeEventListener('keydown', unlockAudio);
-      window.removeEventListener('touchstart', unlockAudio);
-      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener("pointerdown", unlockAudio);
+      window.removeEventListener("keydown", unlockAudio);
+      window.removeEventListener("touchstart", unlockAudio);
+      window.removeEventListener("click", unlockAudio);
       try {
         audio.pause();
-        audio.removeEventListener('play', onPlay);
-        audio.removeEventListener('pause', onPause);
-        audio.removeEventListener('ended', onEnded);
-        audio.removeEventListener('error', onError);
+        audio.removeEventListener("play", onPlay);
+        audio.removeEventListener("pause", onPause);
+        audio.removeEventListener("ended", onEnded);
+        audio.removeEventListener("error", onError);
         audioRef.current = null;
       } catch {
         /* ignore */
@@ -211,6 +262,7 @@ export default function MusicButton() {
   }, [attemptPlayWithFallback, loadTrack]);
 
   const toggle = () => {
+    unlockedRef.current = true;
     const audio = audioRef.current;
     if (!audio) return;
     try {
@@ -219,7 +271,7 @@ export default function MusicButton() {
       if (audio.paused) {
         wantPlayRef.current = true;
         const p = audio.play();
-        if (p && typeof p.catch === 'function') p.catch(() => { /* silent */ });
+        if (p && typeof p.catch === "function") p.catch(() => { /* silent */ });
       } else {
         wantPlayRef.current = false;
         audio.pause();
@@ -230,6 +282,7 @@ export default function MusicButton() {
   };
 
   const skip = (dir: 1 | -1) => {
+    unlockedRef.current = true;
     const audio = audioRef.current;
     if (audio) {
       audio.muted = false;
@@ -255,12 +308,14 @@ export default function MusicButton() {
 
   if (!visible) return null;
 
+  const currentTrack = TRACKS[trackIndex];
+
   return (
     <div className="inline-flex items-center justify-center gap-1.5" role="group" aria-label="Music player">
       <button
         type="button"
         onClick={() => skip(-1)}
-        aria-label="Skip to previous free track"
+        aria-label="Skip to previous track"
         title="Previous"
         className={btnClass}
       >
@@ -271,9 +326,9 @@ export default function MusicButton() {
       <button
         type="button"
         onClick={toggle}
-        aria-label={playing ? `Pause ${TRACKS[trackIndex].title}` : `Play ${TRACKS[trackIndex].title}`}
+        aria-label={playing ? `Pause ${currentTrack.title} by ${currentTrack.artist}` : `Play ${currentTrack.title} by ${currentTrack.artist}`}
         aria-pressed={playing}
-        title={TRACKS[trackIndex].title}
+        title={`${currentTrack.artist} — ${currentTrack.title} (${currentTrack.duration})`}
         className={btnClass}
       >
         {playing ? (
@@ -300,7 +355,7 @@ export default function MusicButton() {
       <button
         type="button"
         onClick={() => skip(1)}
-        aria-label="Skip to next free track"
+        aria-label="Skip to next track"
         title="Skip"
         className={btnClass}
       >
