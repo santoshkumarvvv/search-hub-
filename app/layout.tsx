@@ -88,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <div className="flex-1">{children}</div>
 
-        <footer className="border-t border-line bg-white px-4 py-10 sm:px-6">
+        <footer className="border-t border-[#ece7ff] bg-white/90 px-4 py-10 sm:px-6">
           <div className="mx-auto flex max-w-[1120px] flex-col flex-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2.5 text-xs text-muted">
               <span className="font-display text-sm font-bold text-ink">SearchEmbed</span>
