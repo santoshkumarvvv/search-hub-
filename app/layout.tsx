@@ -31,8 +31,23 @@ export const metadata: Metadata = {
     description:
       "Sub-millisecond Okapi BM25 search with typo tolerance, federated ranking, and tiered API keys. ₹19–₹199/month.",
     siteName: "SearchEmbed",
+    url: "https://search-hub-live.vercel.app",
+    images: [
+      {
+        url: "https://search-hub-live.vercel.app/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "SearchEmbed — Search that ships in seconds",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    title: "SearchEmbed — Search that ships in seconds",
+    description:
+      "Sub-millisecond Okapi BM25 search with typo tolerance, federated ranking, and tiered API keys. ₹19–₹199/month.",
+    images: ["https://search-hub-live.vercel.app/og-image.svg"],
+  },
   referrer: "no-referrer",
 };
 
@@ -74,7 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="flex-1">{children}</div>
 
         <footer className="border-t border-line bg-white px-4 py-10 sm:px-6">
-          <div className="mx-auto flex max-w-[1120px] flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="mx-auto flex max-w-[1120px] flex-col flex-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2.5 text-xs text-muted">
               <span className="font-display text-sm font-bold text-ink">SearchEmbed</span>
               <span aria-hidden="true">·</span>
