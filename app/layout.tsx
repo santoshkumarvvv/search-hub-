@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               href="/"
               className="flex items-center gap-3 text-slate-900 no-underline focus:outline-none"
             >
-              <div className="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm">
+              <div className="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm shadow-indigo-200">
                 SE
               </div>
               <span className="font-bold text-lg tracking-tight">SearchEmbed</span>

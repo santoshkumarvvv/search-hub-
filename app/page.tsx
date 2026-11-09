@@ -67,7 +67,7 @@ export default function HomePage() {
     <div>
       {/* Hero Section */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-6">
+        <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 shadow-xs">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
           <span>SUB-MILLISECOND SEARCH ENGINE</span>
         </div>
@@ -266,10 +266,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Pricing Section (Balanced & Elite) */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-16">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100 shadow-xs">
             Transparent Billing
           </span>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mt-4 mb-4">
@@ -282,7 +282,7 @@ export default function HomePage() {
 
         <div className="grid md:grid-cols-3 gap-8 items-stretch">
           {/* Starter Plan */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col justify-between shadow-xs">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
             <div>
               <h3 className="font-bold text-xl text-slate-900 mb-1">Starter</h3>
               <p className="text-sm text-slate-500 mb-6">Personal sites and blogs.</p>
@@ -298,25 +298,25 @@ export default function HomePage() {
             </div>
             <a
               href="/pricing.html#pricing-plans"
-              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition no-underline"
+              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm no-underline"
             >
-              Start at ₹19
+              Choose Starter
             </a>
           </div>
 
-          {/* Pro Plan (Highlighted) */}
-          <div className="bg-indigo-900 text-white border-2 border-indigo-600 rounded-3xl p-8 flex flex-col justify-between shadow-xl relative">
-            <span className="absolute -top-3.5 right-8 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+          {/* Pro Plan (Elite Highlighted with Glowing Border) */}
+          <div className="bg-white border-2 border-indigo-600 rounded-3xl p-8 flex flex-col justify-between shadow-2xl shadow-indigo-500/10 relative">
+            <span className="absolute -top-3.5 right-8 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
               Most Popular
             </span>
             <div>
-              <h3 className="font-bold text-xl mb-1 text-white">Pro</h3>
-              <p className="text-sm text-indigo-200 mb-6">Indie SaaS and production docs.</p>
+              <h3 className="font-bold text-xl text-slate-900 mb-1">Pro</h3>
+              <p className="text-sm text-slate-500 mb-6">Indie SaaS and production docs.</p>
               <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-4xl font-extrabold text-white">₹99</span>
-                <span className="text-indigo-200 text-sm">/month</span>
+                <span className="text-4xl font-extrabold text-slate-900">₹99</span>
+                <span className="text-slate-500 text-sm">/month</span>
               </div>
-              <ul className="space-y-4 text-sm text-indigo-100 mb-8 list-none p-0">
+              <ul className="space-y-4 text-sm text-slate-700 mb-8 list-none p-0">
                 <li className="flex items-center gap-3">✓ Unlimited widgets</li>
                 <li className="flex items-center gap-3">✓ 50,000 API searches</li>
                 <li className="flex items-center gap-3">✓ Scrypt keys + quotas</li>
@@ -325,14 +325,14 @@ export default function HomePage() {
             </div>
             <a
               href="/pricing.html#pricing-plans"
-              className="w-full block text-center bg-indigo-50 hover:bg-white text-indigo-950 font-semibold py-3 rounded-xl text-sm transition shadow-md no-underline"
+              className="w-full block text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-md shadow-indigo-200 no-underline"
             >
-              Choose Pro — ₹99/mo
+              Choose Pro
             </a>
           </div>
 
           {/* Ultra Plan */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col justify-between shadow-xs">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
             <div>
               <h3 className="font-bold text-xl text-slate-900 mb-1">Ultra</h3>
               <p className="text-sm text-slate-500 mb-6">High volume with AI agents.</p>
@@ -348,9 +348,9 @@ export default function HomePage() {
             </div>
             <a
               href="/pricing.html#pricing-plans"
-              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition no-underline"
+              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm no-underline"
             >
-              Choose Ultra — ₹199/mo
+              Choose Ultra
             </a>
           </div>
         </div>
