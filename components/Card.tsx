@@ -29,7 +29,6 @@ export default function Card({ item }: { item: AppItem }) {
           <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-panel2 text-xs font-bold text-muted">
             <span>{initials(item.name)}</span>
             {item.icon && !failed && (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={item.icon}
                 alt=""
