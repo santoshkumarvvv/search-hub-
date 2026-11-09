@@ -27,26 +27,26 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    title: "SearchEmbed — Search that ships in seconds",
+    title: "SearchEmbed",
     description:
-      "Sub-millisecond Okapi BM25 search with typo tolerance, federated ranking, and tiered API keys. ₹19–₹199/month.",
+      "Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond.",
     siteName: "SearchEmbed",
     url: "https://search-hub-live.vercel.app",
     images: [
       {
-        url: "https://search-hub-live.vercel.app/og-image.svg",
+        url: "https://search-hub-live.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SearchEmbed — Search that ships in seconds",
+        alt: "SearchEmbed",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SearchEmbed — Search that ships in seconds",
+    title: "SearchEmbed",
     description:
-      "Sub-millisecond Okapi BM25 search with typo tolerance, federated ranking, and tiered API keys. ₹19–₹199/month.",
-    images: ["https://search-hub-live.vercel.app/og-image.svg"],
+      "Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond.",
+    images: ["https://search-hub-live.vercel.app/og-image.png"],
   },
   referrer: "no-referrer",
 };
