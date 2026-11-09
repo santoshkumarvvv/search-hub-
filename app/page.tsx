@@ -1,15 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import TogetherPanel from "../components/TogetherPanel";
 
 const SUGGESTED_CHIPS = ["bm25 algorithm", "minecraft", "scrypt"];
 
 export default function HomePage() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [lang, setLang] = useState<"en" | "hi">("en");
-  const [currentQuery, setCurrentQuery] = useState("bm25 algorithm");
-  const [togetherOpen, setTogetherOpen] = useState(false);
 
   useEffect(() => {
     const existing = document.querySelector('script[src="/embed.js"]');
@@ -21,25 +18,11 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const el = inputRef.current;
-    if (!el) return;
-    const sync = () => setCurrentQuery(el.value);
-    el.addEventListener("input", sync);
-    if (typeof window !== "undefined") {
-      const sp = new URLSearchParams(window.location.search);
-      if (sp.get("together")) {
-        setTogetherOpen(true);
-      }
-    }
-    return () => el.removeEventListener("input", sync);
-  }, []);
-
-  useEffect(() => {
     if (typeof window === "undefined") return;
-    const applyLangToDom = (nextLang: "en" | "hi") => {
-      const btn = document.getElementById("langBtn");
-      if (btn) {
-        btn.innerText = nextLang === "en" ? "🇮🇳 हिंदी" : "🇬🇧 English";
+    const applyLangToDom = (nextLang: "en" | "hi", updateBtnText: boolean) => {
+      const langTextEl = document.getElementById("langText");
+      if (langTextEl && updateBtnText) {
+        langTextEl.innerText = nextLang === "en" ? "हिंदी" : "English";
       }
       document.querySelectorAll("[data-en]").forEach((el) => {
         if (el.getAttribute("data-rich") === "true") return;
@@ -51,7 +34,7 @@ export default function HomePage() {
     const toggleFn = () => {
       setLang((prev) => {
         const next = prev === "en" ? "hi" : "en";
-        applyLangToDom(next);
+        applyLangToDom(next, true);
         return next;
       });
     };
@@ -61,11 +44,9 @@ export default function HomePage() {
     if (btn) {
       btn.onclick = toggleFn;
     }
-    applyLangToDom(lang);
-  }, [lang]);
+  }, []);
 
   function runChipQuery(q: string) {
-    setCurrentQuery(q);
     if (
       typeof window !== "undefined" &&
       (window as unknown as { SearchEmbed?: { search: (v: string) => void } }).SearchEmbed
@@ -155,10 +136,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Live Sandbox Preview Section */}
+      {/* Live Sandbox Preview Section (Google-style Pill Search Bar) */}
       <section id="sandbox" className="max-w-4xl mx-auto px-6 pb-20 scroll-mt-20">
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-100 p-6 sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="bg-white border border-slate-200/80 rounded-3xl shadow-xl shadow-slate-100 p-6 sm:p-8">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-amber-400" aria-hidden="true" />
               <span className="w-3 h-3 rounded-full bg-emerald-400" aria-hidden="true" />
@@ -167,61 +148,40 @@ export default function HomePage() {
                 Live Sandbox · Okapi BM25
               </span>
             </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <div
-                data-search-status
-                aria-live="polite"
-                className="flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-semibold border border-emerald-100"
-              >
-                ⚡ 3 results · 0.85 ms
-              </div>
-              <button
-                type="button"
-                onClick={() => setTogetherOpen((v) => !v)}
-                aria-expanded={togetherOpen}
-                className={`text-xs px-3 py-1 rounded-full font-semibold border transition cursor-pointer ${
-                  togetherOpen
-                    ? "bg-slate-900 text-white border-slate-900"
-                    : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
-                }`}
-              >
-                👥 Together Mode
-              </button>
+            <div
+              data-search-status
+              aria-live="polite"
+              className="flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-semibold border border-emerald-100"
+            >
+              ⚡ Ready · 0.85 ms
             </div>
           </div>
 
-          {togetherOpen && (
-            <div className="mb-6 overflow-hidden rounded-xl border border-slate-200">
-              <TogetherPanel
-                currentQuery={currentQuery}
-                onRemoteQuery={(q) => runChipQuery(q)}
-                open={togetherOpen}
-                onClose={() => setTogetherOpen(false)}
-              />
-            </div>
-          )}
-
-          {/* Search Input Box */}
+          {/* Google Style Pill Search Bar */}
           <div className="relative mb-6">
             <label htmlFor="demo-search-input" className="sr-only">
-              Search query
+              Search catalog
             </label>
             <input
               ref={inputRef}
               id="demo-search-input"
               type="text"
               data-search-input
-              defaultValue="bm25 algorithm"
-              placeholder="Search catalog (e.g. bm25 algorithm, minecraft, scrypt)…"
+              placeholder="Search catalog (e.g. bm25 algorithm)..."
               autoComplete="off"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 pr-12 text-slate-800 font-medium focus:outline-none focus:border-slate-900"
+              className="w-full bg-slate-50 border-2 border-slate-200 focus:border-slate-900 rounded-full px-6 py-4 text-slate-800 font-medium text-base shadow-inner focus:outline-hidden transition"
             />
             <button
               type="button"
-              onClick={() => inputRef.current?.focus()}
-              aria-label="Focus search input"
-              className="absolute right-3 top-2.5 bg-slate-900 hover:bg-slate-800 text-white p-2 rounded-lg text-xs transition cursor-pointer"
+              onClick={() => {
+                if (inputRef.current && inputRef.current.value.trim()) {
+                  runChipQuery(inputRef.current.value.trim());
+                } else {
+                  inputRef.current?.focus();
+                }
+              }}
+              aria-label="Run search"
+              className="absolute right-3 top-2.5 bg-slate-900 hover:bg-slate-800 text-white p-3 rounded-full transition shadow-md cursor-pointer"
             >
               🔍
             </button>
@@ -231,83 +191,28 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center gap-2 mb-6 text-xs text-slate-500">
             <span className="font-semibold">Try:</span>
             {SUGGESTED_CHIPS.map((chip) => (
-              <button
+              <span
                 key={chip}
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={() => runChipQuery(chip)}
-                className={`px-2.5 py-1 rounded-lg border transition cursor-pointer ${
-                  currentQuery.toLowerCase() === chip.toLowerCase()
-                    ? "bg-slate-900 text-white border-slate-900 font-semibold"
-                    : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200/70"
-                }`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    runChipQuery(chip);
+                  }
+                }}
+                className="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-full border border-slate-200 cursor-pointer transition"
               >
                 {chip}
-              </button>
+              </span>
             ))}
           </div>
 
-          {/* Result Card Container */}
+          {/* Result Box Placeholder */}
           <div data-search-results className="space-y-3">
-            <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-5">
-              <div className="flex justify-between items-start gap-3 mb-2">
-                <h3 className="font-bold text-slate-900 text-base">
-                  Okapi BM25 Probabilistic Ranking Specification
-                </h3>
-                <span className="text-xs bg-slate-200/80 text-slate-800 font-mono px-2 py-0.5 rounded font-semibold shrink-0">
-                  BM25: 4.80
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mb-3">https://search-hub-live.vercel.app</p>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Robertson-Sparck Jones probabilistic term frequency saturation and document length
-                normalization.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Architecture & Features (Dark Contrast Break) */}
-      <section id="features" className="bg-slate-900 text-white py-24 px-6 my-12 scroll-mt-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-              Architecture &amp; Benchmarks
-            </h2>
-            <p className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              Engineered for sub-millisecond retrieval.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl">
-              <div className="text-2xl mb-4" aria-hidden="true">
-                ⚡
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-white">BM25 Ranking</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Term frequency saturates logarithmically while document length normalization ensures
-                concise pages beat bloated rambles.
-              </p>
-            </div>
-            <div className="bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl">
-              <div className="text-2xl mb-4" aria-hidden="true">
-                🌐
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-white">Typo Tolerance</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                One edit recovers misspellings across Latin and Devanagari scripts with bounded
-                Damerau-Levenshtein distance.
-              </p>
-            </div>
-            <div className="bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl">
-              <div className="text-2xl mb-4" aria-hidden="true">
-                🛡️
-              </div>
-              <h3 className="text-lg font-bold mb-2 text-white">Secure API Gateway</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Scrypt key derivation, sliding-window rate limiters, and per-tier quotas that fail
-                closed under burst load.
-              </p>
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 text-center text-slate-400 text-sm">
+              Type a query above to run Okapi BM25 ranking...
             </div>
           </div>
         </div>

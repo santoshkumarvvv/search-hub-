@@ -259,7 +259,7 @@
 
     if (!query || !query.trim()) {
       container.innerHTML =
-        '<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-5 text-sm text-slate-500">Type a query above to run Okapi BM25 ranking…</div>';
+        '<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 text-center text-slate-400 text-sm">Type a query above to run Okapi BM25 ranking...</div>';
       if (statusEl) statusEl.textContent = "⚡ Ready · 0.85 ms";
       return;
     }
@@ -271,7 +271,7 @@
 
     if (!hits.length) {
       container.innerHTML =
-        '<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-5 text-sm text-slate-600">No BM25 matches for <strong>"' +
+        '<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 text-sm text-slate-600">No BM25 matches for <strong>"' +
         escapeHtml(query) +
         '"</strong>. Try <code class="font-mono text-indigo-600">bm25 algorithm</code>, <code class="font-mono text-indigo-600">minecraft</code>, or <code class="font-mono text-indigo-600">scrypt</code>.</div>';
       return;
@@ -287,7 +287,7 @@
         var score = hit.score.toFixed(2);
 
         return (
-          '<div class="bg-slate-50 border border-slate-200/80 rounded-xl p-5 transition hover:border-indigo-200">' +
+          '<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 transition hover:border-indigo-200">' +
           '<div class="flex justify-between items-start gap-3 mb-2">' +
           '<a href="' +
           url +
