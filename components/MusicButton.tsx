@@ -3,106 +3,101 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * Famous Brazilian Funk playlist — 16 recognizable anthems, each >= 2 minutes.
- * Hosted locally in /public/music/ and served from https://search-hub-live.vercel.app/music/...
+ * Famous Hindi Songs playlist — 15 widely recognized Bollywood hits, classic playback, and indie Hindi tracks,
+ * each over 2 minutes long (3:35 to 6:52).
+ * Hosted in /public/music/ and served from https://search-hub-live.vercel.app/music/...
  * for guaranteed HTTP 200 playback with zero external instability.
  */
 export const TRACKS = [
   {
-    title: "Desenrola Bate Joga de Ladin",
-    artist: "Os Hawaianos & L7NNON",
-    duration: "2:38",
-    url: "/music/01-os-hawaianos-desenrola-bate-joga-de-ladin.mp3",
+    title: "Chaiyya Chaiyya (Dil Se)",
+    artist: "Sukhwinder Singh, Sapna Awasthi & A.R. Rahman",
+    duration: "6:52",
+    url: "/music/01-chaiyya-chaiyya-dil-se.mp3",
   },
   {
-    title: "Olha a Explosão",
-    artist: "MC Kevinho",
-    duration: "3:07",
-    url: "/music/02-mc-kevinho-olha-a-explosao.mp3",
+    title: "Kun Faya Kun (Rockstar)",
+    artist: "A.R. Rahman, Javed Ali & Mohit Chauhan",
+    duration: "6:21",
+    url: "/music/02-kun-faya-kun-rockstar.mp3",
   },
   {
-    title: "Terremoto",
-    artist: "Anitta & MC Kevinho",
-    duration: "2:36",
-    url: "/music/03-anitta-mc-kevinho-terremoto.mp3",
+    title: "Nadaan Parinde (Rockstar)",
+    artist: "A.R. Rahman & Mohit Chauhan",
+    duration: "5:00",
+    url: "/music/03-nadaan-parinde-rockstar.mp3",
   },
   {
-    title: "Mega Mandelão dos Fluxos",
-    artist: "MC GW",
-    duration: "3:30",
-    url: "/music/04-mc-gw-mega-mandelao-dos-fluxos.mp3",
+    title: "Tere Bina (Guru)",
+    artist: "A.R. Rahman & Chinmayi",
+    duration: "4:47",
+    url: "/music/04-tere-bina-guru.mp3",
   },
   {
-    title: "Montagem Coral",
-    artist: "DJ Holanda, MC GW, MC TH & MC Cyclope",
-    duration: "2:25",
-    url: "/music/05-mc-gw-montagem-coral.mp3",
+    title: "Maa Tujhe Salaam (Vande Mataram)",
+    artist: "A.R. Rahman",
+    duration: "4:43",
+    url: "/music/05-maa-tujhe-salaam-vande-mataram.mp3",
   },
   {
-    title: "Maçã Verde",
-    artist: "MC Hariel",
-    duration: "3:21",
-    url: "/music/06-mc-hariel-maca-verde.mp3",
+    title: "Yeh Jo Des Hai Tera (Swades)",
+    artist: "A.R. Rahman",
+    duration: "5:26",
+    url: "/music/06-yeh-jo-des-hai-tera-swades.mp3",
   },
   {
-    title: "Câmera Lenta",
-    artist: "MC Hariel",
-    duration: "4:05",
-    url: "/music/07-mc-hariel-camera-lenta.mp3",
+    title: "Choti Si Aasha (Roja)",
+    artist: "Minmini & A.R. Rahman",
+    duration: "4:43",
+    url: "/music/07-choti-si-aasha-roja.mp3",
   },
   {
-    title: "Cupido",
-    artist: "MC Hariel",
-    duration: "3:06",
-    url: "/music/08-mc-hariel-cupido.mp3",
+    title: "Rangeela Re (Rangeela)",
+    artist: "Asha Bhosle, Aditya Narayan & A.R. Rahman",
+    duration: "5:31",
+    url: "/music/08-rangeela-re.mp3",
   },
   {
-    title: "De História em História",
-    artist: "MC Hariel",
-    duration: "2:34",
-    url: "/music/09-mc-hariel-de-historia-em-historia.mp3",
+    title: "Jai Ho (Slumdog Millionaire)",
+    artist: "A.R. Rahman & Sukhwinder Singh",
+    duration: "3:41",
+    url: "/music/09-jai-ho-ar-rahman.mp3",
   },
   {
-    title: "Baile de Favela (KondZilla)",
-    artist: "MC João",
-    duration: "3:08",
-    url: "/music/10-mc-joao-baile-de-favela.mp3",
+    title: "Bombay Theme",
+    artist: "A.R. Rahman",
+    duration: "5:18",
+    url: "/music/10-bombay-theme-ar-rahman.mp3",
   },
   {
-    title: "Dançarina (Funk Remix)",
-    artist: "Pedro Sampaio, Anitta & MC Pedrinho",
-    duration: "3:34",
-    url: "/music/11-pedro-sampaio-anitta-mc-pedrinho-dancarina.mp3",
+    title: "Kesariya Balam (Lekin)",
+    artist: "Lata Mangeshkar",
+    duration: "5:30",
+    url: "/music/11-kesariya-balam-lata-mangeshkar.mp3",
   },
   {
-    title: "Luz do Luar (KondZilla)",
-    artist: "MC Fioti",
-    duration: "4:03",
-    url: "/music/12-mc-fioti-luz-do-luar.mp3",
+    title: "Kesariya Balam (Euphoria Rock)",
+    artist: "Palash Sen (Euphoria)",
+    duration: "5:30",
+    url: "/music/12-kesariya-balam-palash-sen.mp3",
   },
   {
-    title: "Joga Pra Frente",
-    artist: "MC Kevinho",
-    duration: "3:08",
-    url: "/music/13-mc-kevinho-joga-pra-frente.mp3",
+    title: "Kesariya Balam (Folk Fusion)",
+    artist: "Shubha Mudgal",
+    duration: "3:35",
+    url: "/music/13-kesariya-balam-shubha-mudgal.mp3",
   },
   {
-    title: "Cabelo Voa",
-    artist: "Mr. Catra & MC G3",
-    duration: "2:16",
-    url: "/music/14-mr-catra-cabelo-voa.mp3",
+    title: "Kesariya Balam (Padharo Mhare Des)",
+    artist: "Allah Jilai Bai",
+    duration: "6:39",
+    url: "/music/14-kesariya-balam-allah-jilai-bai.mp3",
   },
   {
-    title: "Desce Glamourosa",
-    artist: "Verônica Costa (Furacão 2000)",
-    duration: "2:33",
-    url: "/music/15-veronica-costa-desce-glamourosa.mp3",
-  },
-  {
-    title: "Tócame",
-    artist: "Anitta",
-    duration: "2:48",
-    url: "/music/16-anitta-tocame.mp3",
+    title: "Kuch Naa Kaho",
+    artist: "Queenie Fernandes (Jazz Goa)",
+    duration: "4:24",
+    url: "/music/15-kuch-naa-kaho.mp3",
   },
 ] as const;
 
@@ -132,7 +127,6 @@ export default function MusicButton() {
       const p = audio.play();
       if (p && typeof p.then === "function") {
         p.then(() => {
-          // If not yet unlocked via gesture, test if browser allows unmuted autoplay
           if (!unlockedRef.current) {
             try {
               audio.muted = false;
