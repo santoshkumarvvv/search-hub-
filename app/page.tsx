@@ -135,11 +135,15 @@ export default function HomePage() {
         (window as unknown as { SearchEmbed?: { init: () => void } }).SearchEmbed?.init();
       }} />
 
-      <section className="mx-auto max-w-[1120px] px-4 pt-14 pb-8 sm:px-6 sm:pt-20 sm:pb-10 text-center">
+      <section className="relative mx-auto max-w-[1120px] px-4 pt-12 pb-6 sm:px-6 sm:pt-16 sm:pb-8 text-center">
+        <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#e4dcff] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c5cff] shadow-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#7c5cff]" aria-hidden="true" />
+          Sub-millisecond search
+        </p>
         <h1 className="font-display mx-auto max-w-3xl text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl md:text-6xl">
           Search that <span className="hero-underline">ships in seconds.</span>
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-[15px] font-medium leading-relaxed text-[#4c35b5] sm:text-base">
+        <p className="mx-auto mt-6 max-w-xl text-[15px] font-medium leading-relaxed text-[#4c35b5] sm:text-base">
           Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond — then search together with friends.
         </p>
         <div className="mt-8 flex justify-center">

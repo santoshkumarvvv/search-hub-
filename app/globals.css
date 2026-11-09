@@ -34,7 +34,10 @@ html {
 }
 
 body {
-  background-color: var(--bg);
+  background-color: #f7f5ff;
+  background-image:
+    radial-gradient(900px 420px at 50% -80px, rgba(124, 92, 255, 0.18), transparent 70%),
+    radial-gradient(600px 280px at 100% 20%, rgba(245, 197, 66, 0.12), transparent 60%);
   color: var(--text);
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   min-height: 100vh;
