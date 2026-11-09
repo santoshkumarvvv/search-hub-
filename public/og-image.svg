@@ -1,20 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0a001f"/>
-      <stop offset="0.5" stop-color="#1a0a3c"/>
-      <stop offset="1" stop-color="#2d0b5e"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="600" y1="100" x2="600" y2="530" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#7c5cff" stop-opacity="0.6"/>
-      <stop offset="1" stop-color="#7c5cff" stop-opacity="0"/>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0418"/>
+      <stop offset="100%" stop-color="#1a0a3a"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-  <circle cx="600" cy="315" r="280" fill="url(#glow)"/>
-  <circle cx="600" cy="315" r="200" fill="none" stroke="#7c5cff" stroke-width="2" opacity="0.3"/>
-  <circle cx="600" cy="315" r="140" fill="none" stroke="#7c5cff" stroke-width="1.5" opacity="0.5"/>
-  <text x="600" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="160" font-weight="bold" fill="#7c5cff">V</text>
-  <text x="600" y="480" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff" letter-spacing="8">SEARCH EMBED</text>
-  <text x="600" y="540" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" fill="#a78bfa" letter-spacing="4">SEARCH THAT SHIPS IN SECONDS</text>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <circle cx="460" cy="300" r="180" fill="#24103a"/>
+  <circle cx="460" cy="300" r="150" fill="#2e1548"/>
+  <ellipse cx="460" cy="280" rx="110" ry="130" fill="#3a1c58"/>
+  <ellipse cx="420" cy="270" rx="28" ry="14" fill="#e02850"/>
+  <ellipse cx="500" cy="270" rx="28" ry="14" fill="#b02040"/>
+  <text x="760" y="420" font-family="Arial Black, sans-serif" font-size="360" font-weight="900" fill="#dc122a">V</text>
+  <text x="60" y="580" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="700" fill="#c8b4ff">SearchEmbed</text>
 </svg>
