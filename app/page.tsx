@@ -5,11 +5,9 @@ import TogetherPanel from "../components/TogetherPanel";
 
 const SUGGESTED_CHIPS = ["bm25 algorithm", "minecraft", "scrypt"];
 
-const CDN_SCRIPT_URL = "https://cdn.searchembed.com/v2.4.js";
-
 export default function HomePage() {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [copiedScript, setCopiedScript] = useState(false);
+  const [lang, setLang] = useState<"en" | "hi">("en");
   const [currentQuery, setCurrentQuery] = useState("bm25 algorithm");
   const [togetherOpen, setTogetherOpen] = useState(false);
 
@@ -36,6 +34,36 @@ export default function HomePage() {
     return () => el.removeEventListener("input", sync);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const applyLangToDom = (nextLang: "en" | "hi") => {
+      const btn = document.getElementById("langBtn");
+      if (btn) {
+        btn.innerText = nextLang === "en" ? "🇮🇳 हिंदी" : "🇬🇧 English";
+      }
+      document.querySelectorAll("[data-en]").forEach((el) => {
+        if (el.getAttribute("data-rich") === "true") return;
+        const text = el.getAttribute(`data-${nextLang}`);
+        if (text) (el as HTMLElement).innerText = text;
+      });
+    };
+
+    const toggleFn = () => {
+      setLang((prev) => {
+        const next = prev === "en" ? "hi" : "en";
+        applyLangToDom(next);
+        return next;
+      });
+    };
+
+    (window as unknown as { toggleLanguage?: () => void }).toggleLanguage = toggleFn;
+    const btn = document.getElementById("langBtn");
+    if (btn) {
+      btn.onclick = toggleFn;
+    }
+    applyLangToDom(lang);
+  }, [lang]);
+
   function runChipQuery(q: string) {
     setCurrentQuery(q);
     if (
@@ -52,59 +80,78 @@ export default function HomePage() {
     }
   }
 
-  function handleCopyCdn() {
-    if (typeof window === "undefined") return;
-    try {
-      navigator.clipboard.writeText(CDN_SCRIPT_URL);
-      setCopiedScript(true);
-      setTimeout(() => setCopiedScript(false), 2000);
-    } catch {
-      /* ignore */
-    }
-  }
-
   return (
     <div>
       {/* Hero Section */}
       <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 shadow-xs">
+        <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 shadow-xs">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
-          <span>SUB-MILLISECOND SEARCH ENGINE</span>
+          <span
+            data-en="SUB-MILLISECOND SEARCH ENGINE"
+            data-hi="सब-मिलीसेकंड सर्च इंजन"
+          >
+            {lang === "en" ? "SUB-MILLISECOND SEARCH ENGINE" : "सब-मिलीसेकंड सर्च इंजन"}
+          </span>
         </div>
 
-        <h1 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]">
-          Search that ships in{" "}
-          <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-            seconds.
-          </span>
+        <h1
+          data-rich="true"
+          data-en="Search that ships in seconds."
+          data-hi="सर्च जो सेकंडों में काम करे।"
+          className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]"
+        >
+          {lang === "en" ? (
+            <>
+              Search that ships in{" "}
+              <span className="bg-gradient-to-r from-slate-900 to-indigo-700 bg-clip-text text-transparent">
+                seconds.
+              </span>
+            </>
+          ) : (
+            <>
+              सर्च जो{" "}
+              <span className="bg-gradient-to-r from-slate-900 to-indigo-700 bg-clip-text text-transparent">
+                सेकंडों में
+              </span>{" "}
+              काम करे।
+            </>
+          )}
         </h1>
 
-        <p className="text-slate-600 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          Drop one{" "}
-          <code className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono text-sm font-bold border border-indigo-100">
-            2 KB
-          </code>{" "}
-          script tag to index, rank, and typo-correct your catalog under a millisecond.
+        <p
+          data-rich="true"
+          data-en="Drop one 2 KB script tag to index, rank, and typo-correct your catalog under a millisecond."
+          data-hi="एक मिलिसेकंड के भीतर अपने कैटलॉग को इंडेक्स, रैंक और सही करने के लिए एक 2 KB स्क्रिप्ट टैग डालें।"
+          className="text-slate-600 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+        >
+          {lang === "en" ? (
+            <>
+              Drop one{" "}
+              <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
+                2 KB
+              </code>{" "}
+              script tag to index, rank, and typo-correct your catalog under a millisecond.
+            </>
+          ) : (
+            <>
+              एक मिलिसेकंड के भीतर अपने कैटलॉग को इंडेक्स, रैंक और सही करने के लिए एक{" "}
+              <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
+                2 KB
+              </code>{" "}
+              स्क्रिप्ट टैग डालें।
+            </>
+          )}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href="#sandbox"
-            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition no-underline"
+            data-en="Try Live Sandbox ↓"
+            data-hi="लाइव सैंडबॉक्स आज़माएं ↓"
+            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg transition no-underline"
           >
-            Try Live Sandbox &darr;
+            {lang === "en" ? "Try Live Sandbox ↓" : "लाइव सैंडबॉक्स आज़माएं ↓"}
           </a>
-
-          <div className="w-full sm:w-auto flex items-center justify-between gap-3 bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-xs font-mono text-xs text-slate-600">
-            <span>&lt;script src=&quot;https://cdn...&quot;&gt;</span>
-            <button
-              type="button"
-              onClick={handleCopyCdn}
-              className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded font-sans font-semibold transition cursor-pointer"
-            >
-              {copiedScript ? "✓ Copied" : "Copy"}
-            </button>
-          </div>
         </div>
       </section>
 
@@ -115,7 +162,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-amber-400" aria-hidden="true" />
               <span className="w-3 h-3 rounded-full bg-emerald-400" aria-hidden="true" />
-              <span className="w-3 h-3 rounded-full bg-indigo-500" aria-hidden="true" />
+              <span className="w-3 h-3 rounded-full bg-slate-900" aria-hidden="true" />
               <span className="text-xs font-semibold text-slate-400 ml-2">
                 Live Sandbox · Okapi BM25
               </span>
@@ -135,8 +182,8 @@ export default function HomePage() {
                 aria-expanded={togetherOpen}
                 className={`text-xs px-3 py-1 rounded-full font-semibold border transition cursor-pointer ${
                   togetherOpen
-                    ? "bg-indigo-600 text-white border-indigo-600"
-                    : "bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-100"
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
                 }`}
               >
                 👥 Together Mode
@@ -145,7 +192,7 @@ export default function HomePage() {
           </div>
 
           {togetherOpen && (
-            <div className="mb-6 overflow-hidden rounded-xl border border-indigo-100">
+            <div className="mb-6 overflow-hidden rounded-xl border border-slate-200">
               <TogetherPanel
                 currentQuery={currentQuery}
                 onRemoteQuery={(q) => runChipQuery(q)}
@@ -168,13 +215,13 @@ export default function HomePage() {
               defaultValue="bm25 algorithm"
               placeholder="Search catalog (e.g. bm25 algorithm, minecraft, scrypt)…"
               autoComplete="off"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 pr-12 text-slate-800 font-medium focus:outline-none focus:border-indigo-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 pr-12 text-slate-800 font-medium focus:outline-none focus:border-slate-900"
             />
             <button
               type="button"
               onClick={() => inputRef.current?.focus()}
               aria-label="Focus search input"
-              className="absolute right-3 top-2.5 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg text-xs transition cursor-pointer"
+              className="absolute right-3 top-2.5 bg-slate-900 hover:bg-slate-800 text-white p-2 rounded-lg text-xs transition cursor-pointer"
             >
               🔍
             </button>
@@ -190,7 +237,7 @@ export default function HomePage() {
                 onClick={() => runChipQuery(chip)}
                 className={`px-2.5 py-1 rounded-lg border transition cursor-pointer ${
                   currentQuery.toLowerCase() === chip.toLowerCase()
-                    ? "bg-indigo-50 text-indigo-700 border-indigo-200 font-semibold"
+                    ? "bg-slate-900 text-white border-slate-900 font-semibold"
                     : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200/70"
                 }`}
               >
@@ -203,10 +250,10 @@ export default function HomePage() {
           <div data-search-results className="space-y-3">
             <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-5">
               <div className="flex justify-between items-start gap-3 mb-2">
-                <h3 className="font-bold text-indigo-900 text-base">
+                <h3 className="font-bold text-slate-900 text-base">
                   Okapi BM25 Probabilistic Ranking Specification
                 </h3>
-                <span className="text-xs bg-indigo-100 text-indigo-700 font-mono px-2 py-0.5 rounded font-semibold shrink-0">
+                <span className="text-xs bg-slate-200/80 text-slate-800 font-mono px-2 py-0.5 rounded font-semibold shrink-0">
                   BM25: 4.80
                 </span>
               </div>
@@ -224,7 +271,7 @@ export default function HomePage() {
       <section id="features" className="bg-slate-900 text-white py-24 px-6 my-12 scroll-mt-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">
+            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
               Architecture &amp; Benchmarks
             </h2>
             <p className="text-3xl sm:text-4xl font-extrabold tracking-tight">
@@ -233,7 +280,7 @@ export default function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl">
-              <div className="text-indigo-400 text-2xl mb-4" aria-hidden="true">
+              <div className="text-2xl mb-4" aria-hidden="true">
                 ⚡
               </div>
               <h3 className="text-lg font-bold mb-2 text-white">BM25 Ranking</h3>
@@ -243,7 +290,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl">
-              <div className="text-indigo-400 text-2xl mb-4" aria-hidden="true">
+              <div className="text-2xl mb-4" aria-hidden="true">
                 🌐
               </div>
               <h3 className="text-lg font-bold mb-2 text-white">Typo Tolerance</h3>
@@ -253,7 +300,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl">
-              <div className="text-indigo-400 text-2xl mb-4" aria-hidden="true">
+              <div className="text-2xl mb-4" aria-hidden="true">
                 🛡️
               </div>
               <h3 className="text-lg font-bold mb-2 text-white">Secure API Gateway</h3>
@@ -266,17 +313,31 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Section (Balanced & Elite) */}
+      {/* Pricing Section */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-16">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100 shadow-xs">
-            Transparent Billing
+          <span
+            data-en="Transparent Billing"
+            data-hi="पारदर्शी बिलिंग"
+            className="text-xs font-bold text-slate-700 uppercase tracking-widest bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200 shadow-xs"
+          >
+            {lang === "en" ? "Transparent Billing" : "पारदर्शी बिलिंग"}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mt-4 mb-4">
-            Predictable Rupee pricing.
+          <h2
+            data-en="Predictable Rupee pricing."
+            data-hi="किफायती और स्पष्ट मूल्य निर्धारण।"
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mt-4 mb-4"
+          >
+            {lang === "en" ? "Predictable Rupee pricing." : "किफायती और स्पष्ट मूल्य निर्धारण।"}
           </h2>
-          <p className="text-slate-600 text-base">
-            Pro is the sweet spot for most indie hackers and growing teams.
+          <p
+            data-en="Pro is the sweet spot for most indie hackers and growing teams."
+            data-hi="अधिकांश डेवलपर्स और टीमों के लिए यह सबसे बेहतरीन है।"
+            className="text-slate-600 text-base"
+          >
+            {lang === "en"
+              ? "Pro is the sweet spot for most indie hackers and growing teams."
+              : "अधिकांश डेवलपर्स और टीमों के लिए यह सबसे बेहतरीन है।"}
           </p>
         </div>
 
@@ -284,11 +345,25 @@ export default function HomePage() {
           {/* Starter Plan */}
           <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
             <div>
-              <h3 className="font-bold text-xl text-slate-900 mb-1">Starter</h3>
-              <p className="text-sm text-slate-500 mb-6">Personal sites and blogs.</p>
+              <h3
+                data-en="Starter"
+                data-hi="स्टार्टर"
+                className="font-bold text-xl text-slate-900 mb-1"
+              >
+                {lang === "en" ? "Starter" : "स्टार्टर"}
+              </h3>
+              <p
+                data-en="Personal sites and blogs."
+                data-hi="व्यक्तिगत साइटें और ब्लॉग।"
+                className="text-sm text-slate-500 mb-6"
+              >
+                {lang === "en" ? "Personal sites and blogs." : "व्यक्तिगत साइटें और ब्लॉग।"}
+              </p>
               <div className="flex items-baseline gap-1 mb-8">
                 <span className="text-4xl font-extrabold text-slate-900">₹19</span>
-                <span className="text-slate-500 text-sm">/month</span>
+                <span className="text-slate-500 text-sm" data-en="/month" data-hi="/माह">
+                  {lang === "en" ? "/month" : "/माह"}
+                </span>
               </div>
               <ul className="space-y-4 text-sm text-slate-600 mb-8 list-none p-0">
                 <li className="flex items-center gap-3">✓ 1 widget under 2 KB</li>
@@ -298,23 +373,45 @@ export default function HomePage() {
             </div>
             <a
               href="/pricing.html#pricing-plans"
+              data-en="Choose Starter"
+              data-hi="स्टार्टर चुनें"
               className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm no-underline"
             >
-              Choose Starter
+              {lang === "en" ? "Choose Starter" : "स्टार्टर चुनें"}
             </a>
           </div>
 
-          {/* Pro Plan (Elite Highlighted with Glowing Border) */}
-          <div className="bg-white border-2 border-indigo-600 rounded-3xl p-8 flex flex-col justify-between shadow-2xl shadow-indigo-500/10 relative">
-            <span className="absolute -top-3.5 right-8 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-              Most Popular
+          {/* Pro Plan */}
+          <div className="bg-white border-2 border-slate-900 rounded-3xl p-8 flex flex-col justify-between shadow-2xl shadow-slate-900/10 relative">
+            <span
+              data-en="Most Popular"
+              data-hi="सबसे लोकप्रिय"
+              className="absolute -top-3.5 right-8 bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm"
+            >
+              {lang === "en" ? "Most Popular" : "सबसे लोकप्रिय"}
             </span>
             <div>
-              <h3 className="font-bold text-xl text-slate-900 mb-1">Pro</h3>
-              <p className="text-sm text-slate-500 mb-6">Indie SaaS and production docs.</p>
+              <h3
+                data-en="Pro"
+                data-hi="प्रो"
+                className="font-bold text-xl text-slate-900 mb-1"
+              >
+                {lang === "en" ? "Pro" : "प्रो"}
+              </h3>
+              <p
+                data-en="Indie SaaS and production docs."
+                data-hi="स्वतंत्र डेवलपर्स और डॉक्यूमेंट्स के लिए।"
+                className="text-sm text-slate-500 mb-6"
+              >
+                {lang === "en"
+                  ? "Indie SaaS and production docs."
+                  : "स्वतंत्र डेवलपर्स और डॉक्यूमेंट्स के लिए।"}
+              </p>
               <div className="flex items-baseline gap-1 mb-8">
                 <span className="text-4xl font-extrabold text-slate-900">₹99</span>
-                <span className="text-slate-500 text-sm">/month</span>
+                <span className="text-slate-500 text-sm" data-en="/month" data-hi="/माह">
+                  {lang === "en" ? "/month" : "/माह"}
+                </span>
               </div>
               <ul className="space-y-4 text-sm text-slate-700 mb-8 list-none p-0">
                 <li className="flex items-center gap-3">✓ Unlimited widgets</li>
@@ -325,20 +422,36 @@ export default function HomePage() {
             </div>
             <a
               href="/pricing.html#pricing-plans"
-              className="w-full block text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-md shadow-indigo-200 no-underline"
+              data-en="Choose Pro"
+              data-hi="प्रो चुनें"
+              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-md no-underline"
             >
-              Choose Pro
+              {lang === "en" ? "Choose Pro" : "प्रो चुनें"}
             </a>
           </div>
 
           {/* Ultra Plan */}
           <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
             <div>
-              <h3 className="font-bold text-xl text-slate-900 mb-1">Ultra</h3>
-              <p className="text-sm text-slate-500 mb-6">High volume with AI agents.</p>
+              <h3
+                data-en="Ultra"
+                data-hi="अल्ट्रा"
+                className="font-bold text-xl text-slate-900 mb-1"
+              >
+                {lang === "en" ? "Ultra" : "अल्ट्रा"}
+              </h3>
+              <p
+                data-en="High volume with AI agents."
+                data-hi="एआई एजेंट्स के साथ हाई वॉल्यूम।"
+                className="text-sm text-slate-500 mb-6"
+              >
+                {lang === "en" ? "High volume with AI agents." : "एआई एजेंट्स के साथ हाई वॉल्यूम।"}
+              </p>
               <div className="flex items-baseline gap-1 mb-8">
                 <span className="text-4xl font-extrabold text-slate-900">₹199</span>
-                <span className="text-slate-500 text-sm">/month</span>
+                <span className="text-slate-500 text-sm" data-en="/month" data-hi="/माह">
+                  {lang === "en" ? "/month" : "/माह"}
+                </span>
               </div>
               <ul className="space-y-4 text-sm text-slate-600 mb-8 list-none p-0">
                 <li className="flex items-center gap-3">✓ 500,000 API searches</li>
@@ -348,9 +461,11 @@ export default function HomePage() {
             </div>
             <a
               href="/pricing.html#pricing-plans"
+              data-en="Choose Ultra"
+              data-hi="अल्ट्रा चुनें"
               className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm no-underline"
             >
-              Choose Ultra
+              {lang === "en" ? "Choose Ultra" : "अल्ट्रा चुनें"}
             </a>
           </div>
         </div>

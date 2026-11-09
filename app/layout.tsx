@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="dot-grid min-h-screen flex flex-col antialiased selection:bg-indigo-600 selection:text-white">
+      <body className="dot-grid min-h-screen flex flex-col antialiased selection:bg-slate-900 selection:text-white">
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
@@ -65,11 +65,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               href="/"
               className="flex items-center gap-3 text-slate-900 no-underline focus:outline-none"
             >
-              <div className="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm shadow-indigo-200">
+              <div className="bg-slate-900 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm">
                 SE
               </div>
-              <span className="font-bold text-lg tracking-tight">SearchEmbed</span>
-              <span className="text-[11px] bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-md border border-indigo-100">
+              <span
+                className="font-bold text-lg tracking-tight"
+                data-en="SearchEmbed"
+                data-hi="सर्चएम्बेड"
+              >
+                SearchEmbed
+              </span>
+              <span className="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-md border border-slate-200">
                 v2.4
               </span>
             </a>
@@ -78,29 +84,45 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               aria-label="Primary navigation"
               className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600"
             >
-              <a href="#features" className="hover:text-indigo-600 transition">
+              <a
+                href="#features"
+                className="hover:text-slate-900 transition"
+                data-en="Features"
+                data-hi="विशेषताएं"
+              >
                 Features
               </a>
-              <a href="#sandbox" className="hover:text-indigo-600 transition">
+              <a
+                href="#sandbox"
+                className="hover:text-slate-900 transition"
+                data-en="Sandbox"
+                data-hi="सैंडबॉक्स"
+              >
                 Sandbox
               </a>
-              <a href="#pricing" className="hover:text-indigo-600 transition">
+              <a
+                href="#pricing"
+                className="hover:text-slate-900 transition"
+                data-en="Pricing"
+                data-hi="मूल्य निर्धारण"
+              >
                 Pricing
               </a>
             </nav>
 
             <div className="flex items-center gap-3">
-              <a
-                href="https://github.com/santoshkumarvvv/search-hub-"
-                target="_blank"
-                rel="noreferrer"
-                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 transition text-slate-800 no-underline"
+              <button
+                type="button"
+                id="langBtn"
+                className="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl border border-slate-200 transition cursor-pointer"
               >
-                <span aria-hidden="true">⭐</span> GitHub
-              </a>
+                🇮🇳 हिंदी
+              </button>
               <a
                 href="#pricing"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm shadow-indigo-200 transition no-underline whitespace-nowrap"
+                className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition no-underline whitespace-nowrap"
+                data-en="Get API Key →"
+                data-hi="एपिआई की लें →"
               >
                 Get API Key &rarr;
               </a>
@@ -116,34 +138,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="border-t border-slate-200 bg-white py-12">
           <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-lg text-xs">
+              <div className="bg-slate-900 text-white font-bold px-2.5 py-1 rounded-lg text-xs">
                 SE
               </div>
               <span className="font-bold text-sm text-slate-900">SearchEmbed</span>
-              <span className="text-xs text-slate-400">
+              <span
+                className="text-xs text-slate-400"
+                data-en="· Okapi BM25 Search Infrastructure"
+                data-hi="· ओकापी बीएम25 सर्च इंफ्रास्ट्रक्चर"
+              >
                 · Okapi BM25 Search Infrastructure
               </span>
             </div>
             <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="/demo.html" className="hover:text-indigo-600 transition">
-                Demo
-              </a>
-              <a href="/pricing.html" className="hover:text-indigo-600 transition">
+              <a
+                href="#pricing"
+                className="hover:text-slate-900 transition"
+                data-en="Pricing"
+                data-hi="मूल्य"
+              >
                 Pricing
               </a>
               <a
                 href="https://github.com/santoshkumarvvv/search-hub-"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-indigo-600 transition"
+                className="hover:text-slate-900 transition"
+                data-en="GitHub"
+                data-hi="गिटहब"
               >
                 GitHub
-              </a>
-              <a
-                href="mailto:kumasantosh947@gmail.com"
-                className="hover:text-indigo-600 transition"
-              >
-                Contact
               </a>
             </div>
           </div>
