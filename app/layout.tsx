@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "SearchEmbed — Search that ships in seconds",
+    default: "SearchEmbed - Sub-millisecond Search Infrastructure",
     template: "%s · SearchEmbed",
   },
   description:
-    "Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond",
+    "Drop one 2 KB script tag to index, rank, and typo-correct your catalog under a millisecond.",
   keywords: [
     "BM25 search engine",
     "embeddable search widget",
@@ -51,83 +50,128 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#fafbfc",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-const LANG_INIT_SCRIPT = `(function(){function a(l){document.documentElement.lang=l;var t=document.getElementById('langText');if(t)t.textContent=l==='hi'?'हिंदी':'English';var n=document.querySelectorAll('[data-en][data-hi]');for(var i=0;i<n.length;i++){var e=n[i];if(e.getAttribute('data-rich')==='true')continue;var v=e.getAttribute('data-'+l);if(v)e.textContent=v;}var p=document.querySelectorAll('[data-placeholder-en][data-placeholder-hi]');for(var j=0;j<p.length;j++){var inp=p[j];var ph=inp.getAttribute('data-placeholder-'+l);if(ph)inp.setAttribute('placeholder',ph);}window.dispatchEvent(new CustomEvent('se-lang-change',{detail:l}));}window.__seToggleLang=function(){var c=document.documentElement.lang==='hi'?'hi':'en';a(c==='en'?'hi':'en');};document.addEventListener('click',function(ev){var target=ev.target;if(target&&target.closest&&target.closest('#langBtn')){window.__seToggleLang();}});})();`;
+const LANG_TOGGLE_SCRIPT = `(function(){var currentLang='en';window.toggleLanguage=function(){currentLang=currentLang==='en'?'hi':'en';document.documentElement.lang=currentLang;var lt=document.getElementById('langText');if(lt)lt.innerText=currentLang==='en'?'हिंदी':'English';document.querySelectorAll('[data-en]').forEach(function(el){if(el.getAttribute('data-rich')==='true')return;var text=el.getAttribute('data-'+currentLang);if(text)el.innerText=text;});window.dispatchEvent(new CustomEvent('se-lang-change',{detail:currentLang}));};document.addEventListener('click',function(ev){var t=ev.target;if(t&&t.closest&&t.closest('#langBtn')){window.toggleLanguage();}});})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen overflow-x-hidden flex flex-col">
+      <body className="dot-grid min-h-screen flex flex-col antialiased selection:bg-slate-900 selection:text-white">
         <a className="skip-link" href="#main">
           Skip to content
         </a>
 
-        <header className="sticky top-0 z-40 border-b border-[#ece7ff] bg-white/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3 sm:px-6">
-            <Link
-              href="/"
-              className="inline-flex min-h-[44px] items-center font-display text-lg font-extrabold tracking-tight text-ink transition hover:text-purple"
-              data-en="SearchEmbed"
-              data-hi="सर्चएम्बेड"
-            >
-              SearchEmbed
-            </Link>
-            <button
-              type="button"
-              id="langBtn"
-              aria-label="Toggle Hindi and English language"
-              className="inline-flex min-h-[34px] items-center gap-1 rounded-full border border-[#e4dcff] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#7c5cff] transition hover:border-[#7c5cff] hover:bg-[#f7f5ff] cursor-pointer"
-            >
-              🌐 <span id="langText">English</span>
-            </button>
+        {/* Navbar */}
+        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80">
+          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" className="flex items-center gap-3 no-underline">
+              <div className="bg-slate-900 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm">
+                SE
+              </div>
+              <span
+                className="font-bold text-lg tracking-tight text-slate-900"
+                data-en="SearchEmbed"
+                data-hi="सर्चएम्बेड"
+              >
+                SearchEmbed
+              </span>
+              <span className="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-md border border-slate-200">
+                v2.4
+              </span>
+            </a>
+
+            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+              <a
+                href="#features"
+                className="hover:text-slate-900 transition"
+                data-en="Features"
+                data-hi="विशेषताएं"
+              >
+                Features
+              </a>
+              <a
+                href="#sandbox"
+                className="hover:text-slate-900 transition"
+                data-en="Sandbox"
+                data-hi="सैंडबॉक्स"
+              >
+                Sandbox
+              </a>
+              <a
+                href="#pricing"
+                className="hover:text-slate-900 transition"
+                data-en="Pricing"
+                data-hi="मूल्य निर्धारण"
+              >
+                Pricing
+              </a>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                id="langBtn"
+                className="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl border border-slate-200 transition cursor-pointer flex items-center gap-1.5"
+              >
+                🌐 <span id="langText">English</span>
+              </button>
+              <a
+                href="#pricing"
+                className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition"
+                data-en="Get API Key →"
+                data-hi="एपिआई की लें →"
+              >
+                Get API Key &rarr;
+              </a>
+            </div>
           </div>
         </header>
 
-        <div className="flex-1">{children}</div>
+        <div id="main" className="flex-1">
+          {children}
+        </div>
 
-        <footer
-          className="border-t border-[#7c5cff] bg-white/90 px-4 py-10 sm:px-6"
-          style={{ borderTop: "1px solid #7c5cff" }}
-        >
-          <div className="mx-auto flex max-w-[1120px] flex-col items-center justify-between gap-4 sm:flex-row">
-            <div className="flex items-center gap-2.5 text-xs text-muted">
-              <span className="font-display text-sm font-bold text-ink">SearchEmbed</span>
-              <span aria-hidden="true">·</span>
+        {/* Footer */}
+        <footer className="border-t border-slate-200 bg-white py-12">
+          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-900 text-white font-bold px-2.5 py-1 rounded-lg text-xs">
+                SE
+              </div>
+              <span className="font-bold text-sm text-slate-900">SearchEmbed</span>
               <span
-                data-en="Okapi BM25 Search Infrastructure"
-                data-hi="ओकापी BM25 सर्च इंफ्रास्ट्रक्चर"
+                className="text-xs text-slate-400"
+                data-en="· Okapi BM25 Search Infrastructure"
+                data-hi="· ओकापी बीएम25 सर्च इंफ्रास्ट्रक्चर"
               >
-                Okapi BM25 Search Infrastructure
+                · Okapi BM25 Search Infrastructure
               </span>
             </div>
-            <nav
-              aria-label="Footer navigation"
-              className="flex w-full sm:w-auto flex-row flex-nowrap items-center justify-evenly sm:justify-between gap-6 sm:gap-8 text-sm font-semibold text-ink"
-            >
+            <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
               <a
-                href="/#sandbox"
-                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+                href="#sandbox"
+                className="hover:text-slate-900 transition"
                 data-en="Demo"
                 data-hi="डेमो"
               >
                 Demo
               </a>
               <a
-                href="/pricing"
-                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+                href="#pricing"
+                className="hover:text-slate-900 transition"
                 data-en="Pricing"
                 data-hi="मूल्य"
               >
@@ -137,7 +181,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 href="https://github.com/santoshkumarvvv/search-hub-"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+                className="hover:text-slate-900 transition"
                 data-en="GitHub"
                 data-hi="गिटहब"
               >
@@ -145,17 +189,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </a>
               <a
                 href="mailto:kumasantosh947@gmail.com"
-                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+                className="hover:text-slate-900 transition"
                 data-en="Contact"
                 data-hi="संपर्क"
               >
                 Contact
               </a>
-            </nav>
+            </div>
           </div>
         </footer>
 
-        <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: LANG_TOGGLE_SCRIPT }} />
       </body>
     </html>
   );
