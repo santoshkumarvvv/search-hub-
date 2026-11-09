@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360" fill="none">
+  <defs>
+    <radialGradient id="violetGlowLeft" cx="12%" cy="35%" r="45%">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.22" />
+      <stop offset="55%" stop-color="#9b6bff" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#7c5cff" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="goldGlowRight" cx="88%" cy="32%" r="42%">
+      <stop offset="0%" stop-color="#f5c542" stop-opacity="0.24" />
+      <stop offset="55%" stop-color="#7c5cff" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#f5c542" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="violetGoldArc" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c5cff" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#b88cff" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#f5c542" stop-opacity="0.38" />
+    </linearGradient>
+    <linearGradient id="nodeViolet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c5cff" />
+      <stop offset="100%" stop-color="#9b6bff" />
+    </linearGradient>
+    <linearGradient id="nodeGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5c542" />
+      <stop offset="100%" stop-color="#7c5cff" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="360" fill="url(#violetGlowLeft)" />
+  <rect width="1200" height="360" fill="url(#goldGlowRight)" />
+  <path d="M-40 290 C 260 210, 940 210, 1240 290" stroke="url(#violetGoldArc)" stroke-width="2" stroke-dasharray="6 8" />
+  <path d="M-40 70 C 280 150, 920 150, 1240 70" stroke="url(#violetGoldArc)" stroke-width="1.5" opacity="0.65" />
+  <g opacity="0.55">
+    <circle cx="96" cy="96" r="46" stroke="#7c5cff" stroke-width="1.5" stroke-opacity="0.35" />
+    <circle cx="96" cy="96" r="22" stroke="#f5c542" stroke-width="1.5" stroke-opacity="0.45" />
+    <circle cx="96" cy="96" r="5" fill="url(#nodeViolet)" />
+    <circle cx="156" cy="148" r="4" fill="#f5c542" />
+    <line x1="96" y1="96" x2="156" y2="148" stroke="#7c5cff" stroke-width="1.2" stroke-opacity="0.35" />
+  </g>
+  <g opacity="0.55">
+    <circle cx="1104" cy="96" r="46" stroke="#f5c542" stroke-width="1.5" stroke-opacity="0.4" />
+    <circle cx="1104" cy="96" r="22" stroke="#7c5cff" stroke-width="1.5" stroke-opacity="0.38" />
+    <circle cx="1104" cy="96" r="5" fill="url(#nodeGold)" />
+    <circle cx="1044" cy="148" r="4" fill="#7c5cff" />
+    <line x1="1104" y1="96" x2="1044" y2="148" stroke="#f5c542" stroke-width="1.2" stroke-opacity="0.4" />
+  </g>
+</svg>
