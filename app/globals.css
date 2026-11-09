@@ -4,26 +4,8 @@
 
 :root {
   color-scheme: light;
-  --bg: #F8FAFC;
-  --bg-soft: #F1F5F9;
-  --ink: #0F172A;
-  --panel: #FFFFFF;
-  --panel-elevated: #F8FAFC;
-  --line: #E2E8F0;
-  --line-strong: #CBD5E1;
-  --text: #0F172A;
-  --muted: #64748B;
-  --purple: #4F46E5;
-  --purple-glow: rgba(79, 70, 229, 0.25);
-  --gold: #F59E0B;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background-color: var(--bg);
+  --bg: #fafbfc;
+  --text: #0f172a;
 }
 
 html {
@@ -33,24 +15,20 @@ html {
 }
 
 body {
-  background-color: #F8FAFC;
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.12), transparent 70%),
-    radial-gradient(rgba(148, 163, 184, 0.28) 1px, transparent 1px);
-  background-size: 100% 100%, 24px 24px;
-  background-position: 0 0, 0 0;
-  color: var(--text);
-  font-family: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #fafbfc;
+  color: #0f172a;
+  margin: 0;
+  padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, .font-display {
-  font-family: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
-  letter-spacing: -0.025em;
-  color: var(--text);
+.dot-grid {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -61,39 +39,8 @@ h1, h2, h3, h4, .font-display {
   scrollbar-width: none;
 }
 
-@layer components {
-  .btn-base {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-200 select-none;
-    min-height: 44px;
-  }
-
-  .btn-primary {
-    @apply btn-base font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/25;
-  }
-
-  .btn-secondary {
-    @apply btn-base bg-white text-slate-800 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-sm;
-  }
-
-  .card-surface {
-    @apply rounded-2xl bg-white border border-slate-200/90 shadow-sm transition-all duration-200;
-  }
-
-  .card-surface:hover {
-    @apply border-slate-300 shadow-md;
-  }
-
-  .search-box {
-    @apply bg-white border-2 border-slate-200/90 rounded-xl shadow-sm transition-all duration-200;
-  }
-
-  .search-box:focus-within {
-    @apply border-indigo-600 ring-4 ring-indigo-500/15;
-  }
-}
-
 :focus-visible {
-  outline: 2px solid #4F46E5;
+  outline: 2px solid #4f46e5;
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -115,23 +62,13 @@ h1, h2, h3, h4, .font-display {
   left: -9999px;
   top: 0;
   z-index: 999;
-  background: #4F46E5;
+  background: #4f46e5;
   color: #ffffff;
   padding: 10px 18px;
   font-weight: 700;
   border-radius: 0 0 10px 0;
   text-decoration: none;
 }
-
 .skip-link:focus {
   left: 0;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
