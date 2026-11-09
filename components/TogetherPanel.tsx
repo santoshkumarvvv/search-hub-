@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Message = { id: string; name: string; text: string; at: number };
 type Room = {
@@ -16,29 +16,22 @@ type Room = {
 export default function TogetherPanel({
   currentQuery,
   onRemoteQuery,
-  open: controlledOpen,
-  onClose,
 }: {
   currentQuery: string;
   onRemoteQuery: (q: string) => void;
-  open?: boolean;
-  onClose?: () => void;
 }) {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
-
-  const [tab, setTab] = useState<"create" | "join">("create");
-  const [name, setName] = useState("");
-  const [codeInput, setCodeInput] = useState("");
+  const [open, setOpen] = useState(true);
+  const [name, setName] = useState('');
+  const [codeInput, setCodeInput] = useState('');
   const [room, setRoom] = useState<Room | null>(null);
-  const [chat, setChat] = useState("");
-  const [notice, setNotice] = useState("");
+  const [chat, setChat] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
-  const lastRemoteQuery = useRef("");
+  const lastRemoteQuery = useRef('');
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("se_together_name");
+      const saved = localStorage.getItem('se_together_name');
       if (saved) setName(saved);
     } catch {
       /* ignore */
@@ -48,7 +41,7 @@ export default function TogetherPanel({
   const applyRoom = useCallback(
     (next: Room) => {
       setRoom(next);
-      if (typeof next.query === "string" && next.query !== lastRemoteQuery.current) {
+      if (typeof next.query === 'string' && next.query !== lastRemoteQuery.current) {
         lastRemoteQuery.current = next.query;
         onRemoteQuery(next.query);
       }
@@ -61,7 +54,7 @@ export default function TogetherPanel({
     const id = setInterval(async () => {
       try {
         const res = await fetch(`/api/together?code=${encodeURIComponent(room.code)}`, {
-          cache: "no-store",
+          cache: 'no-store',
         });
         if (res.ok) applyRoom((await res.json()) as Room);
       } catch {
@@ -77,13 +70,13 @@ export default function TogetherPanel({
     const t = setTimeout(async () => {
       try {
         lastRemoteQuery.current = currentQuery;
-        const res = await fetch("/api/together", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const res = await fetch('/api/together', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            action: "sync",
+            action: 'sync',
             code: room.code,
-            name: name || "Guest",
+            name: name || 'Guest',
             query: currentQuery,
           }),
         });
@@ -96,49 +89,49 @@ export default function TogetherPanel({
   }, [currentQuery, room?.code, name, applyRoom]);
 
   async function createRoom() {
-    const n = name.trim() || "Host";
+    const n = name.trim() || 'Host';
     setBusy(true);
-    setNotice("");
+    setNotice('');
     try {
-      localStorage.setItem("se_together_name", n);
-      const res = await fetch("/api/together", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "create", name: n }),
+      localStorage.setItem('se_together_name', n);
+      const res = await fetch('/api/together', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'create', name: n }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not create room");
+      if (!res.ok) throw new Error(data.error || 'Could not create room');
       applyRoom(data as Room);
-      setNotice("Room live. Share the code with your team.");
+      setNotice('Room live. Share the code with friends.');
     } catch (e) {
-      setNotice(e instanceof Error ? e.message : "Failed");
+      setNotice(e instanceof Error ? e.message : 'Failed');
     } finally {
       setBusy(false);
     }
   }
 
   async function joinRoom() {
-    const n = name.trim() || "Guest";
+    const n = name.trim() || 'Guest';
     const c = codeInput.trim().toUpperCase();
     if (!c) {
-      setNotice("Enter a 6-character room code.");
+      setNotice('Enter a room code.');
       return;
     }
     setBusy(true);
-    setNotice("");
+    setNotice('');
     try {
-      localStorage.setItem("se_together_name", n);
-      const res = await fetch("/api/together", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "join", code: c, name: n }),
+      localStorage.setItem('se_together_name', n);
+      const res = await fetch('/api/together', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'join', code: c, name: n }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Room not found");
+      if (!res.ok) throw new Error(data.error || 'Room not found');
       applyRoom(data as Room);
-      setNotice("Joined. Queries and chat stay in real-time sync.");
+      setNotice('Joined. Searches and chat stay in sync.');
     } catch (e) {
-      setNotice(e instanceof Error ? e.message : "Failed");
+      setNotice(e instanceof Error ? e.message : 'Failed');
     } finally {
       setBusy(false);
     }
@@ -147,17 +140,12 @@ export default function TogetherPanel({
   async function sendChat() {
     if (!room || !chat.trim()) return;
     const text = chat.trim();
-    setChat("");
+    setChat('');
     try {
-      const res = await fetch("/api/together", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "chat",
-          code: room.code,
-          name: name || "Guest",
-          text,
-        }),
+      const res = await fetch('/api/together', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'chat', code: room.code, name: name || 'Guest', text }),
       });
       if (res.ok) applyRoom((await res.json()) as Room);
     } catch {
@@ -170,212 +158,195 @@ export default function TogetherPanel({
     const url = `${window.location.origin}/?together=${room.code}`;
     try {
       await navigator.clipboard.writeText(url);
-      setNotice("Invite link copied to clipboard.");
+      setNotice('Invite link copied.');
     } catch {
       setNotice(url);
     }
   }
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     const sp = new URLSearchParams(window.location.search);
-    const c = sp.get("together");
+    const c = sp.get('together');
     if (c) {
       setCodeInput(c.toUpperCase());
-      setTab("join");
-      setInternalOpen(true);
+      setOpen(true);
     }
   }, []);
 
-  function handleClose() {
-    if (onClose) onClose();
-    else setInternalOpen(false);
+  function toggleOpen() {
+    const y = typeof window !== 'undefined' ? window.scrollY : 0;
+    setOpen((v) => !v);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y);
+        const currentLang = document.documentElement.lang === 'hi' ? 'hi' : 'en';
+        document.querySelectorAll('[data-en]').forEach((el) => {
+          if (el.getAttribute('data-rich') === 'true') return;
+          const t = el.getAttribute(`data-${currentLang}`);
+          if (t) (el as HTMLElement).textContent = t;
+        });
+      });
+    });
   }
 
-  if (!isOpen) return null;
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={toggleOpen}
+        data-en="Show Together mode"
+        data-hi="टुगेदर मोड दिखाएं"
+        className="inline-flex min-h-11 items-center rounded-full border border-[#7c5cff] bg-white px-4 text-sm font-semibold text-[#7c5cff]"
+      >
+        Show Together mode
+      </button>
+    );
+  }
 
   return (
-    <div className="bg-indigo-50/60 border-b border-indigo-100 p-4 transition-all">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900">
-            <span aria-hidden="true">👥</span>
-            <span>Together Mode · Live Sync</span>
-          </span>
-          <span className="text-xs text-slate-500">
-            Real-time shared query state &amp; side-channel chat.
-          </span>
-          {room && (
-            <span className="rounded-md bg-indigo-600 px-2 py-0.5 font-mono text-xs font-bold text-white">
-              {room.code}
-            </span>
-          )}
+    <div className="rounded-2xl border border-line bg-white p-5 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3
+            className="font-display text-lg font-bold text-ink"
+            data-en="Together mode"
+            data-hi="टुगेदर मोड"
+          >
+            Together mode
+          </h3>
+          <p
+            className="mt-1 text-sm text-muted"
+            data-en="One room. Live query sync. Side chat. Pin results you both like."
+            data-hi="एक रूम। लाइव क्वेरी सिंक। साइड चैट। पसंद के रिज़ल्ट पिन करें।"
+          >
+            One room. Live query sync. Side chat. Pin results you both like.
+          </p>
         </div>
-
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Close Together Mode drawer"
-          title="Close Together Mode"
-          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-indigo-200/70 bg-white/80 text-xs font-bold text-slate-500 transition hover:bg-white hover:text-slate-900"
-        >
-          ✕
-        </button>
+        <div className="flex items-center gap-2">
+          {room && (
+            <div className="rounded-full bg-purple/10 px-3 py-1.5 font-mono text-sm font-bold text-purple">
+              {room.code}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={toggleOpen}
+            data-en="Hide Together"
+            data-hi="टुगेदर छुपाएं"
+            className="inline-flex min-h-11 items-center rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink"
+          >
+            Hide Together
+          </button>
+        </div>
       </div>
 
       {!room ? (
-        <div className="mt-3">
-          {/* 2-Tab Segmented Control */}
-          <div
-            role="tablist"
-            aria-label="Together Mode mode selector"
-            className="inline-flex rounded-lg border border-indigo-200/80 bg-white/90 p-0.5 shadow-sm"
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <label className="block text-sm">
+            <span className="text-muted" data-en="Your name" data-hi="आपका नाम">
+              Your name
+            </span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-line px-3 py-2.5 text-ink outline-none focus:border-purple"
+              placeholder="e.g. Riya"
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="text-muted" data-en="Join with code" data-hi="कोड से जुड़ें">
+              Join with code
+            </span>
+            <input
+              value={codeInput}
+              onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+              className="mt-1 w-full rounded-xl border border-line px-3 py-2.5 font-mono text-ink outline-none focus:border-purple"
+              placeholder="ABC123"
+              maxLength={6}
+            />
+          </label>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={createRoom}
+            data-en="Start a room"
+            data-hi="रूम शुरू करें"
+            className="btn-primary min-h-12"
           >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "create"}
-              onClick={() => setTab("create")}
-              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
-                tab === "create"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Create Room
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === "join"}
-              onClick={() => setTab("join")}
-              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
-                tab === "join"
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Join with Code
-            </button>
-          </div>
-
-          {tab === "create" ? (
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name (e.g. Riya)"
-                maxLength={24}
-                aria-label="Your name"
-                className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none"
-              />
-              <button
-                type="button"
-                disabled={busy}
-                onClick={createRoom}
-                className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-indigo-600 px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-50"
-              >
-                Start Live Room
-              </button>
-            </div>
-          ) : (
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name (e.g. Riya)"
-                maxLength={24}
-                aria-label="Your name"
-                className="h-10 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none"
-              />
-              <input
-                type="text"
-                value={codeInput}
-                onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
-                placeholder="Room code (ABC123)"
-                maxLength={6}
-                aria-label="Room code"
-                className="h-10 w-full sm:w-44 rounded-lg border border-slate-200 bg-white px-3 font-mono text-xs uppercase tracking-wider text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none"
-              />
-              <button
-                type="button"
-                disabled={busy}
-                onClick={joinRoom}
-                className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-50"
-              >
-                Join Room
-              </button>
-            </div>
-          )}
+            Start a room
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={joinRoom}
+            data-en="Join room"
+            data-hi="रूम से जुड़ें"
+            className="btn-secondary min-h-12 bg-white text-[#7c5cff]"
+            style={{ border: '1px solid #7c5cff', background: '#ffffff', color: '#7c5cff' }}
+          >
+            Join room
+          </button>
         </div>
       ) : (
-        <div className="mt-3 grid gap-3 lg:grid-cols-2">
-          <div className="flex flex-col justify-between rounded-xl border border-indigo-200/70 bg-white p-3">
-            <div>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-slate-700">
-                  Online ({room.members.length}):{" "}
-                  <span className="font-mono text-indigo-700">{room.members.join(", ")}</span>
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={copyInvite}
-                    className="rounded-md bg-indigo-600 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-indigo-700"
-                  >
-                    Copy invite link
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRoom(null)}
-                    className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-100"
-                  >
-                    Leave
-                  </button>
-                </div>
-              </div>
-              {room.query && (
-                <p className="mt-2 font-mono text-xs text-slate-500">
-                  Synced query: <span className="font-semibold text-slate-900">“{room.query}”</span>
-                </p>
-              )}
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div>
+            <div className="mb-2 flex flex-wrap gap-2">
+              <button type="button" onClick={copyInvite} className="btn-primary min-h-11 px-4 text-sm">
+                Copy invite link
+              </button>
+              <button
+                type="button"
+                onClick={() => setRoom(null)}
+                className="btn-secondary min-h-11 px-4 text-sm"
+              >
+                Leave
+              </button>
             </div>
+            <p className="text-xs text-muted">
+              Online: {room.members.join(', ')}
+              {room.query ? ` · live query: “${room.query}”` : ''}
+            </p>
+            {room.pins.length > 0 && (
+              <div className="mt-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">Pinned merge</p>
+                <ul className="mt-1 space-y-1">
+                  {room.pins.map((pin) => (
+                    <li key={pin} className="rounded-lg bg-panel2 px-3 py-2 text-sm text-ink">
+                      {pin}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
-
-          <div className="flex h-36 flex-col rounded-xl border border-indigo-200/70 bg-white">
-            <div className="flex-1 space-y-1.5 overflow-y-auto p-2.5 text-xs">
+          <div className="flex h-64 flex-col rounded-xl border border-line bg-panel2">
+            <div className="flex-1 space-y-2 overflow-y-auto p-3 text-sm">
               {room.messages.map((m) => (
-                <div key={m.id} className={m.name === "System" ? "text-slate-400" : "text-slate-700"}>
-                  {m.name !== "System" && (
-                    <span className="font-semibold text-indigo-600">{m.name}: </span>
+                <div key={m.id} className={m.name === 'System' ? 'text-muted text-xs' : ''}>
+                  {m.name !== 'System' && (
+                    <span className="font-semibold text-purple">{m.name}: </span>
                   )}
                   {m.text}
                 </div>
               ))}
             </div>
-            <div className="flex gap-1.5 border-t border-slate-100 p-1.5">
+            <div className="flex gap-2 border-t border-line p-2">
               <input
                 value={chat}
                 onChange={(e) => setChat(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendChat()}
-                placeholder="Message room…"
-                className="h-8 flex-1 rounded-md border border-slate-200 px-2.5 text-xs outline-none focus:border-indigo-600"
+                onKeyDown={(e) => e.key === 'Enter' && sendChat()}
+                placeholder="Chat with the room…"
+                className="min-h-11 flex-1 rounded-lg border border-line px-3 text-sm outline-none focus:border-purple"
               />
-              <button
-                type="button"
-                onClick={sendChat}
-                className="rounded-md bg-indigo-600 px-3 text-xs font-semibold text-white hover:bg-indigo-700"
-              >
+              <button type="button" onClick={sendChat} className="btn-primary min-h-11 px-4 text-sm">
                 Send
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {notice && <p className="mt-2 font-mono text-xs text-indigo-700">{notice}</p>}
+      {notice && <p className="mt-3 text-sm text-muted">{notice}</p>}
     </div>
   );
 }

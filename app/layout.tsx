@@ -1,159 +1,133 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://search-hub-live.vercel.app"),
   title: {
-    default: "SearchEmbed - Sub-millisecond Search Infrastructure",
+    default: "SearchEmbed — Search that ships in seconds",
     template: "%s · SearchEmbed",
   },
   description:
-    "Drop one 2 KB script tag to index, rank, and typo-correct your catalog under a millisecond. Okapi BM25 ranking with predictable Rupee pricing from ₹19/mo.",
+    "Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond",
   keywords: [
-    "BM25 search",
-    "embedded search widget",
-    "instant site search",
-    "JavaScript search engine",
-    "Okapi BM25",
-    "docs search",
+    "BM25 search engine",
+    "embeddable search widget",
+    "typo-tolerant search",
+    "instant search API",
     "SearchEmbed",
   ],
-  authors: [{ name: "Santosh Kumar", url: "https://github.com/santoshkumarvvv" }],
+  authors: [{ name: "Santosh Kumar" }],
+  creator: "Santosh Kumar",
+  publisher: "SearchEmbed",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
   openGraph: {
-    title: "SearchEmbed - Sub-millisecond Search Infrastructure",
-    description:
-      "Drop one 2 KB script tag to index, rank, and typo-correct your catalog under a millisecond.",
     type: "website",
+    title: "SearchEmbed",
+    description:
+      "Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond",
     siteName: "SearchEmbed",
-    locale: "en_IN",
+    url: "https://search-hub-live.vercel.app",
+    images: [
+      {
+        url: "https://search-hub-live.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SearchEmbed",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SearchEmbed - Sub-millisecond Search Infrastructure",
-    description: "Drop one 2 KB script tag for sub-millisecond BM25 search. Plans from ₹19/mo.",
+    title: "SearchEmbed",
+    description:
+      "Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond",
+    images: ["https://search-hub-live.vercel.app/og-image.png"],
   },
-  robots: { index: true, follow: true },
-  icons: { icon: "/favicon.svg" },
+  referrer: "no-referrer",
 };
 
 export const viewport: Viewport = {
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
-  themeColor: "#fafbfc",
+  viewportFit: "cover",
 };
+
+const LANG_INIT_SCRIPT = `(function(){function a(l){document.documentElement.lang=l;var t=document.getElementById('langText');if(t)t.textContent=l==='hi'?'हिंदी':'English';var n=document.querySelectorAll('[data-en][data-hi]');for(var i=0;i<n.length;i++){var e=n[i];if(e.getAttribute('data-rich')==='true')continue;var v=e.getAttribute('data-'+l);if(v)e.textContent=v;}var p=document.querySelectorAll('[data-placeholder-en][data-placeholder-hi]');for(var j=0;j<p.length;j++){var inp=p[j];var ph=inp.getAttribute('data-placeholder-'+l);if(ph)inp.setAttribute('placeholder',ph);}window.dispatchEvent(new CustomEvent('se-lang-change',{detail:l}));}window.__seToggleLang=function(){var c=document.documentElement.lang==='hi'?'hi':'en';a(c==='en'?'hi':'en');};document.addEventListener('click',function(ev){var target=ev.target;if(target&&target.closest&&target.closest('#langBtn')){window.__seToggleLang();}});})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="dot-grid min-h-screen flex flex-col antialiased selection:bg-slate-900 selection:text-white">
-        <a href="#main" className="skip-link">
-          Skip to main content
+      <body className="font-sans text-ink antialiased selection:bg-purple/15 selection:text-ink min-h-screen overflow-x-hidden flex flex-col">
+        <a className="skip-link" href="#main">
+          Skip to content
         </a>
 
-        {/* Navbar */}
-        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80">
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-3">
-            <a
+        <header className="sticky top-0 z-40 border-b border-[#ece7ff] bg-white/80 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3 sm:px-6">
+            <Link
               href="/"
-              className="flex items-center gap-3 text-slate-900 no-underline focus:outline-none"
+              className="inline-flex min-h-[44px] items-center font-display text-lg font-extrabold tracking-tight text-ink transition hover:text-purple"
+              data-en="SearchEmbed"
+              data-hi="सर्चएम्बेड"
             >
-              <div className="bg-slate-900 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm">
-                SE
-              </div>
-              <span
-                className="font-bold text-lg tracking-tight"
-                data-en="SearchEmbed"
-                data-hi="सर्चएम्बेड"
-              >
-                SearchEmbed
-              </span>
-              <span className="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-md border border-slate-200">
-                v2.4
-              </span>
-            </a>
-
-            <nav
-              aria-label="Primary navigation"
-              className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600"
+              SearchEmbed
+            </Link>
+            <button
+              type="button"
+              id="langBtn"
+              aria-label="Toggle Hindi and English language"
+              className="inline-flex min-h-[34px] items-center gap-1 rounded-full border border-[#e4dcff] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#7c5cff] transition hover:border-[#7c5cff] hover:bg-[#f7f5ff] cursor-pointer"
             >
-              <a
-                href="#features"
-                className="hover:text-slate-900 transition"
-                data-en="Features"
-                data-hi="विशेषताएं"
-              >
-                Features
-              </a>
-              <a
-                href="#sandbox"
-                className="hover:text-slate-900 transition"
-                data-en="Sandbox"
-                data-hi="सैंडबॉक्स"
-              >
-                Sandbox
-              </a>
-              <a
-                href="#pricing"
-                className="hover:text-slate-900 transition"
-                data-en="Pricing"
-                data-hi="मूल्य निर्धारण"
-              >
-                Pricing
-              </a>
-            </nav>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                id="langBtn"
-                className="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl border border-slate-200 transition cursor-pointer flex items-center gap-1"
-              >
-                🌐 <span id="langText">English</span>
-              </button>
-              <a
-                href="#pricing"
-                className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition no-underline whitespace-nowrap"
-                data-en="Get API Key →"
-                data-hi="एपिआई की लें →"
-              >
-                Get API Key &rarr;
-              </a>
-            </div>
+              🌐 <span id="langText">English</span>
+            </button>
           </div>
         </header>
 
-        <div id="main" className="flex-1">
-          {children}
-        </div>
+        <div className="flex-1">{children}</div>
 
-        {/* Footer */}
-        <footer className="border-t border-slate-200 bg-white py-12">
-          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-slate-900 text-white font-bold px-2.5 py-1 rounded-lg text-xs">
-                SE
-              </div>
-              <span className="font-bold text-sm text-slate-900">SearchEmbed</span>
+        <footer
+          className="border-t border-[#7c5cff] bg-white/90 px-4 py-10 sm:px-6"
+          style={{ borderTop: "1px solid #7c5cff" }}
+        >
+          <div className="mx-auto flex max-w-[1120px] flex-col items-center justify-between gap-4 sm:flex-row">
+            <div className="flex items-center gap-2.5 text-xs text-muted">
+              <span className="font-display text-sm font-bold text-ink">SearchEmbed</span>
+              <span aria-hidden="true">·</span>
               <span
-                className="text-xs text-slate-400"
-                data-en="· Okapi BM25 Search Infrastructure"
-                data-hi="· ओकापी बीएम25 सर्च इंफ्रास्ट्रक्चर"
+                data-en="Okapi BM25 Search Infrastructure"
+                data-hi="ओकापी BM25 सर्च इंफ्रास्ट्रक्चर"
               >
-                · Okapi BM25 Search Infrastructure
+                Okapi BM25 Search Infrastructure
               </span>
             </div>
-            <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
+            <nav
+              aria-label="Footer navigation"
+              className="flex w-full sm:w-auto flex-row flex-nowrap items-center justify-evenly sm:justify-between gap-6 sm:gap-8 text-sm font-semibold text-ink"
+            >
               <a
-                href="#pricing"
-                className="hover:text-slate-900 transition"
+                href="/#sandbox"
+                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+                data-en="Demo"
+                data-hi="डेमो"
+              >
+                Demo
+              </a>
+              <a
+                href="/pricing"
+                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
                 data-en="Pricing"
                 data-hi="मूल्य"
               >
@@ -163,15 +137,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 href="https://github.com/santoshkumarvvv/search-hub-"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-slate-900 transition"
+                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
                 data-en="GitHub"
                 data-hi="गिटहब"
               >
                 GitHub
               </a>
-            </div>
+              <a
+                href="mailto:kumasantosh947@gmail.com"
+                className="inline-flex min-h-[44px] items-center transition hover:text-purple"
+                data-en="Contact"
+                data-hi="संपर्क"
+              >
+                Contact
+              </a>
+            </nav>
           </div>
         </footer>
+
+        <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
       </body>
     </html>
   );

@@ -1,380 +1,669 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
+import Script from 'next/script';
+import TogetherPanel from '@/components/TogetherPanel';
 
-const SUGGESTED_CHIPS = ["bm25 algorithm", "minecraft", "scrypt"];
+const SANDBOX_DEMO_KEY =
+  process.env.NEXT_PUBLIC_DEMO_API_KEY ||
+  ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_');
+
+type SpeechRec = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  onresult: ((event: { results: ArrayLike<{ isFinal?: boolean; 0?: { transcript?: string } }> }) => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+const FEATURES = [
+  {
+    title: 'BM25 ranking',
+    titleHi: 'BM25 रैंकिंग',
+    body: 'Term frequency saturates. Short pages beat long rambles.',
+    bodyHi: 'टर्म फ़्रीक्वेंसी संतृप्त होती है। छोटे और सटीक पेज ऊपर आते हैं।',
+    span: 'md:col-span-7',
+  },
+  {
+    title: 'Typo tolerance',
+    titleHi: 'टाइपो सहनशीलता',
+    body: 'One edit recovers misspellings in Latin and Devanagari.',
+    bodyHi: 'लैटिन और देवनागरी में एक अक्षर की गलती अपने आप सुधरती है।',
+    span: 'md:col-span-5',
+  },
+  {
+    title: 'Federated signals',
+    titleHi: 'फ़ेडरेटेड सिग्नल्स',
+    body: 'Lexical score, recency, and popularity blend locally.',
+    bodyHi: 'लेक्सिकल स्कोर, ताज़गी और लोकप्रियता का स्थानीय मिश्रण।',
+    span: 'md:col-span-5',
+  },
+  {
+    title: 'API gateway with tiers',
+    titleHi: 'टियर वाला API गेटवे',
+    body: 'Scrypt keys, sliding windows, quotas that fail closed.',
+    bodyHi: 'Scrypt कुंजियाँ, स्लाइडिंग विंडो और सुरक्षित कोटा।',
+    span: 'md:col-span-7',
+  },
+];
+
+const STEPS = [
+  {
+    step: '01',
+    title: 'Index your data',
+    titleHi: 'अपना डेटा इंडेक्स करें',
+    desc: 'Static JSON feed or push records to the hosted API.',
+    descHi: 'स्टैटिक JSON फ़ीड या होस्टेड API पर रिकॉर्ड भेजें।',
+  },
+  {
+    step: '02',
+    title: 'Search anywhere',
+    titleHi: 'कहीं भी सर्च करें',
+    desc: 'One 2 KB script on React, Next.js, docs, or HTML.',
+    descHi: 'React, Next.js, डॉक्स या HTML पर सिर्फ़ एक 2 KB स्क्रिप्ट।',
+  },
+  {
+    step: '03',
+    title: 'Get ranked results',
+    titleHi: 'रैंक किए गए परिणाम पाएं',
+    desc: 'Typo-tolerant BM25 under one millisecond.',
+    descHi: 'एक मिलीसेकंड से कम में टाइपो-सहिष्णु BM25।',
+  },
+];
+
+const PLANS = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    nameHi: 'स्टार्टर',
+    price: '₹19',
+    who: 'Personal sites and blogs.',
+    whoHi: 'व्यक्तिगत साइटों और ब्लॉगों के लिए।',
+    features: ['1 widget under 2 KB', '5,000 documents', 'BM25 + 1-edit typos', 'Worker offload'],
+    cta: 'Start at ₹19',
+    ctaHi: '₹19 में शुरू करें',
+    href: '/pricing.html#razorpay-starter',
+    featured: false,
+    discount: 'Save 20%',
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    nameHi: 'प्रो',
+    price: '₹99',
+    who: 'Indie SaaS and production docs.',
+    whoHi: 'इंडी SaaS और प्रोडक्शन डॉक्स के लिए।',
+    features: ['Unlimited widgets', '50,000 API searches', 'Scrypt keys + quotas', 'JSON / CSV export'],
+    cta: 'Choose Pro — ₹99/mo',
+    ctaHi: 'प्रो चुनें — ₹99/माह',
+    href: '/pricing.html#razorpay-pro',
+    featured: true,
+    badge: 'Most popular',
+  },
+  {
+    id: 'ultra',
+    name: 'Ultra',
+    nameHi: 'अल्ट्रा',
+    price: '₹199',
+    who: 'High volume with agents.',
+    whoHi: 'उच्च ट्रैफ़िक और एजेंट्स के लिए।',
+    features: ['500,000 API searches', '3 agent runs / day', 'Drift alerts', 'Priority routing'],
+    cta: 'Choose Ultra — ₹199/mo',
+    ctaHi: 'अल्ट्रा चुनें — ₹199/माह',
+    href: '/pricing.html#razorpay-ultra',
+    featured: false,
+    discount: 'Save 15%',
+  },
+];
 
 export default function HomePage() {
+  const [listening, setListening] = useState(false);
+  const [liveQuery, setLiveQuery] = useState('bm25 algorithm');
+  const [lang, setLang] = useState<'en' | 'hi'>('en');
+  const recognitionRef = useRef<SpeechRec | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [lang, setLang] = useState<"en" | "hi">("en");
 
   useEffect(() => {
-    const existing = document.querySelector('script[src="/embed.js"]');
-    if (existing) return;
-    const s = document.createElement("script");
-    s.src = "/embed.js";
-    s.async = true;
-    document.body.appendChild(s);
-  }, []);
+    const w = window as unknown as {
+      SearchEmbed?: { init: () => void };
+      __seToggleLang?: () => void;
+    };
+    w.SearchEmbed?.init();
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const applyLangToDom = (nextLang: "en" | "hi", updateBtnText: boolean) => {
-      const langTextEl = document.getElementById("langText");
-      if (langTextEl && updateBtnText) {
-        langTextEl.innerText = nextLang === "en" ? "हिंदी" : "English";
+    const applyLangDom = (nextLang: 'en' | 'hi') => {
+      document.documentElement.lang = nextLang;
+      const langText = document.getElementById('langText');
+      if (langText) {
+        langText.textContent = nextLang === 'hi' ? 'हिंदी' : 'English';
       }
-      document.querySelectorAll("[data-en]").forEach((el) => {
-        if (el.getAttribute("data-rich") === "true") return;
-        const text = el.getAttribute(`data-${nextLang}`);
-        if (text) (el as HTMLElement).innerText = text;
+      document.querySelectorAll('[data-en][data-hi]').forEach((el) => {
+        if (el.getAttribute('data-rich') === 'true') return;
+        const val = el.getAttribute(`data-${nextLang}`);
+        if (val) (el as HTMLElement).textContent = val;
+      });
+      document.querySelectorAll('[data-placeholder-en][data-placeholder-hi]').forEach((inp) => {
+        const p = inp.getAttribute(`data-placeholder-${nextLang}`);
+        if (p) inp.setAttribute('placeholder', p);
       });
     };
 
-    const toggleFn = () => {
-      setLang((prev) => {
-        const next = prev === "en" ? "hi" : "en";
-        applyLangToDom(next, true);
-        return next;
-      });
+    const onLangEvent = (e: Event) => {
+      const detail = (e as CustomEvent<'en' | 'hi'>).detail;
+      if (detail === 'en' || detail === 'hi') {
+        setLang(detail);
+      }
     };
+    window.addEventListener('se-lang-change', onLangEvent);
 
-    (window as unknown as { toggleLanguage?: () => void }).toggleLanguage = toggleFn;
-    const btn = document.getElementById("langBtn");
+    const btn = document.getElementById('langBtn');
     if (btn) {
-      btn.onclick = toggleFn;
+      btn.onclick = () => {
+        const current = document.documentElement.lang === 'hi' ? 'hi' : 'en';
+        const next: 'en' | 'hi' = current === 'en' ? 'hi' : 'en';
+        setLang(next);
+        applyLangDom(next);
+      };
     }
+
+    try {
+      const q = new URLSearchParams(window.location.search).get('q');
+      if (q && inputRef.current) {
+        inputRef.current.value = q;
+        setLiveQuery(q);
+        inputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    } catch {
+      /* ignore */
+    }
+    return () => {
+      window.removeEventListener('se-lang-change', onLangEvent);
+      try {
+        recognitionRef.current?.stop();
+      } catch {
+        /* ignore */
+      }
+    };
   }, []);
 
-  function runChipQuery(q: string) {
-    if (
-      typeof window !== "undefined" &&
-      (window as unknown as { SearchEmbed?: { search: (v: string) => void } }).SearchEmbed
-    ) {
-      (window as unknown as { SearchEmbed: { search: (v: string) => void } }).SearchEmbed.search(q);
+  const toggleVoiceSearch = () => {
+    if (listening && recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        /* ignore */
+      }
+      setListening(false);
       return;
     }
-    if (inputRef.current) {
-      inputRef.current.value = q;
-      inputRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-      inputRef.current.focus();
+    const w = window as unknown as {
+      SpeechRecognition?: new () => SpeechRec;
+      webkitSpeechRecognition?: new () => SpeechRec;
+    };
+    const SpeechRecCtor = w.SpeechRecognition || w.webkitSpeechRecognition;
+    const statusEl = document.querySelector('[data-search-status]');
+    if (!SpeechRecCtor) {
+      if (statusEl) statusEl.textContent = 'Voice search is not supported in this browser';
+      return;
     }
-  }
+    try {
+      const rec = new SpeechRecCtor();
+      rec.lang = 'hi-IN';
+      rec.interimResults = true;
+      rec.continuous = false;
+      rec.maxAlternatives = 1;
+      rec.onstart = () => {
+        setListening(true);
+        if (statusEl) statusEl.textContent = 'Listening (Hindi / English)… speak now';
+      };
+      rec.onresult = (event) => {
+        let text = '';
+        for (let i = 0; i < event.results.length; i++) text += event.results[i][0]?.transcript || '';
+        const combined = text.trim();
+        const inp = inputRef.current;
+        if (inp) {
+          inp.value = combined;
+          setLiveQuery(combined);
+          inp.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      };
+      rec.onerror = () => {
+        setListening(false);
+        if (statusEl) statusEl.textContent = 'Mic failed — try again or type your query';
+      };
+      rec.onend = () => {
+        setListening(false);
+        if (
+          statusEl &&
+          !statusEl.textContent?.startsWith('Mic failed') &&
+          !statusEl.textContent?.startsWith('Mic busy')
+        ) {
+          statusEl.textContent = 'BM25 Local Index · 52 records';
+        }
+      };
+      recognitionRef.current = rec;
+      rec.start();
+    } catch {
+      setListening(false);
+      if (statusEl) statusEl.textContent = 'Mic busy — try again in a moment';
+    }
+  };
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
-          <span
-            data-en="SUB-MILLISECOND SEARCH ENGINE"
-            data-hi="सब-मिलीसेकंड सर्च इंजन"
-          >
-            {lang === "en" ? "SUB-MILLISECOND SEARCH ENGINE" : "सब-मिलीसेकंड सर्च इंजन"}
-          </span>
-        </div>
+    <main id="main" className="animate-fade-in">
+      <Script
+        src="/embed.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          (window as unknown as { SearchEmbed?: { init: () => void } }).SearchEmbed?.init();
+        }}
+      />
 
+      <section
+        className="relative mx-auto max-w-[1120px] overflow-hidden bg-cover bg-center bg-no-repeat px-4 pt-12 pb-6 sm:px-6 sm:pt-16 sm:pb-8 text-center"
+        style={{ backgroundImage: "url('/hero-banner.svg')" }}
+      >
+        <img
+          src="/hero-banner.svg"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 h-full w-full max-w-full object-cover"
+        />
+        <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#e4dcff] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7c5cff] shadow-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#7c5cff]" aria-hidden="true" />
+          <span data-en="Sub-millisecond search" data-hi="सब-मिलीसेकंड सर्च">
+            {lang === 'en' ? 'Sub-millisecond search' : 'सब-मिलीसेकंड सर्च'}
+          </span>
+        </p>
         <h1
           data-rich="true"
           data-en="Search that ships in seconds."
           data-hi="सर्च जो सेकंडों में काम करे।"
-          className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]"
+          className="font-display mx-auto max-w-3xl text-[2.35rem] font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl md:text-6xl"
         >
-          {lang === "en" ? (
+          {lang === 'en' ? (
             <>
-              Search that ships in{" "}
-              <span className="bg-gradient-to-r from-slate-900 to-indigo-700 bg-clip-text text-transparent">
-                seconds.
-              </span>
+              Search that <span className="hero-underline">ships in seconds.</span>
             </>
           ) : (
             <>
-              सर्च जो{" "}
-              <span className="bg-gradient-to-r from-slate-900 to-indigo-700 bg-clip-text text-transparent">
-                सेकंडों में
-              </span>{" "}
-              काम करे।
+              सर्च जो <span className="hero-underline">सेकंडों में काम करे।</span>
             </>
           )}
         </h1>
-
         <p
-          data-rich="true"
-          data-en="Drop one 2 KB script tag to index, rank, and typo-correct your catalog under a millisecond."
-          data-hi="एक मिलिसेकंड के भीतर अपने कैटलॉग को इंडेक्स, रैंक और सही करने के लिए एक 2 KB स्क्रिप्ट टैग डालें।"
-          className="text-slate-600 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+          data-en="Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond — then search together with friends."
+          data-hi="एक मिलीसेकंड से भी कम समय में अपने कैटलॉग को इंडेक्स, रैंक और टाइपो-करेक्ट करने के लिए एक स्क्रिप्ट टैग लगाएं — फिर दोस्तों के साथ मिलकर खोजें।"
+          className="mx-auto mt-6 max-w-xl text-[15px] font-medium leading-relaxed text-[#4c35b5] sm:text-base"
         >
-          {lang === "en" ? (
-            <>
-              Drop one{" "}
-              <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
-                2 KB
-              </code>{" "}
-              script tag to index, rank, and typo-correct your catalog under a millisecond.
-            </>
-          ) : (
-            <>
-              एक मिलिसेकंड के भीतर अपने कैटलॉग को इंडेक्स, रैंक और सही करने के लिए एक{" "}
-              <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
-                2 KB
-              </code>{" "}
-              स्क्रिप्ट टैग डालें।
-            </>
-          )}
+          {lang === 'en'
+            ? 'Drop one script tag to index, rank, and typo-correct your catalog in under a millisecond — then search together with friends.'
+            : 'एक मिलीसेकंड से भी कम समय में अपने कैटलॉग को इंडेक्स, रैंक और टाइपो-करेक्ट करने के लिए एक स्क्रिप्ट टैग लगाएं — फिर दोस्तों के साथ मिलकर खोजें।'}
         </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-8 flex justify-center">
           <a
             href="#sandbox"
-            data-en="Try Live Sandbox ↓"
-            data-hi="लाइव सैंडबॉक्स आज़माएं ↓"
-            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg transition no-underline"
+            data-en="Try it live"
+            data-hi="लाइव आज़माएं"
+            className="btn-primary min-h-12 px-8"
           >
-            {lang === "en" ? "Try Live Sandbox ↓" : "लाइव सैंडबॉक्स आज़माएं ↓"}
+            {lang === 'en' ? 'Try it live' : 'लाइव आज़माएं'}
           </a>
         </div>
       </section>
 
-      {/* Live Sandbox Preview Section (Google-style Pill Search Bar) */}
-      <section id="sandbox" className="max-w-4xl mx-auto px-6 pb-20 scroll-mt-20">
-        <div className="bg-white border border-slate-200/80 rounded-3xl shadow-xl shadow-slate-100 p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-amber-400" aria-hidden="true" />
-              <span className="w-3 h-3 rounded-full bg-emerald-400" aria-hidden="true" />
-              <span className="w-3 h-3 rounded-full bg-slate-900" aria-hidden="true" />
-              <span className="text-xs font-semibold text-slate-400 ml-2">
-                Live Sandbox · Okapi BM25
-              </span>
-            </div>
-            <div
+      <section className="mx-auto max-w-[720px] px-4 pb-6 sm:px-6" aria-label="Together mode">
+        <TogetherPanel
+          currentQuery={liveQuery}
+          onRemoteQuery={(q) => {
+            setLiveQuery(q);
+            const inp = inputRef.current;
+            if (inp) {
+              inp.value = q;
+              inp.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          }}
+        />
+      </section>
+
+      <section id="sandbox" aria-label="Live BM25 Search Sandbox" className="mx-auto max-w-[720px] px-4 pb-8 sm:px-6">
+        <div
+          data-search-embed
+          data-api-url="/api/search"
+          data-api-key={SANDBOX_DEMO_KEY}
+          data-index-url="/data/index.json"
+          className="rounded-2xl border border-line bg-white p-3.5 sm:p-7 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]"
+        >
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <span className="font-mono text-[11px] text-muted tracking-wide">Live sandbox · Okapi BM25</span>
+            <span
               data-search-status
               aria-live="polite"
-              className="flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-semibold border border-emerald-100"
+              className="inline-flex items-center gap-1.5 rounded-full bg-purple/10 px-2.5 py-1 font-mono text-[11px] font-semibold text-purple"
             >
-              ⚡ Ready · 0.85 ms
-            </div>
+              <span className="h-1.5 w-1.5 rounded-full bg-purple animate-pulse" aria-hidden="true" />
+              BM25 Local Index · 3 results (0.40 ms)
+            </span>
           </div>
 
-          {/* Google Style Pill Search Bar */}
-          <div className="relative mb-6">
-            <label htmlFor="demo-search-input" className="sr-only">
-              Search catalog
-            </label>
+          <div className="search-box flex items-center gap-1.5 rounded-full pl-3 pr-1.5 py-1.5 sm:gap-2 sm:pl-4 sm:pr-2 sm:py-2">
+            <svg
+              className="h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-muted"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path strokeWidth={1.75} d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+            </svg>
             <input
               ref={inputRef}
-              id="demo-search-input"
-              type="text"
               data-search-input
-              placeholder="Search catalog (e.g. bm25 algorithm)..."
-              autoComplete="off"
-              className="w-full bg-slate-50 border-2 border-slate-200 focus:border-slate-900 rounded-full px-6 py-4 text-slate-800 font-medium text-base shadow-inner focus:outline-hidden transition"
+              type="search"
+              defaultValue="bm25 algorithm"
+              aria-label="Search your catalog..."
+              placeholder={lang === 'en' ? 'Search your catalog...' : 'अपना कैटलॉग खोजें...'}
+              data-placeholder-en="Search your catalog..."
+              data-placeholder-hi="अपना कैटलॉग खोजें..."
+              onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
+              className="w-full min-w-0 bg-transparent text-[13px] sm:text-[15px] text-ink placeholder:text-muted focus:outline-none"
             />
             <button
               type="button"
-              onClick={() => {
-                if (inputRef.current && inputRef.current.value.trim()) {
-                  runChipQuery(inputRef.current.value.trim());
-                } else {
-                  inputRef.current?.focus();
-                }
-              }}
-              aria-label="Run search"
-              className="absolute right-3 top-2.5 bg-slate-900 hover:bg-slate-800 text-white p-3 rounded-full transition shadow-md cursor-pointer"
+              onClick={toggleVoiceSearch}
+              aria-label={listening ? 'Stop voice search' : 'Start voice search (Hindi and English)'}
+              aria-pressed={listening}
+              className={`inline-flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full border-2 border-purple bg-purple text-white shadow-[0_2px_10px_rgba(124,92,255,0.4)] transition hover:bg-[#6b4ce6] ${
+                listening ? 'ring-4 ring-purple/30 scale-105' : ''
+              }`}
             >
-              🔍
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.8}
+                  d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zm7 11a7 7 0 01-14 0m7 7v4m-4 0h8"
+                />
+              </svg>
             </button>
           </div>
 
-          {/* Query Pills */}
-          <div className="flex flex-wrap items-center gap-2 mb-6 text-xs text-slate-500">
-            <span className="font-semibold">Try:</span>
-            {SUGGESTED_CHIPS.map((chip) => (
-              <span
-                key={chip}
-                role="button"
-                tabIndex={0}
-                onClick={() => runChipQuery(chip)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    runChipQuery(chip);
-                  }
-                }}
-                className="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-full border border-slate-200 cursor-pointer transition"
+          <div className="mt-3.5 flex flex-nowrap items-center gap-1 overflow-hidden">
+            <span
+              className="shrink-0 text-[10px] font-semibold text-[#7c5cff]"
+              data-en="Try:"
+              data-hi="खोजें:"
+            >
+              {lang === 'en' ? 'Try:' : 'खोजें:'}
+            </span>
+            {['bm25 algorithm', 'minecraft', 'scrypt kdf', 'wireguard vpn'].map((q) => (
+              <button
+                key={q}
+                type="button"
+                data-search-preset={q}
+                className="inline-flex h-9 min-w-0 flex-1 basis-0 items-center justify-center rounded-full border border-[#7c5cff] bg-white px-1 text-center font-mono text-[11px] font-semibold leading-none text-[#7c5cff] sm:h-11 sm:text-[10px]"
               >
-                {chip}
-              </span>
+                <span className="truncate">{q}</span>
+              </button>
             ))}
           </div>
 
-          {/* Result Box Placeholder */}
-          <div data-search-results className="space-y-3">
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 text-center text-slate-400 text-sm">
-              Type a query above to run Okapi BM25 ranking...
+          <div id="homepage-embed-results" data-search-results className="mt-5">
+            <div className="search-embed-meta font-mono text-xs text-[#71717a] mb-1.5">
+              BM25 Local Index · 3 results · 0.40 ms
             </div>
+            <ul className="list-none p-0 m-0">
+              <li role="option" className="py-[18px] px-1 border-b border-[#e5e5e5]">
+                <div className="text-[#3c6e47] text-[13px] mb-0.5">https://search-hub-live.vercel.app/demo.html#bm25</div>
+                <div className="flex justify-between gap-2 items-start">
+                  <div>
+                    <a
+                      href="https://search-hub-live.vercel.app/demo.html#bm25"
+                      className="text-[#1a0dab] text-lg no-underline hover:underline"
+                    >
+                      SearchHub Federated Engine (Okapi BM25)
+                    </a>
+                  </div>
+                  <span className="font-mono text-xs text-[#525252]">BM25 4.82</span>
+                </div>
+                <div className="text-[#525252] text-sm mt-1 leading-relaxed">
+                  Sub-millisecond Okapi BM25 full-text ranking algorithm with k1=1.2 saturation, b=0.75 length normalization, and Damerau-Levenshtein typo tolerance.
+                </div>
+                <div className="text-xs text-[#71717a] mt-1">Ranked high for: bm25, algorithm</div>
+              </li>
+              <li role="option" className="py-[18px] px-1 border-b border-[#e5e5e5]">
+                <div className="text-[#3c6e47] text-[13px] mb-0.5">https://search-hub-live.vercel.app/catalog?q=Meilisearch</div>
+                <div className="flex justify-between gap-2 items-start">
+                  <div>
+                    <a
+                      href="https://search-hub-live.vercel.app/catalog?q=Meilisearch"
+                      className="text-[#1a0dab] text-lg no-underline hover:underline"
+                    >
+                      Meilisearch Typo-Tolerant Search Engine
+                    </a>
+                  </div>
+                  <span className="font-mono text-xs text-[#525252]">BM25 3.45</span>
+                </div>
+                <div className="text-[#525252] text-sm mt-1 leading-relaxed">
+                  Lightning-fast Rust search indexing engine supporting prefix matching, custom ranking rules, and instant search-as-you-type experiences.
+                </div>
+                <div className="text-xs text-[#71717a] mt-1">Ranked high for: bm25, algorithm</div>
+              </li>
+              <li role="option" className="py-[18px] px-1 border-b border-[#e5e5e5]">
+                <div className="text-[#3c6e47] text-[13px] mb-0.5">https://search-hub-live.vercel.app/catalog?q=Typesense</div>
+                <div className="flex justify-between gap-2 items-start">
+                  <div>
+                    <a
+                      href="https://search-hub-live.vercel.app/catalog?q=Typesense"
+                      className="text-[#1a0dab] text-lg no-underline hover:underline"
+                    >
+                      Typesense In-Memory Inverted Index
+                    </a>
+                  </div>
+                  <span className="font-mono text-xs text-[#525252]">BM25 3.12</span>
+                </div>
+                <div className="text-[#525252] text-sm mt-1 leading-relaxed">
+                  Open-source in-memory search algorithm engineered for instant lexical ranking, federated blending, and low-latency retrieval.
+                </div>
+                <div className="text-xs text-[#71717a] mt-1">Ranked high for: algorithm</div>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="max-w-6xl mx-auto px-6 py-20 scroll-mt-16">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span
-            data-en="Transparent Billing"
-            data-hi="पारदर्शी बिलिंग"
-            className="text-xs font-bold text-slate-700 uppercase tracking-widest bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200 shadow-xs"
+      <section className="mx-auto max-w-[720px] px-4 pb-10 sm:px-6">
+        <div className="mt-3">
+          <button
+            type="button"
+            className="btn-secondary min-h-11 px-4 text-sm"
+            data-en="Share this search"
+            data-hi="यह खोज साझा करें"
+            onClick={async () => {
+              const q = liveQuery.trim();
+              const shareUrl = q
+                ? `https://search-hub-live.vercel.app/?q=${encodeURIComponent(q)}`
+                : 'https://search-hub-live.vercel.app';
+              const shareText = q
+                ? `Search "${q}" on SearchEmbed — https://search-hub-live.vercel.app`
+                : 'Try SearchEmbed — https://search-hub-live.vercel.app';
+              try {
+                if (typeof navigator !== 'undefined' && navigator.share) {
+                  await navigator.share({ title: 'SearchEmbed', text: shareText, url: shareUrl });
+                } else {
+                  await navigator.clipboard.writeText(shareUrl);
+                  const s = document.querySelector('[data-search-status]');
+                  if (s) s.textContent = 'Link copied — share with a friend';
+                }
+              } catch {
+                try {
+                  await navigator.clipboard.writeText(shareUrl);
+                  const s = document.querySelector('[data-search-status]');
+                  if (s) s.textContent = 'Link copied — share with a friend';
+                } catch {
+                  /* cancelled */
+                }
+              }
+            }}
           >
-            {lang === "en" ? "Transparent Billing" : "पारदर्शी बिलिंग"}
-          </span>
+            {lang === 'en' ? 'Share this search' : 'यह खोज साझा करें'}
+          </button>
+        </div>
+      </section>
+
+      <section id="features" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6">
+        <h2
+          data-en="Engineered for sub-millisecond retrieval."
+          data-hi="सब-मिलीसेकंड परिणामों के लिए निर्मित।"
+          className="font-display text-2xl font-bold text-ink sm:text-3xl"
+        >
+          {lang === 'en' ? 'Engineered for sub-millisecond retrieval.' : 'सब-मिलीसेकंड परिणामों के लिए निर्मित।'}
+        </h2>
+        <p
+          data-en="Production search primitives in one zero-dependency runtime."
+          data-hi="शून्य-निर्भरता रनटाइम में प्रोडक्शन सर्च क्षमताएं।"
+          className="mt-2.5 max-w-xl text-sm text-muted"
+        >
+          {lang === 'en'
+            ? 'Production search primitives in one zero-dependency runtime.'
+            : 'शून्य-निर्भरता रनटाइम में प्रोडक्शन सर्च क्षमताएं।'}
+        </p>
+        <div className="mt-9 grid grid-cols-1 gap-4 md:grid-cols-12">
+          {FEATURES.map((f) => (
+            <article key={f.title} className={`card-surface ${f.span} p-5 sm:p-6`}>
+              <h3
+                data-en={f.title}
+                data-hi={f.titleHi}
+                className="font-display text-lg font-bold text-ink"
+              >
+                {lang === 'en' ? f.title : f.titleHi}
+              </h3>
+              <p
+                data-en={f.body}
+                data-hi={f.bodyHi}
+                className="mt-2 text-sm leading-relaxed text-muted"
+              >
+                {lang === 'en' ? f.body : f.bodyHi}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="how-it-works" className="mx-auto max-w-[1120px] px-4 py-14 sm:px-6">
+        <h2
+          data-en="Live in three steps."
+          data-hi="तीन आसान चरणों में लाइव।"
+          className="font-display text-2xl font-bold text-ink sm:text-3xl"
+        >
+          {lang === 'en' ? 'Live in three steps.' : 'तीन आसान चरणों में लाइव।'}
+        </h2>
+        <div className="mt-9 grid grid-cols-1 gap-4 md:grid-cols-3">
+          {STEPS.map((s) => (
+            <div key={s.step} className="card-surface p-5 sm:p-6">
+              <span className="font-mono text-xs font-semibold text-purple">{s.step}</span>
+              <h3
+                data-en={s.title}
+                data-hi={s.titleHi}
+                className="font-display mt-2.5 text-base font-bold text-ink"
+              >
+                {lang === 'en' ? s.title : s.titleHi}
+              </h3>
+              <p data-en={s.desc} data-hi={s.descHi} className="mt-1.5 text-sm text-muted">
+                {lang === 'en' ? s.desc : s.descHi}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="pricing" className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mb-10 text-center">
           <h2
             data-en="Predictable Rupee pricing."
-            data-hi="किफायती और स्पष्ट मूल्य निर्धारण।"
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mt-4 mb-4"
+            data-hi="पारदर्शी रुपया मूल्य निर्धारण।"
+            className="font-display text-2xl font-bold text-ink sm:text-3xl"
           >
-            {lang === "en" ? "Predictable Rupee pricing." : "किफायती और स्पष्ट मूल्य निर्धारण।"}
+            {lang === 'en' ? 'Predictable Rupee pricing.' : 'पारदर्शी रुपया मूल्य निर्धारण।'}
           </h2>
           <p
-            data-en="Pro is the sweet spot for most indie hackers and growing teams."
-            data-hi="अधिकांश डेवलपर्स और टीमों के लिए यह सबसे बेहतरीन है।"
-            className="text-slate-600 text-base"
+            data-en="Pro is the sweet spot for most teams."
+            data-hi="अधिकांश टीमों के लिए प्रो सबसे उपयुक्त है।"
+            className="mx-auto mt-2.5 max-w-md text-sm text-muted"
           >
-            {lang === "en"
-              ? "Pro is the sweet spot for most indie hackers and growing teams."
-              : "अधिकांश डेवलपर्स और टीमों के लिए यह सबसे बेहतरीन है।"}
+            {lang === 'en' ? 'Pro is the sweet spot for most teams.' : 'अधिकांश टीमों के लिए प्रो सबसे उपयुक्त है।'}
           </p>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-8 items-stretch">
-          {/* Starter Plan */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
-            <div>
-              <h3
-                data-en="Starter"
-                data-hi="स्टार्टर"
-                className="font-bold text-xl text-slate-900 mb-1"
-              >
-                {lang === "en" ? "Starter" : "स्टार्टर"}
-              </h3>
-              <p
-                data-en="Personal sites and blogs."
-                data-hi="व्यक्तिगत साइटें और ब्लॉग।"
-                className="text-sm text-slate-500 mb-6"
-              >
-                {lang === "en" ? "Personal sites and blogs." : "व्यक्तिगत साइटें और ब्लॉग।"}
-              </p>
-              <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-4xl font-extrabold text-slate-900">₹19</span>
-                <span className="text-slate-500 text-sm" data-en="/month" data-hi="/माह">
-                  {lang === "en" ? "/month" : "/माह"}
-                </span>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3 items-start">
+          {PLANS.map((plan) => (
+            <div
+              key={plan.id}
+              className={`flex h-full flex-col justify-between p-6 rounded-2xl ${
+                plan.featured
+                  ? 'card-pro scale-[1.03] z-10 relative'
+                  : plan.id === 'ultra'
+                  ? 'card-ultra card-surface'
+                  : 'card-surface'
+              }`}
+            >
+              <div>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3
+                    data-en={plan.name}
+                    data-hi={plan.nameHi}
+                    className="font-display text-xl font-bold text-ink"
+                  >
+                    {lang === 'en' ? plan.name : plan.nameHi}
+                  </h3>
+                  <div className="flex items-center gap-1.5">
+                    {plan.discount && <span className="badge-discount">{plan.discount}</span>}
+                    {plan.badge && <span className="badge-recommended">{plan.badge}</span>}
+                  </div>
+                </div>
+                <p data-en={plan.who} data-hi={plan.whoHi} className="mt-2 text-xs text-muted">
+                  {lang === 'en' ? plan.who : plan.whoHi}
+                </p>
+                <p className="mt-5 font-display text-3xl font-extrabold text-ink">
+                  {plan.price}
+                  <span className="text-xs font-medium text-muted"> /month</span>
+                </p>
+                <ul className="mt-5 space-y-2.5 text-sm text-muted">
+                  {plan.features.map((feat) => (
+                    <li key={feat} className="flex gap-2">
+                      <span className="text-purple font-semibold">✓</span>
+                      {feat}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-4 text-sm text-slate-600 mb-8 list-none p-0">
-                <li className="flex items-center gap-3">✓ 1 widget under 2 KB</li>
-                <li className="flex items-center gap-3">✓ 5,000 documents</li>
-                <li className="flex items-center gap-3">✓ BM25 + 1-edit typos</li>
-              </ul>
+              <a
+                href={plan.href}
+                data-en={plan.cta}
+                data-hi={plan.ctaHi}
+                className={`mt-7 min-h-12 w-full text-center ${
+                  plan.featured ? 'btn-primary' : 'btn-secondary'
+                }`}
+              >
+                {lang === 'en' ? plan.cta : plan.ctaHi}
+              </a>
             </div>
-            <a
-              href="/pricing.html#pricing-plans"
-              data-en="Choose Starter"
-              data-hi="स्टार्टर चुनें"
-              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm no-underline"
-            >
-              {lang === "en" ? "Choose Starter" : "स्टार्टर चुनें"}
-            </a>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="bg-white border-2 border-slate-900 rounded-3xl p-8 flex flex-col justify-between shadow-2xl shadow-slate-900/10 relative">
-            <span
-              data-en="Most Popular"
-              data-hi="सबसे लोकप्रिय"
-              className="absolute -top-3.5 right-8 bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm"
-            >
-              {lang === "en" ? "Most Popular" : "सबसे लोकप्रिय"}
-            </span>
-            <div>
-              <h3
-                data-en="Pro"
-                data-hi="प्रो"
-                className="font-bold text-xl text-slate-900 mb-1"
-              >
-                {lang === "en" ? "Pro" : "प्रो"}
-              </h3>
-              <p
-                data-en="Indie SaaS and production docs."
-                data-hi="स्वतंत्र डेवलपर्स और डॉक्यूमेंट्स के लिए।"
-                className="text-sm text-slate-500 mb-6"
-              >
-                {lang === "en"
-                  ? "Indie SaaS and production docs."
-                  : "स्वतंत्र डेवलपर्स और डॉक्यूमेंट्स के लिए।"}
-              </p>
-              <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-4xl font-extrabold text-slate-900">₹99</span>
-                <span className="text-slate-500 text-sm" data-en="/month" data-hi="/माह">
-                  {lang === "en" ? "/month" : "/माह"}
-                </span>
-              </div>
-              <ul className="space-y-4 text-sm text-slate-700 mb-8 list-none p-0">
-                <li className="flex items-center gap-3">✓ Unlimited widgets</li>
-                <li className="flex items-center gap-3">✓ 50,000 API searches</li>
-                <li className="flex items-center gap-3">✓ Scrypt keys + quotas</li>
-                <li className="flex items-center gap-3">✓ JSON / CSV export</li>
-              </ul>
-            </div>
-            <a
-              href="/pricing.html#pricing-plans"
-              data-en="Choose Pro"
-              data-hi="प्रो चुनें"
-              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-md no-underline"
-            >
-              {lang === "en" ? "Choose Pro" : "प्रो चुनें"}
-            </a>
-          </div>
-
-          {/* Ultra Plan */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition">
-            <div>
-              <h3
-                data-en="Ultra"
-                data-hi="अल्ट्रा"
-                className="font-bold text-xl text-slate-900 mb-1"
-              >
-                {lang === "en" ? "Ultra" : "अल्ट्रा"}
-              </h3>
-              <p
-                data-en="High volume with AI agents."
-                data-hi="एआई एजेंट्स के साथ हाई वॉल्यूम।"
-                className="text-sm text-slate-500 mb-6"
-              >
-                {lang === "en" ? "High volume with AI agents." : "एआई एजेंट्स के साथ हाई वॉल्यूम।"}
-              </p>
-              <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-4xl font-extrabold text-slate-900">₹199</span>
-                <span className="text-slate-500 text-sm" data-en="/month" data-hi="/माह">
-                  {lang === "en" ? "/month" : "/माह"}
-                </span>
-              </div>
-              <ul className="space-y-4 text-sm text-slate-600 mb-8 list-none p-0">
-                <li className="flex items-center gap-3">✓ 500,000 API searches</li>
-                <li className="flex items-center gap-3">✓ 3 agent runs / day</li>
-                <li className="flex items-center gap-3">✓ Priority routing</li>
-              </ul>
-            </div>
-            <a
-              href="/pricing.html#pricing-plans"
-              data-en="Choose Ultra"
-              data-hi="अल्ट्रा चुनें"
-              className="w-full block text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm no-underline"
-            >
-              {lang === "en" ? "Choose Ultra" : "अल्ट्रा चुनें"}
-            </a>
-          </div>
+          ))}
+        </div>
+        <div className="mt-8">
+          <a
+            href="/pricing.html"
+            data-en="View full pricing and subscribe"
+            data-hi="पूरा मूल्य निर्धारण देखें और सब्सक्राइब करें"
+            className="btn-cta-gradient inline-flex min-h-[56px] w-full items-center justify-center text-center py-4 text-base"
+          >
+            {lang === 'en' ? 'View full pricing and subscribe' : 'पूरा मूल्य निर्धारण देखें और सब्सक्राइब करें'}
+          </a>
         </div>
       </section>
-    </div>
+    </main>
   );
 }

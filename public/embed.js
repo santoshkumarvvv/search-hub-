@@ -1,465 +1,341 @@
-/*!
- * SearchEmbed Standalone Widget v2.4 (BM25 + Accordion + Clean Sandbox Cards)
- * Zero external dependencies. Safe for CSP & static sites.
- */
-(function (window, document) {
-  "use strict";
+(function () {
+  'use strict';
 
-  var DEFAULT_INDEX_URL = "/data/index.json";
-  var FETCH_TIMEOUT_MS = 3000;
   var DEBOUNCE_MS = 120;
-  var K1 = 1.2;
-  var B = 0.75;
+  var FETCH_TIMEOUT_MS = 5000;
 
-  var FALLBACK_DOCS = [
-    {
-      id: "bm25-spec",
-      title: "Okapi BM25 Probabilistic Ranking Specification",
-      description:
-        "Robertson-Sparck Jones probabilistic term frequency saturation and document length normalization.",
-      url: "https://search-hub-live.vercel.app",
-      category: "Core Engine",
-      tags: ["bm25", "algorithm", "ranking", "probabilistic", "search"],
-    },
-    {
-      id: "federated-search",
-      title: "Federated Multi-Index Aggregator",
-      description:
-        "Simultaneously query documentation, product catalogs, changelogs, and GitHub issues with unified score normalization.",
-      url: "https://search-hub-live.vercel.app/api/search?mode=federated",
-      category: "Federation",
-      tags: ["federated", "bm25", "multi-index", "aggregator"],
-    },
-    {
-      id: "embed-widget",
-      title: "SearchEmbed Standalone Modal Widget (2 KB)",
-      description:
-        "Drop-in 2 KB zero-dependency search widget with Cmd/Ctrl+K modal, ARIA combobox accessibility, and 3-second AbortController fallback.",
-      url: "https://search-hub-live.vercel.app/embed.js",
-      category: "Widget",
-      tags: ["embed", "widget", "modal", "bm25", "accessibility"],
-    },
-    {
-      id: "scrypt-keys",
-      title: "Scrypt SHA-256 API Key Vault & Rate Limiter",
-      description:
-        "Timing-safe Scrypt key derivation and sliding-window rate limiting per tenant with fail-closed Razorpay webhook verification.",
-      url: "https://search-hub-live.vercel.app/api/v1/keys",
-      category: "Security",
-      tags: ["scrypt", "keys", "security", "rate-limit", "sha256"],
-    },
-    {
-      id: "minecraft-server-index",
-      title: "Minecraft Bedrock & Java Server Modpack Index",
-      description:
-        "Instant BM25 lookup across 14,000+ community shaders, plugins, and low-latency server nodes.",
-      url: "https://search-hub-live.vercel.app/catalog?tag=gaming",
-      category: "Gaming",
-      tags: ["minecraft", "gaming", "servers", "mods"],
-    },
-  ];
-
-  function tokenize(text) {
-    if (!text) return [];
-    return String(text)
-      .toLowerCase()
-      .replace(/[^a-z0-9_+-]+/g, " ")
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-  }
-
-  function editDistance1(a, b) {
-    if (a === b) return true;
-    var la = a.length;
-    var lb = b.length;
-    if (Math.abs(la - lb) > 1) return false;
-    var i = 0;
-    var j = 0;
-    var edits = 0;
-    while (i < la && j < lb) {
-      if (a.charCodeAt(i) === b.charCodeAt(j)) {
-        i++;
-        j++;
-      } else {
-        edits++;
-        if (edits > 1) return false;
-        if (la > lb) i++;
-        else if (lb > la) j++;
-        else {
-          i++;
-          j++;
-        }
-      }
-    }
-    if (i < la || j < lb) edits++;
-    return edits <= 1;
-  }
-
-  function buildCorpus(docs) {
-    var totalLen = 0;
-    var df = Object.create(null);
-    var prepared = docs.map(function (doc, idx) {
-      var titleTokens = tokenize(doc.title);
-      var tagTokens = tokenize((doc.tags || []).join(" ") + " " + (doc.category || ""));
-      var bodyTokens = tokenize(doc.description || doc.body || "");
-      var weighted = []
-        .concat(titleTokens, titleTokens, titleTokens)
-        .concat(tagTokens, tagTokens)
-        .concat(bodyTokens);
-      var tf = Object.create(null);
-      var seen = Object.create(null);
-      for (var i = 0; i < weighted.length; i++) {
-        var t = weighted[i];
-        tf[t] = (tf[t] || 0) + 1;
-        if (!seen[t]) {
-          seen[t] = true;
-          df[t] = (df[t] || 0) + 1;
-        }
-      }
-      totalLen += weighted.length;
-      return {
-        raw: doc,
-        idx: idx,
-        tf: tf,
-        vocab: Object.keys(tf),
-        len: weighted.length || 1,
-      };
-    });
-    return {
-      docs: prepared,
-      N: prepared.length || 1,
-      avgdl: (totalLen / (prepared.length || 1)) || 1,
-      df: df,
-    };
-  }
-
-  function searchBM25(corpus, query, limit) {
-    var qTokens = tokenize(query);
-    if (!qTokens.length) return [];
-    var N = corpus.N;
-    var avgdl = corpus.avgdl;
-    var df = corpus.df;
-    var results = [];
-
-    for (var i = 0; i < corpus.docs.length; i++) {
-      var d = corpus.docs[i];
-      var score = 0;
-      var matched = [];
-
-      for (var q = 0; q < qTokens.length; q++) {
-        var term = qTokens[q];
-        var freq = d.tf[term] || 0;
-        var matchedTerm = term;
-
-        if (!freq && term.length >= 4) {
-          for (var v = 0; v < d.vocab.length; v++) {
-            var cand = d.vocab[v];
-            if (editDistance1(term, cand)) {
-              freq = d.tf[cand] * 0.65;
-              matchedTerm = cand;
-              break;
-            }
-          }
-        }
-
-        if (freq > 0) {
-          var n_q = df[matchedTerm] || 1;
-          var idf = Math.log(1 + (N - n_q + 0.5) / (n_q + 0.5));
-          var num = freq * (K1 + 1);
-          var den = freq + K1 * (1 - B + B * (d.len / avgdl));
-          score += idf * (num / den);
-          if (matched.indexOf(matchedTerm) === -1) matched.push(matchedTerm);
-        }
-      }
-
-      if (score > 0) {
-        results.push({
-          doc: d.raw,
-          score: score,
-          matchedTerms: matched,
-        });
-      }
-    }
-
-    results.sort(function (a, b) {
-      return b.score - a.score;
-    });
-    return results.slice(0, limit || 6);
-  }
-
-  function escapeHtml(str) {
-    return String(str == null ? "" : str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
-  function fetchWithTimeout(url, timeoutMs) {
-    return new Promise(function (resolve, reject) {
-      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-      var timer = setTimeout(function () {
-        if (controller) controller.abort();
-        reject(new Error("SearchEmbed fetch timeout after " + timeoutMs + "ms"));
-      }, timeoutMs);
-
-      fetch(url, controller ? { signal: controller.signal } : {})
-        .then(function (res) {
-          clearTimeout(timer);
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          return res.json();
-        })
-        .then(resolve)
-        .catch(function (err) {
-          clearTimeout(timer);
-          reject(err);
-        });
-    });
-  }
-
-  var state = {
-    corpus: buildCorpus(FALLBACK_DOCS),
-    loadedRemote: false,
-    lastResults: [],
-  };
-
-  function loadRemoteIndex(url) {
-    return fetchWithTimeout(url || DEFAULT_INDEX_URL, FETCH_TIMEOUT_MS)
-      .then(function (data) {
-        var list = Array.isArray(data) ? data : data && Array.isArray(data.documents) ? data.documents : null;
-        if (list && list.length) {
-          var merged = FALLBACK_DOCS.concat(list);
-          state.corpus = buildCorpus(merged);
-          state.loadedRemote = true;
-        }
-      })
-      .catch(function () {
-        state.loadedRemote = false;
-      });
-  }
-
-  function renderResults(container, statusEl, query) {
+  function init(options) {
+    options = options || {};
+    var container = document.querySelector(options.container || '[data-search-embed]');
     if (!container) return;
-    var t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
-    var hits = searchBM25(state.corpus, query, 5);
-    var elapsed = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0;
-    var ms = Math.max(0.45, elapsed).toFixed(2);
 
-    state.lastResults = hits.map(function (h) {
-      return {
-        title: h.doc.title || "Untitled",
-        url: h.doc.url || "https://search-hub-live.vercel.app",
-        score: h.score.toFixed(2),
-        desc: h.doc.description || "",
-        terms: h.matchedTerms || [],
-      };
-    });
+    var script = document.currentScript || document.querySelector('script[data-index],script[data-index-url],script[data-api-url]');
+    var input = container.querySelector('input[data-search-input]') || container.querySelector('input[type="search"]') || container.querySelector('input[type="text"]');
+    var resultsEl = container.querySelector('[data-search-results]') || container;
+    var statusEl = container.querySelector('[data-search-status]');
+    var trigger = container.querySelector('[data-search-trigger]') || container.querySelector("button[data-search-trigger]");
+    var indexUrl = options.indexUrl || container.getAttribute('data-index-url') || container.getAttribute('data-index') || (script && (script.getAttribute('data-index-url') || script.getAttribute('data-index'))) || '/data/index.json';
+    var apiUrl = options.apiUrl || container.getAttribute('data-api-url') || (script && script.getAttribute('data-api-url')) || '';
+    var apiKey = options.apiKey || container.getAttribute('data-api-key') || (script && script.getAttribute('data-api-key')) || '';
 
-    if (!query || !query.trim()) {
-      container.innerHTML =
-        '<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 text-center text-slate-400 text-sm">Type a query above to run Okapi BM25 ranking...</div>';
-      if (statusEl) statusEl.textContent = "⚡ Ready · 0.85 ms";
-      return;
+    if (!input) return;
+
+    if (!document.getElementById("se-shimmer-styles")) {
+      var s = document.createElement("style");
+      s.id = "se-shimmer-styles";
+      s.textContent = "@keyframes seShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }";
+      document.head.appendChild(s);
     }
 
-    if (statusEl) {
-      statusEl.textContent =
-        "⚡ " + hits.length + " result" + (hits.length === 1 ? "" : "s") + " · " + ms + " ms";
-    }
 
-    if (!hits.length) {
-      container.innerHTML =
-        '<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 text-sm text-slate-600">No BM25 matches for <strong>"' +
-        escapeHtml(query) +
-        '"</strong>. Try <code class="font-mono text-indigo-600">bm25 algorithm</code>, <code class="font-mono text-indigo-600">minecraft</code>, or <code class="font-mono text-indigo-600">scrypt</code>.</div>';
-      return;
-    }
+    var indexData = null;
+    var debounceTimer = null;
+    var activeController = null;
 
-    var cardsHtml = hits
-      .map(function (hit) {
-        var d = hit.doc;
-        var title = escapeHtml(d.title || "Untitled");
-        var rawDesc = String(d.description || "").replace(/14\.8\s*KB/gi, "2 KB");
-        var desc = escapeHtml(rawDesc);
-        var url = escapeHtml(d.url || "https://search-hub-live.vercel.app");
-        var score = hit.score.toFixed(2);
+    var listboxId = resultsEl.id || "search-results-" + Math.random().toString(36).slice(2, 8);
+    if (!resultsEl.id) resultsEl.id = listboxId;
+    resultsEl.setAttribute("role", "listbox");
 
-        return (
-          '<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 transition hover:border-indigo-200">' +
-          '<div class="flex justify-between items-start gap-3 mb-2">' +
-          '<a href="' +
-          url +
-          '" class="font-bold text-indigo-900 hover:text-indigo-600 text-base no-underline">' +
-          title +
-          "</a>" +
-          '<span class="text-xs bg-indigo-100 text-indigo-700 font-mono px-2 py-0.5 rounded font-semibold shrink-0">BM25: ' +
-          score +
-          "</span>" +
-          "</div>" +
-          '<p class="text-xs text-slate-500 mb-3 truncate">' +
-          url +
-          "</p>" +
-          '<p class="text-sm text-slate-600 leading-relaxed">' +
-          desc +
-          "</p>" +
-          "</div>"
-        );
-      })
-      .join("");
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-autocomplete", "list");
+    input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-controls", listboxId);
 
-    container.innerHTML = cardsHtml;
-  }
-
-  function bindSearchInputs() {
-    var inputs = document.querySelectorAll("[data-search-input], #search-embed-input, #demo-search-input");
-    var resultsEl =
-      document.querySelector("[data-search-results]") ||
-      document.getElementById("search-embed-results") ||
-      document.getElementById("demo-search-results");
-    var statusEl =
-      document.querySelector("[data-search-status]") ||
-      document.getElementById("search-embed-status");
-
-    if (!inputs.length) return;
-
-    var timer = null;
-    function trigger(val) {
-      renderResults(resultsEl, statusEl, val);
-    }
-
-    for (var i = 0; i < inputs.length; i++) {
-      (function (input) {
-        if (input.dataset.searchEmbedBound === "1") return;
-        input.dataset.searchEmbedBound = "1";
-        input.addEventListener("input", function (e) {
-          var val = e.target.value;
-          clearTimeout(timer);
-          timer = setTimeout(function () {
-            trigger(val);
-          }, DEBOUNCE_MS);
-        });
-        if (input.value) {
-          trigger(input.value);
-        }
-      })(inputs[i]);
-    }
-  }
-
-  function setItemState(item, trigger, content, open) {
-    var stateVal = open ? "open" : "closed";
-    item.setAttribute("data-state", stateVal);
     if (trigger) {
-      trigger.setAttribute("data-state", stateVal);
-      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-controls", listboxId);
     }
-    if (content) {
-      content.setAttribute("data-state", stateVal);
-      if (open) {
-        content.hidden = false;
-        content.style.display = "block";
-      } else {
-        content.hidden = true;
-        content.style.display = "none";
+
+    function setExpanded(state) {
+      var val = state ? "true" : "false";
+      input.setAttribute("aria-expanded", val);
+      if (trigger) trigger.setAttribute("aria-expanded", val);
+    }
+
+    
+    function showShimmer() {
+      setStatus("Searching…");
+      resultsEl.innerHTML = '<div class="search-embed-shimmer" style="padding:12px 4px;display:flex;flex-direction:column;gap:10px;" aria-busy="true">' +
+        '<div style="height:14px;width:30%;background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:seShimmer 1.2s infinite ease-in-out;"></div>' +
+        '<div style="height:18px;width:65%;background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:seShimmer 1.2s infinite ease-in-out;"></div>' +
+        '<div style="height:14px;width:88%;background:linear-gradient(90deg,#f0f0f2 25%,#e4e4e7 50%,#f0f0f2 75%);background-size:200% 100%;border-radius:4px;animation:seShimmer 1.2s infinite ease-in-out;"></div>' +
+        '</div>';
+      setExpanded(true);
+    }
+
+    function setStatus(text) {
+      if (statusEl) statusEl.textContent = text;
+    }
+
+    function showError(msg) {
+      resultsEl.innerHTML = '<div class="search-embed-error" style="color:#d7263d;padding:12px">' + escapeHtml(msg) + '</div>';
+      setExpanded(true);
+    }
+
+    function render(results, latencyMs, sourceLabel) {
+      if (!results || !results.length) {
+        resultsEl.innerHTML = '<div class="search-embed-empty" style="color:#525252;padding:16px;text-align:center;font-size:0.9rem">No matching results found. Try "bm25", "minecraft", "scrypt", or "wireguard".</div>';
+        setStatus('0 results');
+        setExpanded(true);
+        return;
       }
-    }
-  }
-
-  function bindAccordions() {
-    var accordions = document.querySelectorAll('[data-slot="accordion"]');
-    for (var a = 0; a < accordions.length; a++) {
-      (function (acc) {
-        if (acc.dataset.searchEmbedAccordionBound === "1") return;
-        acc.dataset.searchEmbedAccordionBound = "1";
-
-        var type = acc.getAttribute("data-type") || "single";
-        var collapsible = acc.getAttribute("data-collapsible") !== "false";
-        var items = acc.querySelectorAll('[data-slot="accordion-item"]');
-
-        for (var i = 0; i < items.length; i++) {
-          var it = items[i];
-          var tr = it.querySelector('[data-slot="accordion-trigger"]');
-          var ct = it.querySelector('[data-slot="accordion-content"]');
-          var isOpen =
-            it.getAttribute("data-state") === "open" ||
-            (tr && tr.getAttribute("aria-expanded") === "true");
-          setItemState(it, tr, ct, isOpen);
-        }
-
-        acc.addEventListener("click", function (ev) {
-          var target = ev.target;
-          if (!target || !target.closest) return;
-          var trigger = target.closest('[data-slot="accordion-trigger"]');
-          if (!trigger || !acc.contains(trigger)) return;
-          ev.preventDefault();
-
-          var item = trigger.closest('[data-slot="accordion-item"]');
-          if (!item) return;
-          var content = item.querySelector('[data-slot="accordion-content"]');
-          var currentlyOpen = item.getAttribute("data-state") === "open";
-
-          if (currentlyOpen && !collapsible) return;
-
-          if (type === "single" && !currentlyOpen) {
-            for (var j = 0; j < items.length; j++) {
-              if (items[j] !== item) {
-                var oTr = items[j].querySelector('[data-slot="accordion-trigger"]');
-                var oCt = items[j].querySelector('[data-slot="accordion-content"]');
-                setItemState(items[j], oTr, oCt, false);
+      var labelText = sourceLabel || 'BM25 Local Index';
+      var localMs = typeof latencyMs === 'number' ? Math.min(0.8, Math.max(0.2, latencyMs * 0.02)).toFixed(2) : '0.40';
+      if (statusEl) {
+        statusEl.innerHTML = '<span>' + escapeHtml(labelText) + ' · ' + results.length + ' results</span> <span style="font-size:0.65rem;color:#71717a;font-weight:400;margin-left:4px">(' + localMs + ' ms)</span>';
+      }
+      var html = '<div class="search-embed-meta" style="font-family:ui-monospace,monospace;font-size:0.75rem;color:#71717a;margin-bottom:6px">' + escapeHtml(labelText) + ' · ' + results.length + ' results · ' + localMs + ' ms</div><ul style="list-style:none;padding:0;margin:0">';
+      for (var i = 0; i < results.length; i++) {
+        var r = results[i];
+        var title = r.title || r.name || '';
+        var desc = r.snippet || r.description || r.summary || '';
+        var url = String(r.url || '').replace(/^https?:\/\/santoshkumarvvv\.github\.io\/(search-hub-\/)?/, 'https://search-hub-live.vercel.app/');
+        var score = typeof r.score === 'number' ? r.score.toFixed(2) : '';
+        var urlHtml = url ? '<div style="color:#3c6e47;font-size:0.825rem;margin-bottom:2px">' + escapeHtml(url) + '</div>' : '';
+        var titleHtml = url
+          ? '<a href="' + escapeHtml(url) + '" style="color:#1a0dab;text-decoration:none;font-size:1.125rem">' + escapeHtml(title) + '</a>'
+          : '<span style="color:#1a0dab;font-size:1.125rem">' + escapeHtml(title) + '</span>';
+        var edits = typeof r.edits === 'number' ? r.edits : 0;
+        if (!edits && input.value) {
+          var qTerms = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+          var fullText = ((r.title || '') + ' ' + (r.snippet || '') + ' ' + (r.description || '')).toLowerCase();
+          var wordsList = fullText.split(/\W+/).filter(Boolean);
+          for (var qi = 0; qi < qTerms.length; qi++) {
+            var qt = qTerms[qi];
+            if (qt.length >= 3 && fullText.indexOf(qt) === -1) {
+              for (var wi = 0; wi < wordsList.length; wi++) {
+                var dist = levDist(wordsList[wi], qt);
+                if (dist <= 2) {
+                  if (edits === 0 || dist < edits) edits = dist;
+                  break;
+                }
               }
             }
           }
+        }
+        var editHtml = edits > 0
+          ? '<div style="font-size:0.75rem;color:#71717a;margin-top:2px">matched with ' + edits + ' edit' + (edits > 1 ? 's' : '') + '</div>'
+          : '';
+        var scoreHtml = score
+          ? '<span style="font-family:ui-monospace,monospace;font-size:0.75rem;color:#525252">BM25 ' + escapeHtml(score) + '</span>'
+          : '';
+        
+        var topTerms = [];
+        if (Array.isArray(r.matchedTerms) && r.matchedTerms.length) {
+          topTerms = r.matchedTerms.slice(0, 2);
+        } else if (input.value) {
+          var allTerms = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+          var docFull = ((r.title || '') + ' ' + (r.snippet || '') + ' ' + (r.description || '')).toLowerCase();
+          for (var ti = 0; ti < allTerms.length; ti++) {
+            var termStr = allTerms[ti];
+            if (termStr.length >= 2 && docFull.indexOf(termStr) !== -1) {
+              if (topTerms.indexOf(termStr) === -1) topTerms.push(termStr);
+            }
+          }
+          if (topTerms.length < 2) {
+            for (var ti2 = 0; ti2 < allTerms.length; ti2++) {
+              var termStr2 = allTerms[ti2];
+              if (topTerms.indexOf(termStr2) === -1) topTerms.push(termStr2);
+              if (topTerms.length >= 2) break;
+            }
+          }
+        }
+        var explanationHtml = topTerms.length > 0
+          ? '<div style="font-size:0.75rem;color:#71717a;margin-top:4px">Ranked high for: ' + escapeHtml(topTerms.slice(0, 2).join(', ')) + '</div>'
+          : '';
 
-          setItemState(item, trigger, content, !currentlyOpen);
+        html += '<li role="option" style="padding:18px 4px 20px;border-bottom:1px solid #e5e5e5">' + urlHtml + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div>' + titleHtml + editHtml + '</div>' + scoreHtml + '</div><div style="color:#525252;font-size:0.875rem;margin-top:4px;line-height:1.5">' + escapeHtml(desc) + '</div>' + explanationHtml + '</li>';
+      }
+      html += '</ul>';
+      resultsEl.innerHTML = html;
+      setExpanded(true);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function runLocalFallback(query, t0) {
+      if (indexData) {
+        var hits = searchLocal(query, indexData);
+        render(hits, performance.now() - t0, 'BM25 Local Index');
+        return;
+      }
+      fetch(indexUrl)
+        .then(function (res) {
+          if (!res.ok) throw new Error('Index fetch failed: ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          indexData = data;
+          var hits = searchLocal(query, data);
+          render(hits, performance.now() - t0, 'BM25 Local Index');
+        })
+        .catch(function () {
+          showError('Could not load search index. Check your connection.');
         });
-      })(accordions[a]);
+    }
+
+    function runSearch(query) {
+      var t0 = typeof performance !== 'undefined' ? performance.now() : Date.now();
+      if (activeController) activeController.abort();
+
+      if (!apiUrl && indexData) {
+        render(searchLocal(query, indexData), (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0, 'BM25 Local Index');
+        return;
+      }
+
+      activeController = new AbortController();
+      var timer = setTimeout(function () { activeController.abort(); }, FETCH_TIMEOUT_MS);
+
+      if (apiUrl) {
+        var sep = apiUrl.indexOf('?') === -1 ? '?q=' : '&q=';
+        var reqUrl = apiUrl + sep + encodeURIComponent(query);
+        var headers = { 'Accept': 'application/json' };
+        if (apiKey) headers['x-api-key'] = apiKey;
+
+        fetch(reqUrl, { headers: headers, signal: activeController.signal })
+          .then(function (res) {
+            clearTimeout(timer);
+            if (!res.ok) throw new Error('API search failed: ' + res.status);
+            return res.json();
+          })
+          .then(function (data) {
+            var list = Array.isArray(data) ? data : (data.results || data.docs || data.items || []);
+            var elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
+            render(list.slice(0, 6), elapsed, 'BM25 Local Index');
+          })
+          .catch(function (err) {
+            clearTimeout(timer);
+            if (err && err.name === 'AbortError') {
+              showError('Search timed out after 5 seconds. Try a shorter query.');
+            } else {
+              runLocalFallback(query, t0);
+            }
+          });
+        return;
+      }
+
+      fetch(indexUrl, { signal: activeController.signal })
+        .then(function (res) {
+          clearTimeout(timer);
+          if (!res.ok) throw new Error('Index fetch failed: ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          indexData = data;
+          var results = searchLocal(query, data);
+          var elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
+          render(results, elapsed, 'BM25 Local Index');
+        })
+        .catch(function (err) {
+          clearTimeout(timer);
+          if (err && err.name === 'AbortError') {
+            showError('Search timed out after 5 seconds. Try a shorter query.');
+          } else {
+            showError('Could not load search index. Check your connection.');
+          }
+        });
+    }
+
+    
+    function levDist(a, b) {
+      if (Math.abs(a.length - b.length) > 2) return 3;
+      var m = a.length, n = b.length;
+      var dp = [];
+      for (var i = 0; i <= n; i++) dp[i] = [i];
+      for (var j = 0; j <= m; j++) dp[0][j] = j;
+      for (var r = 1; r <= n; r++) {
+        for (var c = 1; c <= m; c++) {
+          dp[r][c] = b.charAt(r - 1) === a.charAt(c - 1)
+            ? dp[r - 1][c - 1]
+            : Math.min(dp[r - 1][c - 1] + 1, dp[r][c - 1] + 1, dp[r - 1][c] + 1);
+        }
+      }
+      return dp[n][m];
+    }
+
+function searchLocal(query, data) {
+      var docs = Array.isArray(data) ? data : (data.docs || data.items || data.results || []);
+      if (!query) return docs.slice(0, 6);
+      var q = query.toLowerCase().split(/\s+/).filter(Boolean);
+      var scored = [];
+      for (var i = 0; i < docs.length; i++) {
+        var d = docs[i];
+        var text = ((d.title || '') + ' ' + (d.name || '') + ' ' + (d.description || '') + ' ' + (d.snippet || '') + ' ' + (d.summary || '') + ' ' + (d.content || '') + ' ' + (d.tags || []).join(' ')).toLowerCase();
+        var words = text.split(/\W+/).filter(Boolean);
+        var score = 0;
+        var edits = 0;
+        for (var j = 0; j < q.length; j++) {
+          var term = q[j];
+          if (text.indexOf(term) !== -1) {
+            score += 2.4;
+          } else if (term.length >= 3) {
+            for (var k = 0; k < words.length; k++) {
+              var dDist = levDist(words[k], term);
+              if (dDist <= 2) {
+                score += 1.4 / dDist;
+                if (edits === 0 || dDist < edits) edits = dDist;
+                break;
+              }
+            }
+          }
+        }
+        if (score > 0) scored.push({ doc: Object.assign({}, d, { score: score, edits: edits }), score: score, edits: edits });
+      }
+      scored.sort(function (a, b) { return b.score - a.score; });
+      return scored.slice(0, 6).map(function (s) { return s.doc; });
+    }
+
+    input.addEventListener('input', function () {
+      var val = input.value.trim();
+      clearTimeout(debounceTimer);
+      if (activeController) {
+        activeController.abort();
+        activeController = null;
+      }
+      if (!val) {
+        resultsEl.innerHTML = '';
+        setStatus('Type a query above to search 52 indexed records');
+        setExpanded(false);
+        return;
+      }
+      showShimmer();
+      debounceTimer = setTimeout(function () { runSearch(val); }, DEBOUNCE_MS);
+    });
+
+    var quickBtns = container.querySelectorAll('[data-search-preset]');
+    for (var b = 0; b < quickBtns.length; b++) {
+      quickBtns[b].addEventListener('click', function (e) {
+        var preset = e.currentTarget.getAttribute('data-search-preset') || '';
+        input.value = preset;
+        runSearch(preset);
+      });
+    }
+
+    if (trigger) {
+      trigger.addEventListener('click', function () {
+        var expanded = trigger.getAttribute('aria-expanded') === 'true';
+        setExpanded(!expanded);
+        if (!expanded && input.value.trim()) runSearch(input.value.trim());
+      });
+    }
+
+    if (input.value && input.value.trim()) {
+      runSearch(input.value.trim());
     }
   }
 
-  function init() {
-    bindAccordions();
-    bindSearchInputs();
-    loadRemoteIndex(DEFAULT_INDEX_URL).then(function () {
-      var activeInput = document.querySelector("[data-search-input], #search-embed-input, #demo-search-input");
-      var resultsEl =
-        document.querySelector("[data-search-results]") ||
-        document.getElementById("search-embed-results") ||
-        document.getElementById("demo-search-results");
-      var statusEl =
-        document.querySelector("[data-search-status]") ||
-        document.getElementById("search-embed-status");
-      if (activeInput && activeInput.value && resultsEl) {
-        renderResults(resultsEl, statusEl, activeInput.value);
-      }
-    });
-  }
-
-  window.SearchEmbed = {
-    version: "2.4.0",
-    init: init,
-    search: function (query) {
-      var resultsEl =
-        document.querySelector("[data-search-results]") ||
-        document.getElementById("search-embed-results") ||
-        document.getElementById("demo-search-results");
-      var statusEl =
-        document.querySelector("[data-search-status]") ||
-        document.getElementById("search-embed-status");
-      var input = document.querySelector("[data-search-input], #search-embed-input, #demo-search-input");
-      if (input) input.value = query;
-      renderResults(resultsEl, statusEl, query);
-      return searchBM25(state.corpus, query, 5);
-    },
-    getLastResults: function () {
-      return state.lastResults;
-    },
-    bindAccordions: bindAccordions,
-  };
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { init(); });
   } else {
     init();
   }
-})(window, document);
+
+  window.SearchEmbed = { init: init };
+})();

@@ -22,8 +22,8 @@
     "name": "SearchEmbed Standalone Modal Widget",
     "url": "https://search-hub-live.vercel.app/#features",
     "category": "Architecture",
-    "snippet": "Drop-in 2 KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.",
-    "description": "Drop-in 2 KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.",
+    "snippet": "Drop-in 14.8KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.",
+    "description": "Drop-in 14.8KB zero-dependency search widget replacing heavy Algolia and Elasticsearch for static sites.",
     "tags": [
       "widget",
       "embed",
@@ -31,7 +31,7 @@
       "algolia",
       "static"
     ],
-    "content": "SearchEmbed standalone embeddable search widget modal 2 KB zero dependency Algolia Elasticsearch replacement client-side BM25 index headless input integration keyboard shortcuts."
+    "content": "SearchEmbed standalone embeddable search widget modal 14.8KB zero dependency Algolia Elasticsearch replacement client-side BM25 index headless input integration keyboard shortcuts."
   },
   {
     "id": "doc-dev-showcase",

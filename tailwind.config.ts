@@ -8,25 +8,25 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink:       "#0f172a",
+        ink:       "#0a0a0a",
         panel:     "#ffffff",
-        panel2:    "#f8fafc",
-        line:      "#e2e8f0",
-        muted:     "#64748b",
-        accent:    "#4f46e5",
-        accent2:   "#f59e0b",
-        highlight: "#f59e0b",
-        purple:    "#4f46e5",
+        panel2:    "#f8f8f8",
+        line:      "#e5e5e5",
+        muted:     "#525252",
+        accent:    "#7c5cff",
+        accent2:   "#f5c542",
+        highlight: "#f5c542",
+        purple:    "#7c5cff",
         danger:    "#ef4444",
-        gold:      "#f59e0b"
+        gold:      "#f5c542"
       },
       fontFamily: {
-        display: ["Plus Jakarta Sans", "Inter", "system-ui", "-apple-system", "sans-serif"],
-        sans:    ["Plus Jakarta Sans", "Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Syne", "system-ui", "sans-serif"],
+        sans:    ["Inter", "system-ui", "-apple-system", "sans-serif"],
         mono:    ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"]
       },
       animation: {
-        "fade-in": "fadeIn .4s cubic-bezier(0.16, 1, 0.3, 1) both"
+        "fade-in": "fadeIn .45s cubic-bezier(0.16, 1, 0.3, 1) both"
       },
       keyframes: {
         fadeIn: {
