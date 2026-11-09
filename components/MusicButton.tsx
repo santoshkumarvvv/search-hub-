@@ -101,7 +101,25 @@ export const TRACKS = [
   },
 ] as const;
 
+const OG_ART = "https://search-hub-live.vercel.app/og-image.png";
 const MODERATE_VOLUME = 0.45;
+
+function setSessionArtwork(title: string, artist: string) {
+  if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title,
+      artist,
+      artwork: [96, 128, 192, 512].map((size) => ({
+        src: OG_ART,
+        sizes: `${size}x${size}`,
+        type: "image/png",
+      })),
+    });
+  } catch {
+    /* ignore */
+  }
+}
 
 const btnClass =
   "inline-flex h-11 w-11 min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full bg-[#7c5cff] text-white shadow-[0_2px_10px_rgba(124,92,255,0.4)] transition hover:bg-[#6b4ce6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50";
@@ -167,6 +185,7 @@ export default function MusicButton() {
       indexRef.current = next;
       setTrackIndex(next);
       wantPlayRef.current = autoplay;
+      setSessionArtwork(TRACKS[next].title, TRACKS[next].artist);
       try {
         audio.pause();
         audio.src = TRACKS[next].url;
@@ -189,6 +208,7 @@ export default function MusicButton() {
     audio.loop = false;
     audioRef.current = audio;
     wantPlayRef.current = true;
+    setSessionArtwork(TRACKS[0].title, TRACKS[0].artist);
 
     const onPlay = () => {
       errorCountRef.current = 0;
@@ -305,7 +325,8 @@ export default function MusicButton() {
   const currentTrack = TRACKS[trackIndex];
 
   return (
-    <div className="inline-flex items-center justify-center gap-1.5" role="group" aria-label="Music player">
+    <div className="relative inline-flex h-14 items-center justify-center px-11" role="group" aria-label="Music player">
+      <div className="inline-flex items-center justify-center gap-0.5">
       <button
         type="button"
         onClick={() => skip(-1)}
@@ -337,17 +358,6 @@ export default function MusicButton() {
       </button>
       <button
         type="button"
-        onClick={close}
-        aria-label="Close music player"
-        title="Close"
-        className={btnClass}
-      >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <button
-        type="button"
         onClick={() => skip(1)}
         aria-label="Skip to next track"
         title="Skip"
@@ -355,6 +365,18 @@ export default function MusicButton() {
       >
         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+        </svg>
+      </button>
+      </div>
+      <button
+        type="button"
+        onClick={close}
+        aria-label="Close music player"
+        title="Close"
+        className="absolute right-0 top-0 inline-flex h-10 w-10 items-center justify-center bg-transparent text-[#a1a1aa] hover:text-ink"
+      >
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>

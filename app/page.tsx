@@ -147,6 +147,20 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-[720px] px-4 pb-6 sm:px-6" aria-label="Together mode">
+        <TogetherPanel
+          currentQuery={liveQuery}
+          onRemoteQuery={(q) => {
+            setLiveQuery(q);
+            const inp = inputRef.current;
+            if (inp) {
+              inp.value = q;
+              inp.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          }}
+        />
+      </section>
+
       <section id="sandbox" aria-label="Live BM25 Search Sandbox" className="mx-auto max-w-[720px] px-4 pb-8 sm:px-6">
         <div
           data-search-embed
@@ -190,16 +204,16 @@ export default function HomePage() {
               </svg>
             </button>
           </div>
-          <div className="mt-3.5 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-purple">Try:</span>
+          <div className="mt-3.5 flex items-center gap-1 overflow-hidden">
+            <span className="shrink-0 text-[10px] font-semibold text-[#7c5cff]">Try:</span>
             {['bm25 algorithm', 'minecraft', 'scrypt kdf', 'wireguard vpn'].map((q) => (
               <button
                 key={q}
                 type="button"
                 data-search-preset={q}
-                className="inline-flex min-h-[44px] items-center rounded-full border-2 border-purple bg-white px-4 py-2 font-mono text-xs font-semibold text-purple transition-colors hover:bg-purple hover:text-white focus-visible:bg-purple focus-visible:text-white"
+                className="inline-flex h-9 min-w-0 flex-1 basis-0 items-center justify-center rounded-full border border-[#7c5cff] bg-white px-1 text-center font-mono text-[9px] font-semibold leading-none text-[#7c5cff] sm:h-11 sm:text-xs"
               >
-                {q}
+                <span className="truncate">{q}</span>
               </button>
             ))}
           </div>
@@ -259,17 +273,6 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-[720px] px-4 pb-10 sm:px-6">
-        <TogetherPanel
-          currentQuery={liveQuery}
-          onRemoteQuery={(q) => {
-            setLiveQuery(q);
-            const inp = inputRef.current;
-            if (inp) {
-              inp.value = q;
-              inp.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-          }}
-        />
         <div className="mt-3">
           <button
             type="button"

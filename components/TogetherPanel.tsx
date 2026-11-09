@@ -19,7 +19,7 @@ type Props = {
 };
 
 export default function TogetherPanel({ onRemoteQuery, currentQuery = '' }: Props) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [name, setName] = useState('');
   const [codeInput, setCodeInput] = useState('');
   const [room, setRoom] = useState<Room | null>(null);
@@ -175,31 +175,52 @@ export default function TogetherPanel({ onRemoteQuery, currentQuery = '' }: Prop
     }
   }, []);
 
-  return (
-    <div className="mt-6">
+  function toggleOpen() {
+    const y = typeof window !== 'undefined' ? window.scrollY : 0;
+    setOpen((v) => !v);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y);
+      });
+    });
+  }
+
+  if (!open) {
+    return (
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="btn-secondary min-h-12 w-full sm:w-auto px-6"
+        onClick={toggleOpen}
+        className="inline-flex min-h-11 items-center rounded-full border border-[#7c5cff] bg-white px-4 text-sm font-semibold text-[#7c5cff]"
       >
-        {open ? 'Hide Together' : 'Search Together · invite friends'}
+        Show Together mode
       </button>
+    );
+  }
 
-      {open && (
-        <div className="mt-4 rounded-2xl border border-line bg-white p-5 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h3 className="font-display text-lg font-bold text-ink">Together mode</h3>
-              <p className="mt-1 text-sm text-muted">
-                One room. Live query sync. Side chat. Pin results you both like.
-              </p>
+  return (
+    <div className="rounded-2xl border border-line bg-white p-5 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className="font-display text-lg font-bold text-ink">Together mode</h3>
+          <p className="mt-1 text-sm text-muted">
+            One room. Live query sync. Side chat. Pin results you both like.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {room && (
+            <div className="rounded-full bg-purple/10 px-3 py-1.5 font-mono text-sm font-bold text-purple">
+              {room.code}
             </div>
-            {room && (
-              <div className="rounded-full bg-purple/10 px-3 py-1.5 font-mono text-sm font-bold text-purple">
-                {room.code}
-              </div>
-            )}
-          </div>
+          )}
+          <button
+            type="button"
+            onClick={toggleOpen}
+            className="inline-flex min-h-11 items-center rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink"
+          >
+            Hide Together
+          </button>
+        </div>
+      </div>
 
           {!room ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -225,7 +246,13 @@ export default function TogetherPanel({ onRemoteQuery, currentQuery = '' }: Prop
               <button type="button" disabled={busy} onClick={createRoom} className="btn-primary min-h-12">
                 Start a room
               </button>
-              <button type="button" disabled={busy} onClick={joinRoom} className="btn-secondary min-h-12">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={joinRoom}
+                className="btn-secondary min-h-12 bg-white text-[#7c5cff]"
+                style={{ border: '1px solid #7c5cff', background: '#ffffff', color: '#7c5cff' }}
+              >
                 Join room
               </button>
             </div>
@@ -288,8 +315,6 @@ export default function TogetherPanel({ onRemoteQuery, currentQuery = '' }: Prop
             </div>
           )}
           {notice && <p className="mt-3 text-sm text-muted">{notice}</p>}
-        </div>
-      )}
     </div>
   );
 }
