@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a001f"/>
+      <stop offset="0.5" stop-color="#1a0a3c"/>
+      <stop offset="1" stop-color="#2d0b5e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="600" y1="100" x2="600" y2="530" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c5cff" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#7c5cff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="600" cy="315" r="280" fill="url(#glow)"/>
+  <circle cx="600" cy="315" r="200" fill="none" stroke="#7c5cff" stroke-width="2" opacity="0.3"/>
+  <circle cx="600" cy="315" r="140" fill="none" stroke="#7c5cff" stroke-width="1.5" opacity="0.5"/>
+  <text x="600" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="160" font-weight="bold" fill="#7c5cff">V</text>
+  <text x="600" y="480" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff" letter-spacing="8">SEARCH EMBED</text>
+  <text x="600" y="540" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" fill="#a78bfa" letter-spacing="4">SEARCH THAT SHIPS IN SECONDS</text>
+</svg>
