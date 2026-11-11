@@ -56,8 +56,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const LANG_TOGGLE_SCRIPT = `(function(){var currentLang='en';window.toggleLanguage=function(){currentLang=currentLang==='en'?'hi':'en';document.documentElement.lang=currentLang;var lt=document.getElementById('langText');if(lt)lt.innerText=currentLang==='en'?'हिंदी':'English';document.querySelectorAll('[data-en]').forEach(function(el){if(el.getAttribute('data-rich')==='true')return;var text=el.getAttribute('data-'+currentLang);if(text)el.innerText=text;});window.dispatchEvent(new CustomEvent('se-lang-change',{detail:currentLang}));};document.addEventListener('click',function(ev){var t=ev.target;if(t&&t.closest&&t.closest('#langBtn')){window.toggleLanguage();}});})();`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
@@ -81,11 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="bg-slate-900 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm">
                 SE
               </div>
-              <span
-                className="font-bold text-lg tracking-tight text-slate-900"
-                data-en="SearchEmbed"
-                data-hi="सर्चएम्बेड"
-              >
+              <span className="font-bold text-lg tracking-tight text-slate-900">
                 SearchEmbed
               </span>
               <span className="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-md border border-slate-200">
@@ -94,45 +88,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </a>
 
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-              <a
-                href="#features"
-                className="hover:text-slate-900 transition"
-                data-en="Features"
-                data-hi="विशेषताएं"
-              >
+              <a href="#features" className="hover:text-slate-900 transition">
                 Features
               </a>
-              <a
-                href="#sandbox"
-                className="hover:text-slate-900 transition"
-                data-en="Sandbox"
-                data-hi="सैंडबॉक्स"
-              >
+              <a href="#sandbox" className="hover:text-slate-900 transition">
                 Sandbox
               </a>
-              <a
-                href="#pricing"
-                className="hover:text-slate-900 transition"
-                data-en="Pricing"
-                data-hi="मूल्य निर्धारण"
-              >
+              <a href="#pricing" className="hover:text-slate-900 transition">
                 Pricing
               </a>
             </nav>
 
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                id="langBtn"
-                className="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl border border-slate-200 transition cursor-pointer flex items-center gap-1.5"
-              >
-                🌐 <span id="langText">English</span>
-              </button>
               <a
                 href="#pricing"
                 className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition"
-                data-en="Get API Key →"
-                data-hi="एपिआई की लें →"
               >
                 Get API Key &rarr;
               </a>
@@ -152,29 +122,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 SE
               </div>
               <span className="font-bold text-sm text-slate-900">SearchEmbed</span>
-              <span
-                className="text-xs text-slate-400"
-                data-en="· Okapi BM25 Search Infrastructure"
-                data-hi="· ओकापी बीएम25 सर्च इंफ्रास्ट्रक्चर"
-              >
+              <span className="text-xs text-slate-400">
                 · Okapi BM25 Search Infrastructure
               </span>
             </div>
             <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a
-                href="#sandbox"
-                className="hover:text-slate-900 transition"
-                data-en="Demo"
-                data-hi="डेमो"
-              >
+              <a href="#sandbox" className="hover:text-slate-900 transition">
                 Demo
               </a>
-              <a
-                href="#pricing"
-                className="hover:text-slate-900 transition"
-                data-en="Pricing"
-                data-hi="मूल्य"
-              >
+              <a href="#pricing" className="hover:text-slate-900 transition">
                 Pricing
               </a>
               <a
@@ -182,24 +138,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-slate-900 transition"
-                data-en="GitHub"
-                data-hi="गिटहब"
               >
                 GitHub
               </a>
               <a
                 href="mailto:kumasantosh947@gmail.com"
                 className="hover:text-slate-900 transition"
-                data-en="Contact"
-                data-hi="संपर्क"
               >
                 Contact
               </a>
             </div>
           </div>
         </footer>
-
-        <script dangerouslySetInnerHTML={{ __html: LANG_TOGGLE_SCRIPT }} />
       </body>
     </html>
   );
