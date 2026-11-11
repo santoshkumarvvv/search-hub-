@@ -26,6 +26,7 @@ export default function HomePage() {
   const [busy, setBusy] = useState(false);
   const [micSupported, setMicSupported] = useState(true);
   const [listening, setListening] = useState(false);
+  const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const lastRemoteQuery = useRef('');
 
@@ -361,14 +362,18 @@ export default function HomePage() {
       </section>
 
       <section id="rooms" style={{ maxWidth: 1100, margin: '0 auto', padding: '8px 0 72px' }}>
-        <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111111', margin: '0 0 16px' }}>Rooms</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111111', margin: '0 0 16px', textAlign: 'center' }}>Rooms</h2>
         <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 32 }}>
           <div className="rooms-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', padding: '0 12px', fontSize: 14 }} />
             <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase())} placeholder="Room code (ABC123)" maxLength={6} style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', padding: '0 12px', fontSize: 14, fontFamily: 'ui-monospace, monospace' }} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
             <button type="button" disabled={busy} onClick={createRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Host room</button>
+            <div style={{ position: 'relative' }}>
+              <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} }} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer', padding: '12px 24px' }}>Share</button>
+              {copied && <span style={{ position: 'absolute', top: -28, left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', fontSize: 12, padding: '4px 8px', borderRadius: 6, whiteSpace: 'nowrap' }}>Copied!</span>}
+            </div>
             <button type="button" disabled={busy} onClick={joinRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: '2px solid #0a2540', background: '#fff', color: '#0a2540', fontWeight: 600, cursor: 'pointer' }}>Join</button>
           </div>
           {notice && <p style={{ marginTop: 12, fontSize: 13, color: 'rgba(0,0,0,0.55)' }}>{notice}</p>}
