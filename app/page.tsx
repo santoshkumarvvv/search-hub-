@@ -5,7 +5,7 @@ import Script from 'next/script';
 
 const SANDBOX_DEMO_KEY =
   process.env.NEXT_PUBLIC_DEMO_API_KEY ||
-  ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_');
+  ['sh_live', 'homepagedemo0001', '0123456789abcdef0123456789abcdef'].join('_);
 
 type Room = {
   code: string;
@@ -27,6 +27,7 @@ export default function HomePage() {
   const [micSupported, setMicSupported] = useState(true);
   const [listening, setListening] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const lastRemoteQuery = useRef('');
 
@@ -87,12 +88,12 @@ export default function HomePage() {
       try {
         lastRemoteQuery.current = liveQuery;
         const res = await fetch('/api/together', {
-          method: 'POST',
+          method: 'POST",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            action: 'sync',
+            action: 'sync",
             code: room.code,
-            name: name || 'Guest',
+            name: name || 'Guest",
             query: liveQuery,
           }),
         });
@@ -110,16 +111,16 @@ export default function HomePage() {
     setNotice('');
     try {
       const res = await fetch('/api/together', {
-        method: 'POST',
+        method: 'POST",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'create', name: n, query: liveQuery }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Could not create room');
+      if (!res.ok) throw new Error(data.error || 'Could not create room);
       applyRoom(data as Room);
-      setNotice(`Room ${(data as Room).code} live (24h KV TTL) — share code with your team.`);
+      setNotice(`Room ${(data as Room).code} live (24h KV TTL) — share code with your team.');
     } catch (e) {
-      setNotice(e instanceof Error ? e.message : 'Could not create room');
+      setNotice(e instanceof Error ? e.message : 'Could not create room);
     } finally {
       setBusy(false);
     }
@@ -136,16 +137,16 @@ export default function HomePage() {
     setNotice('');
     try {
       const res = await fetch('/api/together', {
-        method: 'POST',
+        method: 'POST",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'join', code: c, name: n }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Room not found');
+      if (!res.ok) throw new Error(data.error || 'Room not found);
       applyRoom(data as Room);
-      setNotice(`Joined room ${c} from KV. Queries sync live.`);
+      setNotice(`Joined room ${c} from KV. Queries sync live.');
     } catch (e) {
-      setNotice(e instanceof Error ? e.message : 'Could not join room');
+      setNotice(e instanceof Error ? e.message : 'Could not join room);
     } finally {
       setBusy(false);
     }
@@ -219,6 +220,9 @@ export default function HomePage() {
     }
   };
 
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareText = encodeURIComponent(shareUrl);
+
   return (
     <div style={{ paddingLeft: 16, paddingRight: 16 }}>
       <Script
@@ -226,7 +230,7 @@ export default function HomePage() {
         strategy="afterInteractive"
         onLoad={() => {
           (window as unknown as { SearchEmbed?: { init: () => void } }).SearchEmbed?.init();
-        }}
+        }
       />
 
       <section className="mx-auto text-center" style={{ maxWidth: 1100, paddingTop: 56, paddingBottom: 28 }}>
@@ -257,7 +261,7 @@ export default function HomePage() {
           data-api-key={SANDBOX_DEMO_KEY}
           data-index-url="/data/index.json"
           className="widget-card"
-          style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 40 }}
+          style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 40 }
         >
           <div style={{ position: 'relative', width: '100%' }}>
             <input
@@ -268,32 +272,32 @@ export default function HomePage() {
               onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
               placeholder="Search catalog (e.g. bm25)..."
               className="search-input"
-              style={{ height: 56, width: '100%', border: '1px solid rgba(0, 0, 0, 0.12)', backgroundColor: '#ffffff', color: '#111111', borderRadius: 28, padding: '0 84px 0 22px', fontSize: 18 }}
+              style={{ height: 56, width: '100%', border: '1px solid rgba(0, 0, 0.12)', backgroundColor: '#ffffff', color: '#111111', borderRadius: 28, padding: '0 84px 0 22px', fontSize: 18 }
             />
             <div style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: 10 }}>
               {micSupported && (
                 <button type="button" data-voice-mic onClick={startVoiceSearch} aria-label="Voice search" title="Voice search (hi-IN)" className="inline-flex items-center justify-center cursor-pointer" style={{ width: 28, height: 28, color: '#0a2540', backgroundColor: listening ? 'rgba(10, 37, 64, 0.08)' : 'transparent', border: 'none', borderRadius: 999 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a2540" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a2540" strokeWidth="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                     <line x1="12" y1="19" x2="12" y2="22" />
                   </svg>
                 </button>
               )}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </div>
           </div>
-          <div id="homepage-embed-results" data-search-results style={{ marginTop: 16, backgroundColor: '#ffffff', border: '1px dashed rgba(0, 0, 0, 0.12)', borderRadius: 12, padding: 18, textAlign: 'center', fontSize: 14, color: 'rgba(0, 0, 0, 0.45)' }}>
+          <div id="homepage-embed-results" data-search-results style={{ marginTop: 16, backgroundColor: '#ffffff', border: '1px dashed rgba(0, 0, 0.12)', borderRadius: 12, padding: 18, textAlign: 'center', fontSize: 14, color: 'rgba(0, 0, 0, 0.45)' }}>
             Type a query above to run Okapi BM25 ranking...
           </div>
         </div>
         <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, color: 'rgba(0, 0, 0, 0.45)', fontWeight: 600 }}>TRY</span>
           {['bm25 algorithm', 'minecraft', 'scrypt', 'wireguard vpn'].map((preset) => (
-            <button key={preset} type="button" data-search-preset={preset} onClick={() => triggerPreset(preset)} style={{ border: '1px solid rgba(0, 0, 0, 0.1)', backgroundColor: 'rgba(0, 0, 0, 0.04)', color: 'rgba(0, 0, 0, 0.55)', fontSize: 13, padding: '4px 10px', borderRadius: 999, cursor: 'pointer' }}>
+            <button key={preset} type="button" data-search-preset={preset} onClick={() => triggerPreset(preset)} style={{ border: '1px solid rgba(0, 0, 0.1)', backgroundColor: 'rgba(0, 0, 0, 0.04)', color: 'rgba(0, 0, 0, 0.55)', fontSize: 13, padding: '4px 10px', borderRadius: 999, cursor: 'pointer' }}>
               {preset}
             </button>
           ))}
@@ -306,7 +310,7 @@ export default function HomePage() {
           <p style={{ color: 'rgba(0, 0, 0, 0.55)', fontSize: 16, marginTop: 8 }}>Pro is the sweet spot for most indie hackers and growing teams.</p>
         </div>
         <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 24, alignItems: 'stretch' }}>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.1)', borderRadius: 16, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0.1)', borderRadius: 16, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: 20, color: '#111', margin: '0 0 4px' }}>Starter</h3>
               <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', margin: '0 0 20px' }}>Personal sites and blogs.</p>
@@ -342,7 +346,7 @@ export default function HomePage() {
               <a href="/pricing.html#razorpay-pro" style={{ width: '100%', display: 'block', textAlign: 'center', background: '#0a2540', color: '#fff', fontWeight: 600, padding: '12px 16px', borderRadius: 8, textDecoration: 'none', boxSizing: 'border-box' }}>Choose Pro</a>
             </div>
           </div>
-          <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.1)', borderRadius: 16, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0.1)', borderRadius: 16, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <h3 style={{ fontWeight: 700, fontSize: 20, color: '#111', margin: '0 0 4px' }}>Ultra</h3>
               <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', margin: '0 0 20px' }}>High volume with AI agents.</p>
@@ -361,28 +365,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="rooms" style={{ maxWidth: 1100, margin: '0 auto', padding: '8px 0 72px' }}>
+      <section id="rooms" style={{ maxWidth: 600, margin: '0 auto', padding: '8px 0 72px' }}>
         <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111111', margin: '0 0 16px', textAlign: 'center' }}>Rooms</h2>
-        <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 32 }}>
-          <div className="rooms-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', padding: '0 12px', fontSize: 14 }} />
-            <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase())} placeholder="Room code (ABC123)" maxLength={6} style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0,0.12)', padding: '0 12px', fontSize: 14, fontFamily: 'ui-monospace, monospace' }} />
+        <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 32 }}>
+          <div className="rooms-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0.12)', padding: '0 12px', fontSize: 14 }} />
+            <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase())} placeholder="Room code (ABC123)" maxLength={6} style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0.12)', padding: '0 12px', fontSize: 14, fontFamily: 'ui-monospace, monospace' }} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
             <button type="button" disabled={busy} onClick={createRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Host room</button>
-            <div style={{ position: 'relative' }}>
-              <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} }} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer', padding: '12px 24px' }}>Share</button>
-              {copied && <span style={{ position: 'absolute', top: -28, left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', fontSize: 12, padding: '4px 8px', borderRadius: 6, whiteSpace: 'nowrap' }}>Copied!</span>}
-            </div>
-            <button type="button" disabled={busy} onClick={joinRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: '2px solid #0a2540', background: '#fff', color: '#0a2540', fontWeight: 600, cursor: 'pointer' }}>Join</button>
+            <button type="button" disabled={busy} onClick={joinRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: '1px solid #0a2540', background: '#ffffff', color: '#0a2540', fontWeight: 600, cursor: 'pointer' }}>Join</button>
           </div>
-          {notice && <p style={{ marginTop: 12, fontSize: 13, color: 'rgba(0,0,0,0.55)' }}>{notice}</p>}
-          {room?.code && (
-            <p style={{ marginTop: 8, fontSize: 13, color: 'rgba(0,0,0,0.55)' }}>
-              Live room {room.code}
-              {room.members?.length ? ` · ${room.members.length} member${room.members.length === 1 ? '' : 's'}` : ''}
-            </p>
-          )}
+          <div style={{ maxWidth: 480, margin: '16px auto 0', marginLeft: 'auto', marginRight: 'auto' }}>
+            <button type="button" onClick={() => setShowShare(!showShare)} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Share</button>
+            {showShare && (
+              <div style={{ marginTop: 8, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href={"https://wa.me/?text=" + shareText} target="_blank" rel="noreferrer" style={{ flex: 1, minWidth: 100, height: 40, borderRadius: 8, background: '#25D366', color: '#fff', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>WhatsApp</a>
+                <a href={"https://twitter.com/intent/tweet?url=" + shareText} target="_blank" rel="noreferrer" style={{ flex: 1, minWidth: 100, height: 40, borderRadius: 8, background: '#0a2540', color: '#fff', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>Twitter</a>
+                <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} }} style={{ flex: 1, minWidth: 100, height: 40, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>{copied ? 'Copied!' : 'Copy Link'}</button>
+              </div>
+            )}
+          </div>
+          {notice ? <p style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: 'rgba(0,0,0,0.5)' }}>{notice}</p> : null}
         </div>
       </section>
     </div>
