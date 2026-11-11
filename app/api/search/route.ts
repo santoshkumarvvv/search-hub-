@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BM25Engine } from '@/lib/search/bm25';
-import { CATALOG_CORPUS, CatalogDoc } from '@/lib/apps';
+import { CATALOG_CORPUS, type CatalogDoc } from '@/lib/apps';
 import { ApiKeyGateway } from '@/lib/saas/apiKeyGateway';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+const MAX_QUERY_LENGTH = 500;
 
 // Pre-index BM25 search engine at module scope (Phase 2 & Phase 7)
 const searchEngine = new BM25Engine<CatalogDoc>(1.2, 0.75);
@@ -20,7 +22,6 @@ const ALLOWED_HOSTNAMES = new Set([
 function getCorsHeaders(request: NextRequest): Record<string, string> {
   const origin = request.headers.get('origin') || '';
   let allowed = false;
-
   if (origin) {
     try {
       const { hostname } = new URL(origin);
@@ -29,7 +30,6 @@ function getCorsHeaders(request: NextRequest): Record<string, string> {
       allowed = false;
     }
   }
-
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://search-hub-live.vercel.app',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -48,9 +48,19 @@ export async function OPTIONS(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const corsHeaders = getCorsHeaders(request);
 
+  // Earliest validation point: hard cap of 500 characters on query parameter before any auth or BM25 processing
+  const rawQuery = request.nextUrl.searchParams.get('q') || '';
+  if (rawQuery.length > 500) {
+    return NextResponse.json(
+      { error: 'query too long' },
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   // API key verification (tiered quotas: starter 2k (₹19), pro 50k (₹99), ultra 500k + 3 agent runs/day (₹199) monthly)
   const apiKey = request.headers.get('x-api-key') || '';
   const keyCheck = await ApiKeyGateway.verifyAndConsume(apiKey);
+
   if (!keyCheck?.valid) {
     return NextResponse.json(
       { error: keyCheck.error, help: keyCheck.help },
@@ -66,7 +76,13 @@ export async function GET(request: NextRequest) {
     'Content-Type': 'application/json',
   };
 
-  const query = (request.nextUrl.searchParams.get('q') || '').trim();
+  const query = rawQuery.trim();
+  if (query.length > MAX_QUERY_LENGTH) {
+    return NextResponse.json(
+      { error: 'query too long' },
+      { status: 400, headers: rateHeaders }
+    );
+  }
 
   if (!query) {
     const defaultResults = CATALOG_CORPUS.slice(0, 5).map((doc) => ({
@@ -87,6 +103,7 @@ export async function GET(request: NextRequest) {
   }
 
   const ranked = searchEngine.search(query, 10);
+
   const results = ranked.map((item) => ({
     title: item.document.title,
     url: item.document.url,

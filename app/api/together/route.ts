@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { atomicRateLimit } from '@/lib/saas/apiKeyGateway';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const ROOM_TTL_SECONDS = 60 * 60 * 24; // 24 hours (86,400 seconds)
 const ROOM_TTL_MS = ROOM_TTL_SECONDS * 1000;
+const TOGETHER_RATE_LIMIT_PER_MIN = 20;
 const VALID_ROOM_CODE = /^[A-Z2-9]{6}$/;
 
 const KV_URL = process.env.KV_REST_API_URL || '';
@@ -32,6 +34,17 @@ type StoredRoomEntry = {
   room: Room;
   expiresAt: number;
 };
+
+function getClientIp(req: NextRequest): string {
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff) {
+    const first = xff.split(',')[0]?.trim();
+    if (first) return first;
+  }
+  const realIp = req.headers.get('x-real-ip')?.trim();
+  if (realIp) return realIp;
+  return '127.0.0.1';
+}
 
 function roomKey(code: string): string {
   return `together:room:${code}`;
@@ -156,6 +169,25 @@ export async function POST(req: NextRequest) {
 
   const action = String(body.action || '');
   const name = String(body.name || 'Guest').slice(0, 24).trim() || 'Guest';
+
+  // Section 4: Atomic rate limit (20 requests per minute per IP) on Together create and join ONLY
+  if (action === 'create' || action === 'join') {
+    const clientIp = getClientIp(req);
+    const rl = await atomicRateLimit(`together:ip:${clientIp}`, TOGETHER_RATE_LIMIT_PER_MIN, 60);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(TOGETHER_RATE_LIMIT_PER_MIN),
+            'X-RateLimit-Remaining': '0',
+            'Retry-After': '60',
+          },
+        }
+      );
+    }
+  }
 
   if (action === 'create') {
     let c = generateSixCharCode();
