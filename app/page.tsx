@@ -180,8 +180,29 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* Live Sandbox Terminal Card */}
-      <section id="sandbox" className="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
+      {/* Live Sandbox Terminal Card (Wide Matte-Black Developer CLI) */}
+      <section
+        id="sandbox"
+        className="w-full max-w-full sm:max-w-[min(900px,94vw)] mx-auto px-[12px] sm:px-0 pb-16"
+        style={{ margin: '0 auto' }}
+      >
+        <style>{`
+          #sandbox [data-search-input]::placeholder {
+            color: #64748B;
+            opacity: 1;
+          }
+          #sandbox [data-search-input]:focus {
+            outline: none !important;
+            border-color: #38BDF8 !important;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+          }
+          #sandbox [data-search-preset]:hover {
+            background-color: #334155 !important;
+          }
+          #sandbox .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
         <div
           data-search-embed
           data-api-url="/api/search"
@@ -189,11 +210,10 @@ export default function HomePage() {
           data-index-url="/data/index.json"
           className="p-[16px] sm:p-6"
           style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            backgroundColor: '#0A0D14',
+            border: '1px solid #1E293B',
             borderRadius: '16px',
-            boxShadow:
-              '0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05)',
           }}
         >
           {/* Sandbox Header */}
@@ -202,7 +222,7 @@ export default function HomePage() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '12px',
+              marginBottom: '14px',
             }}
           >
             <div className="flex items-center gap-1.5">
@@ -211,7 +231,7 @@ export default function HomePage() {
               <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
               <span
                 className="font-mono ml-1.5"
-                style={{ color: '#64748B', fontSize: '12px' }}
+                style={{ color: '#94A3B8', fontSize: '12px' }}
               >
                 Okapi BM25 v2.4
               </span>
@@ -221,9 +241,9 @@ export default function HomePage() {
               aria-live="polite"
               className="rounded-full font-semibold"
               style={{
-                backgroundColor: '#ECFDF5',
-                color: '#059669',
-                border: '1px solid #A7F3D0',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                color: '#34D399',
+                border: '1px solid rgba(52, 211, 153, 0.25)',
                 fontSize: '11px',
                 padding: '4px 8px',
               }}
@@ -232,14 +252,14 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Search Input (Zero Overflow, Crisp Typography) */}
+          {/* Search Input (Dark Sleek Integration) */}
           <div style={{ position: 'relative', width: '100%' }}>
             <svg
               width="16"
               height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#94A3B8"
+              stroke="#64748B"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -262,12 +282,13 @@ export default function HomePage() {
               defaultValue=""
               onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
               placeholder="Search catalog (e.g. bm25)..."
-              className="text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+              className="transition"
               style={{
                 height: '46px',
                 width: '100%',
-                border: '1px solid #E2E8F0',
-                backgroundColor: '#F8FAFC',
+                border: '1px solid #334155',
+                backgroundColor: '#111827',
+                color: '#F8FAFC',
                 borderRadius: '10px',
                 padding: '0 14px 0 40px',
                 fontSize: '14px',
@@ -275,7 +296,7 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Try Chips & Together Toggle (One Sleek Utility Row) */}
+          {/* Try Chips & Together Row (Dark Pills) */}
           <div
             style={{
               marginTop: '10px',
@@ -287,8 +308,8 @@ export default function HomePage() {
           >
             <div className="flex items-center min-w-0 flex-1" style={{ gap: '6px' }}>
               <span
-                className="shrink-0"
-                style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600 }}
+                className="shrink-0 font-bold"
+                style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}
               >
                 TRY:
               </span>
@@ -308,11 +329,11 @@ export default function HomePage() {
                     type="button"
                     data-search-preset={preset}
                     onClick={() => triggerPreset(preset)}
-                    className="rounded-full shrink-0 cursor-pointer hover:bg-slate-50 transition"
+                    className="rounded-full shrink-0 cursor-pointer transition"
                     style={{
-                      border: '1px solid #E2E8F0',
-                      backgroundColor: '#FFFFFF',
-                      color: '#334155',
+                      border: '1px solid #334155',
+                      backgroundColor: '#1E293B',
+                      color: '#E2E8F0',
                       fontSize: '11px',
                       padding: '4px 10px',
                     }}
@@ -327,10 +348,11 @@ export default function HomePage() {
               type="button"
               onClick={() => setTogetherOpen((prev) => !prev)}
               aria-expanded={togetherOpen}
-              className="rounded-full shrink-0 border border-transparent hover:border-slate-200 px-2.5 py-1 transition cursor-pointer"
+              className="rounded-full shrink-0 px-2.5 py-1 transition cursor-pointer hover:bg-[#1E293B]"
               style={{
                 fontSize: '11px',
-                color: '#64748B',
+                color: '#94A3B8',
+                border: '1px solid #334155',
                 backgroundColor: 'transparent',
               }}
             >
@@ -340,26 +362,32 @@ export default function HomePage() {
 
           {/* Smooth Slide-Down Together Panel */}
           {togetherOpen && (
-            <div className="mt-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 transition-all">
+            <div
+              className="mt-3 rounded-xl p-3 transition-all"
+              style={{
+                backgroundColor: '#111827',
+                border: '1px solid #334155',
+              }}
+            >
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="sm:col-span-4 h-8 rounded-lg border border-[#E2E8F0] bg-white px-2.5 text-xs text-slate-900 focus:outline-none"
+                  className="sm:col-span-4 h-8 rounded-lg border border-[#334155] bg-[#0A0D14] px-2.5 text-xs text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#38BDF8]"
                 />
                 <input
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                   placeholder="Room code (ABC123)"
                   maxLength={6}
-                  className="sm:col-span-3 h-8 rounded-lg border border-[#E2E8F0] bg-white px-2.5 font-mono text-xs text-slate-900 focus:outline-none"
+                  className="sm:col-span-3 h-8 rounded-lg border border-[#334155] bg-[#0A0D14] px-2.5 font-mono text-xs text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#38BDF8]"
                 />
                 <button
                   type="button"
                   disabled={busy}
                   onClick={createRoom}
-                  className="sm:col-span-3 h-8 rounded-lg bg-slate-900 text-white text-xs font-semibold px-3 cursor-pointer"
+                  className="sm:col-span-3 h-8 rounded-lg bg-[#38BDF8] text-[#0A0D14] text-xs font-semibold px-3 cursor-pointer hover:opacity-90"
                 >
                   Host room
                 </button>
@@ -367,28 +395,28 @@ export default function HomePage() {
                   type="button"
                   disabled={busy}
                   onClick={joinRoom}
-                  className="sm:col-span-2 h-8 rounded-lg border border-[#E2E8F0] bg-white text-slate-700 text-xs font-semibold px-3 cursor-pointer"
+                  className="sm:col-span-2 h-8 rounded-lg border border-[#334155] bg-[#1E293B] text-[#E2E8F0] text-xs font-semibold px-3 cursor-pointer hover:bg-[#334155]"
                 >
                   Join
                 </button>
               </div>
-              {notice && <p className="mt-1.5 text-[11px] text-slate-500">{notice}</p>}
+              {notice && <p className="mt-1.5 text-[11px] text-[#94A3B8]">{notice}</p>}
             </div>
           )}
 
-          {/* Results Placeholder */}
+          {/* Results Placeholder Box */}
           <div
             id="homepage-embed-results"
             data-search-results
             style={{
               marginTop: '12px',
-              backgroundColor: '#F8FAFC',
-              border: '1px dashed #E2E8F0',
+              backgroundColor: 'rgba(17, 24, 39, 0.6)',
+              border: '1px dashed #334155',
               borderRadius: '10px',
               padding: '18px',
               textAlign: 'center',
               fontSize: '12px',
-              color: '#94A3B8',
+              color: '#64748B',
             }}
           >
             Type a query above to run Okapi BM25 ranking...
