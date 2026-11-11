@@ -7,7 +7,9 @@ type Room = {
   code: string;
   host: string;
   query: string;
+  timestamp?: number;
   updatedAt: number;
+  ttl?: number;
   members: string[];
   pins: string[];
   messages: Message[];
@@ -29,18 +31,14 @@ export default function TogetherPanel({
   const [busy, setBusy] = useState(false);
   const lastRemoteQuery = useRef('');
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('se_together_name');
-      if (saved) setName(saved);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
   const applyRoom = useCallback(
     (next: Room) => {
       setRoom(next);
+      try {
+        localStorage.setItem('se_together_room', next.code);
+      } catch {
+        /* ignore */
+      }
       if (typeof next.query === 'string' && next.query !== lastRemoteQuery.current) {
         lastRemoteQuery.current = next.query;
         onRemoteQuery(next.query);
@@ -48,6 +46,30 @@ export default function TogetherPanel({
     },
     [onRemoteQuery]
   );
+
+  useEffect(() => {
+    try {
+      const savedName = localStorage.getItem('se_together_name');
+      if (savedName) setName(savedName);
+      const sp = new URLSearchParams(window.location.search);
+      const urlCode = sp.get('together');
+      const savedRoom = urlCode ? urlCode.toUpperCase() : localStorage.getItem('se_together_room');
+      if (urlCode) {
+        setCodeInput(urlCode.toUpperCase());
+        setOpen(true);
+      }
+      if (savedRoom && /^[A-Z2-9]{6}$/.test(savedRoom)) {
+        fetch(`/api/together?code=${encodeURIComponent(savedRoom)}`, { cache: 'no-store' })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (data && data.code) applyRoom(data as Room);
+          })
+          .catch(() => {});
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [applyRoom]);
 
   useEffect(() => {
     if (!room?.code) return;
@@ -97,12 +119,12 @@ export default function TogetherPanel({
       const res = await fetch('/api/together', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create', name: n }),
+        body: JSON.stringify({ action: 'create', name: n, query: currentQuery }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not create room');
       applyRoom(data as Room);
-      setNotice('Room live. Share the code with friends.');
+      setNotice(`Room ${(data as Room).code} stored in KV (24h TTL).`);
     } catch (e) {
       setNotice(e instanceof Error ? e.message : 'Failed');
     } finally {
@@ -114,7 +136,7 @@ export default function TogetherPanel({
     const n = name.trim() || 'Guest';
     const c = codeInput.trim().toUpperCase();
     if (!c) {
-      setNotice('Enter a room code.');
+      setNotice('Enter a 6-character room code.');
       return;
     }
     setBusy(true);
@@ -129,7 +151,7 @@ export default function TogetherPanel({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Room not found');
       applyRoom(data as Room);
-      setNotice('Joined. Searches and chat stay in sync.');
+      setNotice('Joined room from KV. Searches and chat stay in sync.');
     } catch (e) {
       setNotice(e instanceof Error ? e.message : 'Failed');
     } finally {
@@ -164,28 +186,12 @@ export default function TogetherPanel({
     }
   }
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const sp = new URLSearchParams(window.location.search);
-    const c = sp.get('together');
-    if (c) {
-      setCodeInput(c.toUpperCase());
-      setOpen(true);
-    }
-  }, []);
-
   function toggleOpen() {
     const y = typeof window !== 'undefined' ? window.scrollY : 0;
     setOpen((v) => !v);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         window.scrollTo(0, y);
-        const currentLang = document.documentElement.lang === 'hi' ? 'hi' : 'en';
-        document.querySelectorAll('[data-en]').forEach((el) => {
-          if (el.getAttribute('data-rich') === 'true') return;
-          const t = el.getAttribute(`data-${currentLang}`);
-          if (t) (el as HTMLElement).textContent = t;
-        });
       });
     });
   }
@@ -195,8 +201,6 @@ export default function TogetherPanel({
       <button
         type="button"
         onClick={toggleOpen}
-        data-en="Show Together mode"
-        data-hi="टुगेदर मोड दिखाएं"
         className="inline-flex min-h-11 items-center rounded-full border border-[#7c5cff] bg-white px-4 text-sm font-semibold text-[#7c5cff]"
       >
         Show Together mode
@@ -205,21 +209,11 @@ export default function TogetherPanel({
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-white p-5 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]">
+    <div className="surface-card rounded-2xl border border-line bg-white p-5 shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3
-            className="font-display text-lg font-bold text-ink"
-            data-en="Together mode"
-            data-hi="टुगेदर मोड"
-          >
-            Together mode
-          </h3>
-          <p
-            className="mt-1 text-sm text-muted"
-            data-en="One room. Live query sync. Side chat. Pin results you both like."
-            data-hi="एक रूम। लाइव क्वेरी सिंक। साइड चैट। पसंद के रिज़ल्ट पिन करें।"
-          >
+          <h3 className="font-display text-lg font-bold text-ink">Together mode</h3>
+          <p className="mt-1 text-sm text-muted">
             One room. Live query sync. Side chat. Pin results you both like.
           </p>
         </div>
@@ -232,8 +226,6 @@ export default function TogetherPanel({
           <button
             type="button"
             onClick={toggleOpen}
-            data-en="Hide Together"
-            data-hi="टुगेदर छुपाएं"
             className="inline-flex min-h-11 items-center rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink"
           >
             Hide Together
@@ -244,9 +236,7 @@ export default function TogetherPanel({
       {!room ? (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="block text-sm">
-            <span className="text-muted" data-en="Your name" data-hi="आपका नाम">
-              Your name
-            </span>
+            <span className="text-muted">Your name</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -255,9 +245,7 @@ export default function TogetherPanel({
             />
           </label>
           <label className="block text-sm">
-            <span className="text-muted" data-en="Join with code" data-hi="कोड से जुड़ें">
-              Join with code
-            </span>
+            <span className="text-muted">Join with code</span>
             <input
               value={codeInput}
               onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
@@ -270,8 +258,6 @@ export default function TogetherPanel({
             type="button"
             disabled={busy}
             onClick={createRoom}
-            data-en="Start a room"
-            data-hi="रूम शुरू करें"
             className="btn-primary min-h-12"
           >
             Start a room
@@ -280,8 +266,6 @@ export default function TogetherPanel({
             type="button"
             disabled={busy}
             onClick={joinRoom}
-            data-en="Join room"
-            data-hi="रूम से जुड़ें"
             className="btn-secondary min-h-12 bg-white text-[#7c5cff]"
             style={{ border: '1px solid #7c5cff', background: '#ffffff', color: '#7c5cff' }}
           >
@@ -297,7 +281,14 @@ export default function TogetherPanel({
               </button>
               <button
                 type="button"
-                onClick={() => setRoom(null)}
+                onClick={() => {
+                  setRoom(null);
+                  try {
+                    localStorage.removeItem('se_together_room');
+                  } catch {
+                    /* ignore */
+                  }
+                }}
                 className="btn-secondary min-h-11 px-4 text-sm"
               >
                 Leave
@@ -320,6 +311,7 @@ export default function TogetherPanel({
               </div>
             )}
           </div>
+
           <div className="flex h-64 flex-col rounded-xl border border-line bg-panel2">
             <div className="flex-1 space-y-2 overflow-y-auto p-3 text-sm">
               {room.messages.map((m) => (
@@ -346,6 +338,7 @@ export default function TogetherPanel({
           </div>
         </div>
       )}
+
       {notice && <p className="mt-3 text-sm text-muted">{notice}</p>}
     </div>
   );

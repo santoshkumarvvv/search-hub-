@@ -4,6 +4,8 @@
 
 :root {
   color-scheme: light;
+  --ambient-violet: rgba(124, 92, 255, 0.05); /* #7c5cff at 5% opacity */
+  --ambient-gold: rgba(245, 197, 66, 0.03); /* #f5c542 at 3% opacity */
 }
 
 html {
@@ -18,6 +20,9 @@ body {
   min-height: 100vh;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: #fafbfc;
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(124, 92, 255, 0.05) 0%, transparent 55%),
+    radial-gradient(circle at 80% 25%, rgba(245, 197, 66, 0.03) 0%, transparent 55%);
   color: #0f172a;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -25,8 +30,30 @@ body {
 }
 
 .dot-grid {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(124, 92, 255, 0.05) 0%, transparent 55%),
+    radial-gradient(circle at 80% 25%, rgba(245, 197, 66, 0.03) 0%, transparent 55%),
+    radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
+}
+
+.card,
+.surface-card {
+  border: 1px solid rgba(124, 92, 255, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover,
+.surface-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(124, 92, 255, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+[data-search-input]:focus,
+.search-input:focus {
+  outline: none;
+  border-color: #7c5cff;
+  box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.25);
 }
 
 .skip-link {

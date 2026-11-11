@@ -107,7 +107,7 @@ export class ApiKeyGateway {
       tier: 'free',
       createdAt: '2026-01-01T00:00:00.000Z',
       totalUsage: 0,
-      monthlyQuota: 1000,
+      monthlyQuota: 2000,
       rateLimitPerMinute: 10,
     });
   }
@@ -141,7 +141,7 @@ export class ApiKeyGateway {
     const keyHash = await this.hashKey(rawKey);
 
     const quotas: Record<PricingTier, { monthly: number; rpm: number }> = {
-      free: { monthly: 1000, rpm: 10 },
+      free: { monthly: 2000, rpm: 10 },
       pro: { monthly: 50000, rpm: 60 },
       enterprise: { monthly: 500000, rpm: 300 },
     };
@@ -298,3 +298,29 @@ export class ApiKeyGateway {
     return this.keys.delete(id);
   }
 }
+export const PRICING_TIERS = {
+  starter: {
+    tier: 'free' as PricingTier,
+    name: 'Starter',
+    priceInr: 19,
+    monthlySearches: 2000,
+    rateLimitPerMinute: 10,
+    agentRunsPerDay: 0,
+  },
+  pro: {
+    tier: 'pro' as PricingTier,
+    name: 'Pro',
+    priceInr: 99,
+    monthlySearches: 50000,
+    rateLimitPerMinute: 60,
+    agentRunsPerDay: 0,
+  },
+  ultra: {
+    tier: 'enterprise' as PricingTier,
+    name: 'Ultra',
+    priceInr: 199,
+    monthlySearches: 500000,
+    rateLimitPerMinute: 300,
+    agentRunsPerDay: 3,
+  },
+} as const;

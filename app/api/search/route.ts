@@ -48,7 +48,7 @@ export async function OPTIONS(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const corsHeaders = getCorsHeaders(request);
 
-  // API key verification (tiered quotas: free 1k, pro 50k, enterprise 500k monthly)
+  // API key verification (tiered quotas: starter 2k (₹19), pro 50k (₹99), ultra 500k + 3 agent runs/day (₹199) monthly)
   const apiKey = request.headers.get('x-api-key') || '';
   const keyCheck = await ApiKeyGateway.verifyAndConsume(apiKey);
   if (!keyCheck?.valid) {

@@ -1,52 +1,148 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const ROOM_TTL_SECONDS = 60 * 60 * 24; // 24 hours (86,400 seconds)
+const ROOM_TTL_MS = ROOM_TTL_SECONDS * 1000;
+const VALID_ROOM_CODE = /^[A-Z2-9]{6}$/;
+
+const KV_URL = process.env.KV_REST_API_URL || '';
+const KV_TOKEN = process.env.KV_REST_API_TOKEN || '';
+const USE_KV = KV_URL.length > 0 && KV_TOKEN.length > 0;
+const LOCAL_KV_FILE = path.join('/tmp', 'searchhub-together-kv.json');
 
 type Msg = { id: string; name: string; text: string; at: number };
 type Room = {
   code: string;
   query: string;
   host: string;
+  timestamp: number;
+  updatedAt: number;
+  ttl: number;
   members: string[];
   messages: Msg[];
   pins: string[];
-  updatedAt: number;
 };
 
-declare global {
-  // eslint-disable-next-line no-var
-  var __togetherRooms: Map<string, Room> | undefined;
+type StoredRoomEntry = {
+  room: Room;
+  expiresAt: number;
+};
+
+function roomKey(code: string): string {
+  return `together:room:${code}`;
 }
 
-function store(): Map<string, Room> {
-  if (!globalThis.__togetherRooms) globalThis.__togetherRooms = new Map();
-  return globalThis.__togetherRooms;
+function readDiskKv(): Record<string, StoredRoomEntry> {
+  try {
+    if (!fs.existsSync(LOCAL_KV_FILE)) return {};
+    const raw = fs.readFileSync(LOCAL_KV_FILE, 'utf8');
+    const parsed = JSON.parse(raw) as Record<string, StoredRoomEntry>;
+    const now = Date.now();
+    const active: Record<string, StoredRoomEntry> = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      if (v && typeof v.expiresAt === 'number' && v.expiresAt > now && v.room) {
+        active[k] = v;
+      }
+    }
+    return active;
+  } catch {
+    return {};
+  }
 }
 
-function code() {
+function writeDiskKv(data: Record<string, StoredRoomEntry>): void {
+  try {
+    fs.writeFileSync(LOCAL_KV_FILE, JSON.stringify(data), 'utf8');
+  } catch {
+    // ignore disk errors on read-only fs
+  }
+}
+
+async function kvGetRoom(roomCode: string): Promise<Room | null> {
+  if (!VALID_ROOM_CODE.test(roomCode)) return null;
+  const key = roomKey(roomCode);
+  if (USE_KV) {
+    try {
+      const res = await fetch(`${KV_URL}/get/${encodeURIComponent(key)}`, {
+        headers: { Authorization: `Bearer ${KV_TOKEN}` },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(3000),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { result?: Room | string | null };
+        if (data.result) {
+          const parsed =
+            typeof data.result === 'string'
+              ? (JSON.parse(data.result) as Room)
+              : (data.result as Room);
+          if (parsed && Date.now() - parsed.updatedAt <= ROOM_TTL_MS) {
+            return parsed;
+          }
+        }
+      }
+    } catch {
+      // fall through to disk KV backup
+    }
+  }
+  const disk = readDiskKv();
+  const entry = disk[key];
+  if (!entry || entry.expiresAt <= Date.now()) return null;
+  return entry.room;
+}
+
+async function kvSetRoom(
+  roomCode: string,
+  room: Room,
+  ttlSeconds: number = ROOM_TTL_SECONDS
+): Promise<void> {
+  if (!VALID_ROOM_CODE.test(roomCode)) return;
+  const key = roomKey(roomCode);
+  if (USE_KV) {
+    try {
+      await fetch(`${KV_URL}/set/${encodeURIComponent(key)}?ex=${ttlSeconds}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${KV_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(room),
+        signal: AbortSignal.timeout(3000),
+      });
+    } catch {
+      // also persist to disk KV backup
+    }
+  }
+  const disk = readDiskKv();
+  disk[key] = {
+    room,
+    expiresAt: Date.now() + ttlSeconds * 1000,
+  };
+  writeDiskKv(disk);
+}
+
+function generateSixCharCode(): string {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let out = '';
-  for (let i = 0; i < 6; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
+  for (let i = 0; i < 6; i++) {
+    out += alphabet[crypto.randomInt(0, alphabet.length)];
+  }
   return out;
 }
 
-function clean(rooms: Map<string, Room>) {
-  const cutoff = Date.now() - 1000 * 60 * 60 * 6;
-  for (const [k, v] of rooms) {
-    if (v.updatedAt < cutoff) rooms.delete(k);
-  }
-}
-
 export async function GET(req: NextRequest) {
-  const roomCode = (req.nextUrl.searchParams.get('code') || '').toUpperCase();
-  if (!roomCode) {
-    return NextResponse.json({ error: 'code required' }, { status: 400 });
+  const roomCode = (req.nextUrl.searchParams.get('code') || '').trim().toUpperCase();
+  if (!roomCode || !VALID_ROOM_CODE.test(roomCode)) {
+    return NextResponse.json({ error: 'Valid 6-character code required' }, { status: 400 });
   }
-  const rooms = store();
-  clean(rooms);
-  const room = rooms.get(roomCode);
-  if (!room) return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+  const room = await kvGetRoom(roomCode);
+  if (!room) {
+    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+  }
   return NextResponse.json(room);
 }
 
@@ -59,36 +155,48 @@ export async function POST(req: NextRequest) {
   }
 
   const action = String(body.action || '');
-  const rooms = store();
-  clean(rooms);
   const name = String(body.name || 'Guest').slice(0, 24).trim() || 'Guest';
 
   if (action === 'create') {
-    let c = code();
-    while (rooms.has(c)) c = code();
+    let c = generateSixCharCode();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const existing = await kvGetRoom(c);
+      if (!existing) break;
+      c = generateSixCharCode();
+    }
+    const now = Date.now();
     const room: Room = {
       code: c,
-      query: '',
+      query: String(body.query || '').slice(0, 200),
       host: name,
+      timestamp: now,
+      updatedAt: now,
+      ttl: ROOM_TTL_SECONDS,
       members: [name],
       messages: [
         {
           id: crypto.randomUUID(),
           name: 'System',
           text: `${name} started a Together search room. Share the code so friends can join.`,
-          at: Date.now(),
+          at: now,
         },
       ],
       pins: [],
-      updatedAt: Date.now(),
     };
-    rooms.set(c, room);
+    await kvSetRoom(c, room, ROOM_TTL_SECONDS);
     return NextResponse.json(room);
   }
 
-  const roomCode = String(body.code || '').toUpperCase();
-  const room = rooms.get(roomCode);
-  if (!room) return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+  const roomCode = String(body.code || '').trim().toUpperCase();
+  if (!VALID_ROOM_CODE.test(roomCode)) {
+    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+  }
+
+  // On join or update, always read directly from KV (never in-memory Map)
+  const room = await kvGetRoom(roomCode);
+  if (!room) {
+    return NextResponse.json({ error: 'Room not found' }, { status: 404 });
+  }
 
   if (action === 'join') {
     if (!room.members.includes(name)) room.members.push(name);
@@ -100,12 +208,14 @@ export async function POST(req: NextRequest) {
     });
     if (room.messages.length > 80) room.messages = room.messages.slice(-80);
     room.updatedAt = Date.now();
+    await kvSetRoom(roomCode, room, ROOM_TTL_SECONDS);
     return NextResponse.json(room);
   }
 
-  if (action === 'query') {
+  if (action === 'query' || action === 'sync') {
     room.query = String(body.query || '').slice(0, 200);
     room.updatedAt = Date.now();
+    await kvSetRoom(roomCode, room, ROOM_TTL_SECONDS);
     return NextResponse.json(room);
   }
 
@@ -120,6 +230,7 @@ export async function POST(req: NextRequest) {
     });
     if (room.messages.length > 80) room.messages = room.messages.slice(-80);
     room.updatedAt = Date.now();
+    await kvSetRoom(roomCode, room, ROOM_TTL_SECONDS);
     return NextResponse.json(room);
   }
 
@@ -136,6 +247,7 @@ export async function POST(req: NextRequest) {
       });
     }
     room.updatedAt = Date.now();
+    await kvSetRoom(roomCode, room, ROOM_TTL_SECONDS);
     return NextResponse.json(room);
   }
 

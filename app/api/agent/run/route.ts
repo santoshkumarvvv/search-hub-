@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
       const emailDraft =
         job.deliveryChannel === 'email' && hasChange
           ? {
-              to: process.env.AGENT_EMAIL_TO || 'TODO_USER_EMAIL',
+              to: process.env.AGENT_EMAIL_TO || 'kumasantosh947@gmail.com',
               subject: `[SearchHub Agent] ${job.instruction.slice(0, 40)}`,
               body: `New: ${delta?.newItems || 0}, Removed: ${delta?.removedItems || 0}, Anomalies: ${anomalies.length}, Threshold: ${thresholdMet ? 'MET' : 'no'}`,
             }

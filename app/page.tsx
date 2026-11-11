@@ -11,7 +11,9 @@ type Room = {
   code: string;
   host: string;
   query: string;
+  timestamp?: number;
   updatedAt: number;
+  ttl?: number;
   members: string[];
 };
 
@@ -23,12 +25,22 @@ export default function HomePage() {
   const [room, setRoom] = useState<Room | null>(null);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [micSupported, setMicSupported] = useState(true);
+  const [listening, setListening] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const lastRemoteQuery = useRef('');
 
   useEffect(() => {
-    const w = window as unknown as { SearchEmbed?: { init: () => void } };
+    const w = window as unknown as {
+      SearchEmbed?: { init: () => void };
+      SpeechRecognition?: unknown;
+      webkitSpeechRecognition?: unknown;
+    };
     w.SearchEmbed?.init();
+
+    if (!w.SpeechRecognition && !w.webkitSpeechRecognition) {
+      setMicSupported(false);
+    }
 
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -100,12 +112,12 @@ export default function HomePage() {
       const res = await fetch('/api/together', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create', name: n }),
+        body: JSON.stringify({ action: 'create', name: n, query: liveQuery }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not create room');
       applyRoom(data as Room);
-      setNotice(`Room ${(data as Room).code} live — share code with your team.`);
+      setNotice(`Room ${(data as Room).code} live (24h KV TTL) — share code with your team.`);
     } catch (e) {
       setNotice(e instanceof Error ? e.message : 'Could not create room');
     } finally {
@@ -131,7 +143,7 @@ export default function HomePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Room not found');
       applyRoom(data as Room);
-      setNotice(`Joined room ${c}. Queries sync live.`);
+      setNotice(`Joined room ${c} from KV. Queries sync live.`);
     } catch (e) {
       setNotice(e instanceof Error ? e.message : 'Could not join room');
     } finally {
@@ -149,6 +161,64 @@ export default function HomePage() {
     }
   };
 
+  const startVoiceSearch = () => {
+    const w = window as unknown as {
+      SpeechRecognition?: new () => {
+        lang: string;
+        interimResults: boolean;
+        maxAlternatives: number;
+        onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+        onerror: (() => void) | null;
+        onend: (() => void) | null;
+        start: () => void;
+      };
+      webkitSpeechRecognition?: new () => {
+        lang: string;
+        interimResults: boolean;
+        maxAlternatives: number;
+        onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+        onerror: (() => void) | null;
+        onend: (() => void) | null;
+        start: () => void;
+      };
+    };
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!SR) {
+      setMicSupported(false);
+      return;
+    }
+    try {
+      const recognition = new SR();
+      recognition.lang = 'hi-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      setListening(true);
+      recognition.onresult = (event) => {
+        const transcript = event.results?.[0]?.[0]?.transcript?.trim() || '';
+        if (transcript) {
+          setLiveQuery(transcript);
+          const inp = inputRef.current;
+          if (inp) {
+            inp.value = transcript;
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+        setListening(false);
+      };
+      recognition.onerror = () => {
+        setListening(false);
+        setMicSupported(false);
+      };
+      recognition.onend = () => {
+        setListening(false);
+      };
+      recognition.start();
+    } catch {
+      setListening(false);
+      setMicSupported(false);
+    }
+  };
+
   return (
     <div>
       <Script
@@ -159,25 +229,34 @@ export default function HomePage() {
         }}
       />
 
-      {/* Hero Section (Compact Mobile Cleanup — Flow directly into Sandbox) */}
+      {/* Hero Section with 40% opacity violet-and-gold hero-banner.svg */}
       <section className="relative overflow-hidden max-w-5xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-6 sm:pb-8 text-center">
-        <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-5 shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>SUB-MILLISECOND SEARCH ENGINE</span>
+        <img
+          src="/hero-banner.svg"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute inset-0 h-full w-full max-w-full object-cover opacity-40"
+          style={{ opacity: 0.4 }}
+        />
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-5 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>SUB-MILLISECOND SEARCH ENGINE</span>
+          </div>
+          <h1 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.1]">
+            Search that ships in{' '}
+            <span className="bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
+              seconds.
+            </span>
+          </h1>
+          <p className="text-slate-600 text-base sm:text-xl max-w-2xl mx-auto mb-0 leading-relaxed">
+            Drop one{' '}
+            <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
+              2 KB
+            </code>{' '}
+            script tag to index, rank, and typo-correct your catalog under a millisecond.
+          </p>
         </div>
-        <h1 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.1]">
-          Search that ships in{' '}
-          <span className="bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
-            seconds.
-          </span>
-        </h1>
-        <p className="text-slate-600 text-base sm:text-xl max-w-2xl mx-auto mb-0 leading-relaxed">
-          Drop one{' '}
-          <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
-            2 KB
-          </code>{' '}
-          script tag to index, rank, and typo-correct your catalog under a millisecond.
-        </p>
       </section>
 
       {/* Live Sandbox Terminal Card (Wide Matte-Black Developer CLI) */}
@@ -193,8 +272,8 @@ export default function HomePage() {
           }
           #sandbox [data-search-input]:focus {
             outline: none !important;
-            border-color: #38BDF8 !important;
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+            border-color: #7c5cff !important;
+            box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.25) !important;
           }
           #sandbox [data-search-preset]:hover {
             background-color: #334155 !important;
@@ -252,29 +331,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Search Input (Dark Sleek Integration) */}
+          {/* Search Input with 24x24 purple mic button on the right side before the search icon */}
           <div style={{ position: 'relative', width: '100%' }}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#64748B"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                left: '14px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-              }}
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
             <input
               ref={inputRef}
               data-search-input
@@ -282,7 +340,7 @@ export default function HomePage() {
               defaultValue=""
               onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
               placeholder="Search catalog (e.g. bm25)..."
-              className="transition"
+              className="search-input transition"
               style={{
                 height: '46px',
                 width: '100%',
@@ -290,10 +348,69 @@ export default function HomePage() {
                 backgroundColor: '#111827',
                 color: '#F8FAFC',
                 borderRadius: '10px',
-                padding: '0 14px 0 40px',
+                padding: '0 72px 0 14px',
                 fontSize: '14px',
               }}
             />
+            <div
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              {micSupported && (
+                <button
+                  type="button"
+                  data-voice-mic
+                  onClick={startVoiceSearch}
+                  aria-label="Voice search"
+                  title="Voice search (hi-IN)"
+                  className="inline-flex items-center justify-center rounded-md transition cursor-pointer"
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    color: '#7c5cff',
+                    backgroundColor: listening ? 'rgba(124, 92, 255, 0.18)' : 'transparent',
+                  }}
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#7c5cff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="22" />
+                  </svg>
+                </button>
+              )}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#64748B"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                style={{ pointerEvents: 'none' }}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
           </div>
 
           {/* Try Chips & Together Row (Dark Pills) */}
@@ -424,7 +541,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Pricing Section (Aligned with Backend Quotas) */}
       <section id="pricing" className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-xs font-bold text-slate-700 uppercase tracking-widest bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200 shadow-xs">
@@ -449,8 +566,8 @@ export default function HomePage() {
                 <span className="text-slate-500 text-sm">/month</span>
               </div>
               <ul className="space-y-4 text-sm text-slate-600 mb-8">
+                <li className="flex items-center gap-3">✓ 2,000 searches / month</li>
                 <li className="flex items-center gap-3">✓ 1 widget under 2 KB</li>
-                <li className="flex items-center gap-3">✓ 5,000 documents</li>
                 <li className="flex items-center gap-3">✓ BM25 + 1-edit typos</li>
               </ul>
             </div>
