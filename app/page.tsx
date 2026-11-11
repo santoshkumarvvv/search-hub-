@@ -15,7 +15,7 @@ type Room = {
   updatedAt: number;
   ttl?: number;
   members: string[];
-};
+);
 
 export default function HomePage() {
   const [liveQuery, setLiveQuery] = useState('');
@@ -91,7 +91,7 @@ export default function HomePage() {
           method: 'POST",
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            action: 'sync",
+            action: 'sync',
             code: room.code,
             name: name || 'Guest",
             query: liveQuery,
@@ -179,7 +179,7 @@ export default function HomePage() {
         maxAlternatives: number;
         onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
         onerror: (() => void) | null;
-        onend: (() => void) | null;
+        onend: () => void) | null;
         start: () => void;
       };
     };
@@ -254,6 +254,10 @@ export default function HomePage() {
         <style>{`
           #sandbox [data-search-input]::placeholder { color: rgba(0, 0, 0, 0.4); opacity: 1; }
           #sandbox [data-search-input]:focus { outline: none !important; border-color: #0a2540 !important; box-shadow: 0 0 0 4px rgba(10, 37, 64, 0.12) !important; }
+          @media (max-width: 640px) {
+            .rooms-fields { grid-template-columns: 1fr !important; }
+            .rooms-btns { grid-template-columns: 1fr 1fr !important; }
+          }
         `}</style>
         <div
           data-search-embed
@@ -261,7 +265,7 @@ export default function HomePage() {
           data-api-key={SANDBOX_DEMO_KEY}
           data-index-url="/data/index.json"
           className="widget-card"
-          style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 40 }
+          style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 40 }
         >
           <div style={{ position: 'relative', width: '100%' }}>
             <input
@@ -369,10 +373,10 @@ export default function HomePage() {
         <h2 style={{ fontSize: 24, fontWeight: 600, color: '#111111', margin: '0 0 16px', textAlign: 'center' }}>Rooms</h2>
         <div style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0.12)', borderRadius: 16, boxShadow: '0 8px 30px rgba(0, 0, 0, 0.08)', padding: 32 }}>
           <div className="rooms-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0.12)', padding: '0 12px', fontSize: 14 }} />
-            <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase())} placeholder="Room code (ABC123)" maxLength={6} style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0.12)', padding: '0 12px', fontSize: 14, fontFamily: 'ui-monospace, monospace' }} />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0.12)', padding: '0 12px', fontSize: 14, width: '100%', boxSizing: 'border-box' }} />
+            <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase())} placeholder="Room code (ABC123)" maxLength={6} style={{ height: 44, borderRadius: 10, border: '1px solid rgba(0,0,0.12)', padding: '0 12px', fontSize: 14, fontFamily: 'ui-monospace, monospace', width: '100%', boxSizing: 'border-box' }} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
+          <div className="rooms-btns" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
             <button type="button" disabled={busy} onClick={createRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Host room</button>
             <button type="button" disabled={busy} onClick={joinRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: '1px solid #0a2540', background: '#ffffff', color: '#0a2540', fontWeight: 600, cursor: 'pointer' }}>Join</button>
           </div>
