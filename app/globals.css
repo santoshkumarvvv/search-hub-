@@ -19,22 +19,19 @@ body {
   padding: 0;
   min-height: 100vh;
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  background-color: #fafbfc;
-  background-image:
-    radial-gradient(circle at 20% 15%, rgba(124, 92, 255, 0.05) 0%, transparent 55%),
-    radial-gradient(circle at 80% 25%, rgba(245, 197, 66, 0.03) 0%, transparent 55%);
-  color: #0f172a;
+  background-color: #ffffff;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #111111;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .dot-grid {
-  background-image:
-    radial-gradient(circle at 20% 15%, rgba(124, 92, 255, 0.05) 0%, transparent 55%),
-    radial-gradient(circle at 80% 25%, rgba(245, 197, 66, 0.03) 0%, transparent 55%),
-    radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 24px 24px;
+  background-color: #ffffff;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .card,
@@ -80,4 +77,30 @@ body {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.nav-cta-icon {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .hero-title {
+    font-size: 32px !important;
+  }
+  .widget-card {
+    padding: 24px !important;
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .nav-cta-label {
+    display: none;
+  }
+  .nav-cta-icon {
+    display: inline-flex;
+  }
+  .hero-actions {
+    gap: 12px !important;
+  }
 }

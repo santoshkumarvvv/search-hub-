@@ -73,53 +73,80 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         {/* Navbar */}
-        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80">
+        <header
+          className="sticky top-0 z-50"
+          style={{
+            height: 64,
+            background: "#ffffff",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.08)",
+          }}
+        >
           <div
-            className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between"
             style={{
+              maxWidth: 1100,
+              margin: "0 auto",
+              padding: "0 16px",
+              height: 64,
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              height: "60px",
             }}
           >
-            <a href="/" className="flex items-center gap-2.5 no-underline shrink-0">
-              <div className="bg-slate-900 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-sm">
-                SE
-              </div>
-              <span className="font-bold text-lg tracking-tight text-slate-900">
-                SearchEmbed
-              </span>
-              <span className="text-[11px] bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded-md border border-slate-200">
-                v2.4
-              </span>
-            </a>
-
-            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-              <a href="#features" className="hover:text-slate-900 transition">
-                Features
-              </a>
-              <a href="#sandbox" className="hover:text-slate-900 transition">
-                Sandbox
-              </a>
-              <a href="#pricing" className="hover:text-slate-900 transition">
-                Pricing
-              </a>
-            </nav>
-
-            <div className="flex items-center shrink-0">
-              <a
-                href="#pricing"
-                className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm transition whitespace-nowrap inline-flex items-center justify-center leading-none"
+            <a
+              href="/"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                textDecoration: "none",
+                color: "#111111",
+                fontWeight: 600,
+                fontSize: 16,
+              }}
+            >
+              <span
                 style={{
-                  height: "auto",
-                  padding: "8px 14px",
-                  borderRadius: "8px",
+                  background: "#0a2540",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: 11,
+                  lineHeight: 1,
+                  padding: "5px 6px",
+                  borderRadius: 6,
                 }}
               >
-                Get API Key &rarr;
-              </a>
-            </div>
+                SE
+              </span>
+              SearchEmbed
+            </a>
+            <a
+              href="#pricing"
+              className="nav-cta"
+              style={{
+                background: "#0a2540",
+                color: "#ffffff",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: 14,
+                borderRadius: 28,
+                padding: "10px 18px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minWidth: 40,
+                minHeight: 40,
+              }}
+            >
+              <span className="nav-cta-label">Get API Key</span>
+              <span className="nav-cta-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="8" cy="15" r="4" />
+                  <path d="M10.85 12.15 19 4" />
+                  <path d="M18 5l2 2" />
+                  <path d="M15 8l2 2" />
+                </svg>
+              </span>
+            </a>
           </div>
         </header>
 
@@ -128,40 +155,39 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         {/* Footer */}
-        <footer className="border-t border-slate-200 bg-white py-12">
-          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-slate-900 text-white font-bold px-2.5 py-1 rounded-lg text-xs">
-                SE
-              </div>
-              <span className="font-bold text-sm text-slate-900">SearchEmbed</span>
-              <span className="text-xs text-slate-400">
-                · Okapi BM25 Search Infrastructure
-              </span>
-            </div>
-            <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="#sandbox" className="hover:text-slate-900 transition">
-                Demo
-              </a>
-              <a href="#pricing" className="hover:text-slate-900 transition">
-                Pricing
-              </a>
-              <a
-                href="https://github.com/santoshkumarvvv/search-hub-"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-slate-900 transition"
-              >
-                GitHub
-              </a>
-              <a
-                href="mailto:kumasantosh947@gmail.com"
-                className="hover:text-slate-900 transition"
-              >
-                Contact
-              </a>
-            </div>
-          </div>
+        <footer
+          style={{
+            borderTop: "1px solid rgba(0, 0, 0, 0.08)",
+            padding: "40px 16px",
+            background: "#ffffff",
+          }}
+        >
+          <nav
+            aria-label="Footer"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 8,
+              fontSize: 14,
+              color: "rgba(0, 0, 0, 0.45)",
+            }}
+          >
+            <a href="mailto:kumasantosh947@gmail.com" style={{ color: "inherit", textDecoration: "none" }}>
+              Contact
+            </a>
+            <a href="mailto:kumasantosh947@gmail.com" style={{ color: "inherit", textDecoration: "none" }}>
+              Email
+            </a>
+            <a
+              href="https://github.com/santoshkumarvvv/search-hub-"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "inherit", textDecoration: "none" }}
+            >
+              GitHub
+            </a>
+          </nav>
         </footer>
       </body>
     </html>
