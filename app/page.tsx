@@ -159,90 +159,81 @@ export default function HomePage() {
         }}
       />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6 shadow-xs">
+      {/* Hero Section (Compact Mobile Cleanup — Flow directly into Sandbox) */}
+      <section className="relative overflow-hidden max-w-5xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-6 sm:pb-8 text-center">
+        <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-5 shadow-xs">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>SUB-MILLISECOND SEARCH ENGINE</span>
         </div>
-        <h1 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]">
+        <h1 className="text-4xl sm:text-7xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.1]">
           Search that ships in{' '}
           <span className="bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
             seconds.
           </span>
         </h1>
-        <p className="text-slate-600 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-slate-600 text-base sm:text-xl max-w-2xl mx-auto mb-0 leading-relaxed">
           Drop one{' '}
           <code className="bg-slate-100 text-slate-800 px-2 py-0.5 rounded font-mono text-sm font-bold border border-slate-200">
             2 KB
           </code>{' '}
           script tag to index, rank, and typo-correct your catalog under a millisecond.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="#sandbox"
-            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg transition"
-          >
-            Try Live Sandbox ↓
-          </a>
-        </div>
       </section>
 
-      {/* Live Sandbox Preview Section */}
-      <section id="sandbox" className="max-w-4xl mx-auto px-4 sm:px-6 pb-20">
+      {/* Live Sandbox Terminal Card */}
+      <section id="sandbox" className="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
         <div
           data-search-embed
           data-api-url="/api/search"
           data-api-key={SANDBOX_DEMO_KEY}
           data-index-url="/data/index.json"
-          className="bg-white border border-slate-200/80 rounded-3xl shadow-xl shadow-slate-100 p-5 sm:p-8"
+          className="p-[16px] sm:p-6"
+          style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: '16px',
+            boxShadow:
+              '0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04)',
+          }}
         >
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-amber-400" />
-              <span className="w-3 h-3 rounded-full bg-emerald-400" />
-              <span className="w-3 h-3 rounded-full bg-slate-900" />
-              <span className="text-xs font-semibold text-slate-400 ml-1">
-                Live Sandbox · Okapi BM25
+          {/* Sandbox Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '12px',
+            }}
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
+              <span
+                className="font-mono ml-1.5"
+                style={{ color: '#64748B', fontSize: '12px' }}
+              >
+                Okapi BM25 v2.4
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setTogetherOpen((prev) => !prev)}
-                aria-expanded={togetherOpen}
-                className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full border transition cursor-pointer ${
-                  togetherOpen
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                <span>👥 Together Mode</span>
-                {room?.code && (
-                  <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700">
-                    {room.code}
-                  </span>
-                )}
-              </button>
-              <div
-                data-search-status
-                aria-live="polite"
-                className="flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-semibold border border-emerald-100"
-              >
-                ⚡ Ready · 0.85 ms
-              </div>
+            <div
+              data-search-status
+              aria-live="polite"
+              className="rounded-full font-semibold"
+              style={{
+                backgroundColor: '#ECFDF5',
+                color: '#059669',
+                border: '1px solid #A7F3D0',
+                fontSize: '11px',
+                padding: '4px 8px',
+              }}
+            >
+              ⚡ Ready · 0.85 ms
             </div>
           </div>
 
-          {/* Rebuilt Unified 48px Inline Flex Search Input */}
-          <div
-            className="w-full flex items-center gap-2.5 px-3.5 rounded-xl transition focus-within:ring-2 focus-within:ring-slate-900 mb-3"
-            style={{
-              height: '48px',
-              backgroundColor: '#F8FAFC',
-              border: '1px solid #E2E8F0',
-            }}
-          >
+          {/* Search Input (Zero Overflow, Crisp Typography) */}
+          <div style={{ position: 'relative', width: '100%' }}>
             <svg
               width="16"
               height="16"
@@ -252,8 +243,14 @@ export default function HomePage() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="shrink-0"
               aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                pointerEvents: 'none',
+              }}
             >
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -264,53 +261,105 @@ export default function HomePage() {
               type="text"
               defaultValue=""
               onInput={(e) => setLiveQuery((e.target as HTMLInputElement).value)}
-              placeholder="Search documentation, keys, algorithms..."
-              className="w-full min-w-0 bg-transparent text-slate-900 placeholder:text-slate-400 text-sm font-medium focus:outline-none"
+              placeholder="Search catalog (e.g. bm25)..."
+              className="text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+              style={{
+                height: '46px',
+                width: '100%',
+                border: '1px solid #E2E8F0',
+                backgroundColor: '#F8FAFC',
+                borderRadius: '10px',
+                padding: '0 14px 0 40px',
+                fontSize: '14px',
+              }}
             />
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[11px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded shrink-0">
-              ⌘K
-            </kbd>
           </div>
 
-          {/* Inline Collapsible Together Mode Drawer */}
-          {togetherOpen && (
-            <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 transition-all">
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">
-                    Together Mode · Live Query Sync
-                  </h4>
-                  <p className="text-[11px] text-slate-500">
-                    Host or join a shared room to sync search queries in real time.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTogetherOpen(false)}
-                  className="text-xs font-medium text-slate-500 hover:text-slate-900 px-2 py-1 rounded-lg border border-slate-200 bg-white cursor-pointer"
-                >
-                  Close
-                </button>
+          {/* Try Chips & Together Toggle (One Sleek Utility Row) */}
+          <div
+            style={{
+              marginTop: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '8px',
+            }}
+          >
+            <div className="flex items-center min-w-0 flex-1" style={{ gap: '6px' }}>
+              <span
+                className="shrink-0"
+                style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600 }}
+              >
+                TRY:
+              </span>
+              <div
+                className="no-scrollbar"
+                style={{
+                  display: 'flex',
+                  overflowX: 'auto',
+                  whiteSpace: 'nowrap',
+                  gap: '6px',
+                  scrollbarWidth: 'none',
+                }}
+              >
+                {['bm25 algorithm', 'minecraft', 'scrypt', 'wireguard vpn'].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    data-search-preset={preset}
+                    onClick={() => triggerPreset(preset)}
+                    className="rounded-full shrink-0 cursor-pointer hover:bg-slate-50 transition"
+                    style={{
+                      border: '1px solid #E2E8F0',
+                      backgroundColor: '#FFFFFF',
+                      color: '#334155',
+                      fontSize: '11px',
+                      padding: '4px 10px',
+                    }}
+                  >
+                    {preset}
+                  </button>
+                ))}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setTogetherOpen((prev) => !prev)}
+              aria-expanded={togetherOpen}
+              className="rounded-full shrink-0 border border-transparent hover:border-slate-200 px-2.5 py-1 transition cursor-pointer"
+              style={{
+                fontSize: '11px',
+                color: '#64748B',
+                backgroundColor: 'transparent',
+              }}
+            >
+              👥 Together{room?.code ? ` (${room.code})` : ''}
+            </button>
+          </div>
+
+          {/* Smooth Slide-Down Together Panel */}
+          {togetherOpen && (
+            <div className="mt-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 transition-all">
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name (e.g. Riya)"
-                  className="sm:col-span-4 h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  placeholder="Your name"
+                  className="sm:col-span-4 h-8 rounded-lg border border-[#E2E8F0] bg-white px-2.5 text-xs text-slate-900 focus:outline-none"
                 />
                 <input
                   value={codeInput}
                   onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                   placeholder="Room code (ABC123)"
                   maxLength={6}
-                  className="sm:col-span-3 h-9 rounded-lg border border-slate-200 bg-white px-3 font-mono text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  className="sm:col-span-3 h-8 rounded-lg border border-[#E2E8F0] bg-white px-2.5 font-mono text-xs text-slate-900 focus:outline-none"
                 />
                 <button
                   type="button"
                   disabled={busy}
                   onClick={createRoom}
-                  className="sm:col-span-3 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 transition cursor-pointer"
+                  className="sm:col-span-3 h-8 rounded-lg bg-slate-900 text-white text-xs font-semibold px-3 cursor-pointer"
                 >
                   Host room
                 </button>
@@ -318,51 +367,29 @@ export default function HomePage() {
                   type="button"
                   disabled={busy}
                   onClick={joinRoom}
-                  className="sm:col-span-2 h-9 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold px-3 transition cursor-pointer"
+                  className="sm:col-span-2 h-8 rounded-lg border border-[#E2E8F0] bg-white text-slate-700 text-xs font-semibold px-3 cursor-pointer"
                 >
                   Join
                 </button>
               </div>
-              {notice && <p className="mt-2 text-[11px] font-medium text-slate-600">{notice}</p>}
+              {notice && <p className="mt-1.5 text-[11px] text-slate-500">{notice}</p>}
             </div>
           )}
 
-          {/* Try Chips (Horizontally Scrollable, Zero Truncation) */}
-          <div
-            className="no-scrollbar mb-6 items-center"
-            style={{
-              display: 'flex',
-              flexWrap: 'nowrap',
-              overflowX: 'auto',
-              gap: '8px',
-              WebkitOverflowScrolling: 'touch',
-              scrollbarWidth: 'none',
-            }}
-          >
-            <span className="text-xs font-semibold text-slate-400 shrink-0">Try:</span>
-            {['bm25 algorithm', 'minecraft', 'scrypt', 'wireguard vpn'].map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                data-search-preset={preset}
-                onClick={() => triggerPreset(preset)}
-                className="rounded-full font-medium text-slate-700 bg-white hover:bg-[#F1F5F9] transition cursor-pointer shrink-0 whitespace-nowrap"
-                style={{
-                  fontSize: '12px',
-                  padding: '6px 12px',
-                  border: '1px solid #E2E8F0',
-                }}
-              >
-                {preset}
-              </button>
-            ))}
-          </div>
-
-          {/* Result Box Placeholder */}
+          {/* Results Placeholder */}
           <div
             id="homepage-embed-results"
             data-search-results
-            className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 text-center text-slate-400 text-sm"
+            style={{
+              marginTop: '12px',
+              backgroundColor: '#F8FAFC',
+              border: '1px dashed #E2E8F0',
+              borderRadius: '10px',
+              padding: '18px',
+              textAlign: 'center',
+              fontSize: '12px',
+              color: '#94A3B8',
+            }}
           >
             Type a query above to run Okapi BM25 ranking...
           </div>
