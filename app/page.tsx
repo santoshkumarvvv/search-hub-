@@ -223,6 +223,16 @@ export default function HomePage() {
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = encodeURIComponent(shareUrl);
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* ignore */
+    }
+  };
+
   return (
     <div style={{ paddingLeft: 16, paddingRight: 16 }}>
       <Script
@@ -256,7 +266,7 @@ export default function HomePage() {
           #sandbox [data-search-input]:focus { outline: none !important; border-color: #0a2540 !important; box-shadow: 0 0 0 4px rgba(10, 37, 64, 0.12) !important; }
           @media (max-width: 640px) {
             .rooms-fields { grid-template-columns: 1fr !important; }
-            .rooms-btns { grid-template-columns: 1fr 1fr !important; }
+            .rooms-btns { grid-template-columns: 1fr !important; }
           }
         `}</style>
         <div
@@ -380,19 +390,31 @@ export default function HomePage() {
             <button type="button" disabled={busy} onClick={createRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Host room</button>
             <button type="button" disabled={busy} onClick={joinRoom} style={{ width: '100%', height: 48, borderRadius: 8, border: '1px solid #0a2540', background: '#ffffff', color: '#0a2540', fontWeight: 600, cursor: 'pointer' }}>Join</button>
           </div>
-          <div style={{ maxWidth: 480, margin: '16px auto 0', marginLeft: 'auto', marginRight: 'auto' }}>
-            <button type="button" onClick={() => setShowShare(!showShare)} style={{ width: '100%', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>Share</button>
-            {showShare && (
-              <div style={{ marginTop: 8, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <a href={"https://wa.me/?text=" + shareText} target="_blank" rel="noreferrer" style={{ flex: 1, minWidth: 100, height: 40, borderRadius: 8, background: '#25D366', color: '#fff', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>WhatsApp</a>
-                <a href={"https://twitter.com/intent/tweet?url=" + shareText} target="_blank" rel="noreferrer" style={{ flex: 1, minWidth: 100, height: 40, borderRadius: 8, background: '#0a2540', color: '#fff', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>Twitter</a>
-                <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {} }} style={{ flex: 1, minWidth: 100, height: 40, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>{copied ? 'Copied!' : 'Copy Link'}</button>
-              </div>
-            )}
-          </div>
-          {notice ? <p style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: 'rgba(0,0,0,0.5)' }}>{notice}</p> : null}
+          <button type="button" onClick={() => setShowShare(!showShare)} style={{ width: '100%', maxWidth: 480, margin: '12px auto 0', display: 'block', height: 48, borderRadius: 8, border: 'none', background: '#0a2540', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>
+            {showShare ? 'Close Share' : 'Share'}
+          </button>
+          {showShare && (
+            <div style={{ maxWidth: 480, margin: '12px auto 0', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+              <a href={`https://wa.me/?text=${shareText}`}" target="_blank" rel="noreferrer" style={{ height: 44, borderRadius: 8, background: '#25D366', color: '#fff', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>WhatsApp</a>
+              <a href={`https://twitter.com/intent/tweet?url=${shareText}`}" target="_blank" rel="noreferrer" style={{ height: 44, borderRadius: 8, background: '#1DA1F2', color: '#fff', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>Twitter</a>
+              <button type="button" onClick={copyLink} style={{ height: 44, borderRadius: 8, border: '1px solid #0a2540', background: '#ffffff', color: '#0a2540', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>{copied ? 'Copied!' : 'Copy Link'}</button>
+            </div>
+          )}
+          {notice && (
+            <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.55)', margin: '12px 0 0', textAlign: 'center' }}>{notice}</p>
+          )}
         </div>
       </section>
+
+      <footer style={{ borderTop: '1px solid rgba(0,0,0,0.08)', padding: '40px 0', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, fontSize: 14, color: 'rgba(0,0,0,0.45)' }}>
+          <a href="mailto:kumasantosh947@gmail.com" style={{ color: 'rgba(0,0,0,0.45)', textDecoration: 'none' }}>Contact</a>
+          <span>·</span>
+          <a href="mailto:kumasantosh947@gmail.com" style={{ color: 'rgba(0,0,0,0.45)', textDecoration: 'none' }}>Email</a>
+          <span>·</span>
+          <a href="https://github.com/santoshkumarvvv" target="_blank" rel="noreferrer" style={{ color: 'rgba(0,0,0,0.45)', textDecoration: 'none' }}>GitHub</a>
+        </div>
+      </footer>
     </div>
   );
 }
